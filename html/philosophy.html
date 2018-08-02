@@ -1,0 +1,2590 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+<!-- 2018-08-02 Thu 00:57 -->
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>episteme</title>
+<meta name="generator" content="Org mode" />
+<meta name="description" content="Knowledge-base of the ##apoptosis community on Freenode"
+ />
+<style type="text/css">
+ <!--/*--><![CDATA[/*><!--*/
+  .title  { text-align: center;
+             margin-bottom: .2em; }
+  .subtitle { text-align: center;
+              font-size: medium;
+              font-weight: bold;
+              margin-top:0; }
+  .todo   { font-family: monospace; color: red; }
+  .done   { font-family: monospace; color: green; }
+  .priority { font-family: monospace; color: orange; }
+  .tag    { background-color: #eee; font-family: monospace;
+            padding: 2px; font-size: 80%; font-weight: normal; }
+  .timestamp { color: #bebebe; }
+  .timestamp-kwd { color: #5f9ea0; }
+  .org-right  { margin-left: auto; margin-right: 0px;  text-align: right; }
+  .org-left   { margin-left: 0px;  margin-right: auto; text-align: left; }
+  .org-center { margin-left: auto; margin-right: auto; text-align: center; }
+  .underline { text-decoration: underline; }
+  #postamble p, #preamble p { font-size: 90%; margin: .2em; }
+  p.verse { margin-left: 3%; }
+  pre {
+    border: 1px solid #ccc;
+    box-shadow: 3px 3px 3px #eee;
+    padding: 8pt;
+    font-family: monospace;
+    overflow: auto;
+    margin: 1.2em;
+  }
+  pre.src {
+    position: relative;
+    overflow: visible;
+    padding-top: 1.2em;
+  }
+  pre.src:before {
+    display: none;
+    position: absolute;
+    background-color: white;
+    top: -10px;
+    right: 10px;
+    padding: 3px;
+    border: 1px solid black;
+  }
+  pre.src:hover:before { display: inline;}
+  /* Languages per Org manual */
+  pre.src-asymptote:before { content: 'Asymptote'; }
+  pre.src-awk:before { content: 'Awk'; }
+  pre.src-C:before { content: 'C'; }
+  /* pre.src-C++ doesn't work in CSS */
+  pre.src-clojure:before { content: 'Clojure'; }
+  pre.src-css:before { content: 'CSS'; }
+  pre.src-D:before { content: 'D'; }
+  pre.src-ditaa:before { content: 'ditaa'; }
+  pre.src-dot:before { content: 'Graphviz'; }
+  pre.src-calc:before { content: 'Emacs Calc'; }
+  pre.src-emacs-lisp:before { content: 'Emacs Lisp'; }
+  pre.src-fortran:before { content: 'Fortran'; }
+  pre.src-gnuplot:before { content: 'gnuplot'; }
+  pre.src-haskell:before { content: 'Haskell'; }
+  pre.src-hledger:before { content: 'hledger'; }
+  pre.src-java:before { content: 'Java'; }
+  pre.src-js:before { content: 'Javascript'; }
+  pre.src-latex:before { content: 'LaTeX'; }
+  pre.src-ledger:before { content: 'Ledger'; }
+  pre.src-lisp:before { content: 'Lisp'; }
+  pre.src-lilypond:before { content: 'Lilypond'; }
+  pre.src-lua:before { content: 'Lua'; }
+  pre.src-matlab:before { content: 'MATLAB'; }
+  pre.src-mscgen:before { content: 'Mscgen'; }
+  pre.src-ocaml:before { content: 'Objective Caml'; }
+  pre.src-octave:before { content: 'Octave'; }
+  pre.src-org:before { content: 'Org mode'; }
+  pre.src-oz:before { content: 'OZ'; }
+  pre.src-plantuml:before { content: 'Plantuml'; }
+  pre.src-processing:before { content: 'Processing.js'; }
+  pre.src-python:before { content: 'Python'; }
+  pre.src-R:before { content: 'R'; }
+  pre.src-ruby:before { content: 'Ruby'; }
+  pre.src-sass:before { content: 'Sass'; }
+  pre.src-scheme:before { content: 'Scheme'; }
+  pre.src-screen:before { content: 'Gnu Screen'; }
+  pre.src-sed:before { content: 'Sed'; }
+  pre.src-sh:before { content: 'shell'; }
+  pre.src-sql:before { content: 'SQL'; }
+  pre.src-sqlite:before { content: 'SQLite'; }
+  /* additional languages in org.el's org-babel-load-languages alist */
+  pre.src-forth:before { content: 'Forth'; }
+  pre.src-io:before { content: 'IO'; }
+  pre.src-J:before { content: 'J'; }
+  pre.src-makefile:before { content: 'Makefile'; }
+  pre.src-maxima:before { content: 'Maxima'; }
+  pre.src-perl:before { content: 'Perl'; }
+  pre.src-picolisp:before { content: 'Pico Lisp'; }
+  pre.src-scala:before { content: 'Scala'; }
+  pre.src-shell:before { content: 'Shell Script'; }
+  pre.src-ebnf2ps:before { content: 'ebfn2ps'; }
+  /* additional language identifiers per "defun org-babel-execute"
+       in ob-*.el */
+  pre.src-cpp:before  { content: 'C++'; }
+  pre.src-abc:before  { content: 'ABC'; }
+  pre.src-coq:before  { content: 'Coq'; }
+  pre.src-groovy:before  { content: 'Groovy'; }
+  /* additional language identifiers from org-babel-shell-names in
+     ob-shell.el: ob-shell is the only babel language using a lambda to put
+     the execution function name together. */
+  pre.src-bash:before  { content: 'bash'; }
+  pre.src-csh:before  { content: 'csh'; }
+  pre.src-ash:before  { content: 'ash'; }
+  pre.src-dash:before  { content: 'dash'; }
+  pre.src-ksh:before  { content: 'ksh'; }
+  pre.src-mksh:before  { content: 'mksh'; }
+  pre.src-posh:before  { content: 'posh'; }
+  /* Additional Emacs modes also supported by the LaTeX listings package */
+  pre.src-ada:before { content: 'Ada'; }
+  pre.src-asm:before { content: 'Assembler'; }
+  pre.src-caml:before { content: 'Caml'; }
+  pre.src-delphi:before { content: 'Delphi'; }
+  pre.src-html:before { content: 'HTML'; }
+  pre.src-idl:before { content: 'IDL'; }
+  pre.src-mercury:before { content: 'Mercury'; }
+  pre.src-metapost:before { content: 'MetaPost'; }
+  pre.src-modula-2:before { content: 'Modula-2'; }
+  pre.src-pascal:before { content: 'Pascal'; }
+  pre.src-ps:before { content: 'PostScript'; }
+  pre.src-prolog:before { content: 'Prolog'; }
+  pre.src-simula:before { content: 'Simula'; }
+  pre.src-tcl:before { content: 'tcl'; }
+  pre.src-tex:before { content: 'TeX'; }
+  pre.src-plain-tex:before { content: 'Plain TeX'; }
+  pre.src-verilog:before { content: 'Verilog'; }
+  pre.src-vhdl:before { content: 'VHDL'; }
+  pre.src-xml:before { content: 'XML'; }
+  pre.src-nxml:before { content: 'XML'; }
+  /* add a generic configuration mode; LaTeX export needs an additional
+     (add-to-list 'org-latex-listings-langs '(conf " ")) in .emacs */
+  pre.src-conf:before { content: 'Configuration File'; }
+
+  table { border-collapse:collapse; }
+  caption.t-above { caption-side: top; }
+  caption.t-bottom { caption-side: bottom; }
+  td, th { vertical-align:top;  }
+  th.org-right  { text-align: center;  }
+  th.org-left   { text-align: center;   }
+  th.org-center { text-align: center; }
+  td.org-right  { text-align: right;  }
+  td.org-left   { text-align: left;   }
+  td.org-center { text-align: center; }
+  dt { font-weight: bold; }
+  .footpara { display: inline; }
+  .footdef  { margin-bottom: 1em; }
+  .figure { padding: 1em; }
+  .figure p { text-align: center; }
+  .equation-container {
+    display: table;
+    text-align: center;
+    width: 100%;
+  }
+  .equation {
+    vertical-align: middle;
+  }
+  .equation-label {
+    display: table-cell;
+    text-align: right;
+    vertical-align: middle;
+  }
+  .inlinetask {
+    padding: 10px;
+    border: 2px solid gray;
+    margin: 10px;
+    background: #ffffcc;
+  }
+  #org-div-home-and-up
+   { text-align: right; font-size: 70%; white-space: nowrap; }
+  textarea { overflow-x: auto; }
+  .linenr { font-size: smaller }
+  .code-highlighted { background-color: #ffff00; }
+  .org-info-js_info-navigation { border-style: none; }
+  #org-info-js_console-label
+    { font-size: 10px; font-weight: bold; white-space: nowrap; }
+  .org-info-js_search-highlight
+    { background-color: #ffff00; color: #000000; font-weight: bold; }
+  .org-svg { width: 90%; }
+  /*]]>*/-->
+</style>
+<link rel="stylesheet" type="text/css" href="https://www.pirilampo.org/styles/readtheorg/css/htmlize.css"/>
+<link rel="stylesheet" type="text/css" href="https://www.pirilampo.org/styles/readtheorg/css/readtheorg.css"/>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="https://www.pirilampo.org/styles/lib/js/jquery.stickytableheaders.js"></script>
+<script type="text/javascript" src="https://www.pirilampo.org/styles/readtheorg/js/readtheorg.js"></script>
+<script type="text/javascript">
+/*
+@licstart  The following is the entire license notice for the
+JavaScript code in this tag.
+
+Copyright (C) 2012-2018 Free Software Foundation, Inc.
+
+The JavaScript code in this tag is free software: you can
+redistribute it and/or modify it under the terms of the GNU
+General Public License (GNU GPL) as published by the Free Software
+Foundation, either version 3 of the License, or (at your option)
+any later version.  The code is distributed WITHOUT ANY WARRANTY;
+without even the implied warranty of MERCHANTABILITY or FITNESS
+FOR A PARTICULAR PURPOSE.  See the GNU GPL for more details.
+
+As additional permission under GNU GPL version 3 section 7, you
+may distribute non-source (e.g., minimized or compacted) forms of
+that code without the copy of the GNU GPL normally required by
+section 4, provided you include this license notice and a URL
+through which recipients can access the Corresponding Source.
+
+
+@licend  The above is the entire license notice
+for the JavaScript code in this tag.
+*/
+<!--/*--><![CDATA[/*><!--*/
+ function CodeHighlightOn(elem, id)
+ {
+   var target = document.getElementById(id);
+   if(null != target) {
+     elem.cacheClassElem = elem.className;
+     elem.cacheClassTarget = target.className;
+     target.className = "code-highlighted";
+     elem.className   = "code-highlighted";
+   }
+ }
+ function CodeHighlightOff(elem, id)
+ {
+   var target = document.getElementById(id);
+   if(elem.cacheClassElem)
+     elem.className = elem.cacheClassElem;
+   if(elem.cacheClassTarget)
+     target.className = elem.cacheClassTarget;
+ }
+/*]]>*///-->
+</script>
+</head>
+<body>
+<div id="content">
+<h1 class="title">episteme</h1>
+<div id="table-of-contents">
+<h2>Table of Contents</h2>
+<div id="text-table-of-contents">
+<ul>
+<li><a href="#org8054d67">Western Philosophy</a>
+<ul>
+<li><a href="#org01ecbb6">Pre-Socratic</a>
+<ul>
+<li><a href="#orgd359301">Four elements: Earth, Water, Air and Fire</a></li>
+<li><a href="#org4d10bdf">Sophists ~ 450BC</a></li>
+<li><a href="#orgc623bc2">Pythagoreans ~ 500BC</a></li>
+<li><a href="#org5aad107">Heraclitus - 535-475BC</a></li>
+<li><a href="#org5827837">Parmenides ~ 450BC</a></li>
+<li><a href="#orgd804ac4">Zeno of Elea - 490-430BC</a></li>
+<li><a href="#orgce9b134">Herodotus - 484-425BC</a></li>
+<li><a href="#orgec9c518">Thucydides - 460-395BC</a></li>
+</ul>
+</li>
+<li><a href="#orga7cfbe9">Classical Greek</a>
+<ul>
+<li><a href="#org5960643">Socrates - 469-399BC</a></li>
+<li><a href="#orgb06b26f">Plato</a></li>
+<li><a href="#orgf9a27e5">Aristotle</a></li>
+<li><a href="#orgd8a2471">Epicureanism</a></li>
+<li><a href="#org439f711">Stoicism</a></li>
+</ul>
+</li>
+<li><a href="#org7d5bbab">Romans</a>
+<ul>
+<li><a href="#org37210c0">Cicero - 106-43BC</a></li>
+<li><a href="#orgeaa160b">Skeptics</a></li>
+</ul>
+</li>
+<li><a href="#org153892e">Christians</a>
+<ul>
+<li><a href="#org1b9de4c">Hebrew Bible</a></li>
+<li><a href="#org986a66f">Old Testament</a></li>
+<li><a href="#org2b0cdd6">New Testament</a></li>
+<li><a href="#org559758c">Augistine - 354 - 430</a></li>
+<li><a href="#org5a9ccb1">Aquinus - 1225-1274</a></li>
+<li><a href="#org3a95a6c">Medieval Thought</a></li>
+<li><a href="#org8c0f50a">Luther - 1483-1546</a></li>
+<li><a href="#orgdde567d">Calvin - 1509-1564</a></li>
+</ul>
+</li>
+<li><a href="#orgb04805b">The Renaissance</a>
+<ul>
+<li><a href="#org2cbf57f">Machiavelli</a></li>
+<li><a href="#org497ec6a">Thomas Moore</a></li>
+<li><a href="#orgbfc5e49">Erasumus</a></li>
+<li><a href="#orgd0ab91a">Galileo</a></li>
+<li><a href="#org1cf2259">Francis Bacon</a></li>
+<li><a href="#orgc96b803">Descartes</a></li>
+<li><a href="#org844f9cc">Hobbes</a></li>
+<li><a href="#orge80e8b8">Spinoza</a></li>
+<li><a href="#org0e8738a">Bayle</a></li>
+<li><a href="#org30090b7">Newton</a></li>
+</ul>
+</li>
+<li><a href="#org1f36f76">The Enlightenment</a>
+<ul>
+<li><a href="#orgc593e68">Adam Smith - 1723-1790</a></li>
+<li><a href="#orgfb6b0eb">Rousseau - 1712-1778</a></li>
+<li><a href="#org8f9b6bd">David Hume - 1711-1766</a></li>
+<li><a href="#org39ebfcc">Montesquieu - 1689-1755</a></li>
+<li><a href="#org9e857f1">Bishop Berkeley - 1685-1733</a></li>
+<li><a href="#org9c5e540">Mandeville - 1670-1733</a></li>
+<li><a href="#org7b8cbb5">Vico - 1678-1744</a></li>
+<li><a href="#org3e9790b">Leibniz - 1646-1716</a></li>
+<li><a href="#orgfa01e1b">John Locke - 1632-1704</a></li>
+</ul>
+</li>
+<li><a href="#org234b7b7">Age of Ideology</a>
+<ul>
+<li><a href="#orga775beb">Kant</a></li>
+<li><a href="#org449ac2a">Burke</a></li>
+<li><a href="#org4c07902">Hegel</a></li>
+<li><a href="#orge5beaca">Marx</a></li>
+<li><a href="#org30f6317">Mill - 1806-1873</a></li>
+<li><a href="#org5c91bac">Jeremey Bentham - 1748-1832</a></li>
+<li><a href="#org87d0432">Kierkegaard</a></li>
+<li><a href="#org5a7e642">Schopenhauer</a></li>
+<li><a href="#org890245f">Nietzsche</a></li>
+</ul>
+</li>
+<li><a href="#org87a99ee">Modernity I</a>
+<ul>
+<li><a href="#org640102e">James</a></li>
+<li><a href="#orgc6ee608">Freud</a></li>
+<li><a href="#org1b99b00">AJ Ayer</a></li>
+<li><a href="#org86de649">Max Weber</a></li>
+<li><a href="#orgc188596">Dewey</a></li>
+<li><a href="#org1663155">Heidegger</a></li>
+<li><a href="#org2e9b81b">Wittgenstein</a></li>
+<li><a href="#orgc3b0f56">Husserl</a></li>
+</ul>
+</li>
+<li><a href="#orge64cae9">Modernity II</a>
+<ul>
+<li><a href="#orgef91f37">Hayek</a></li>
+<li><a href="#org31824bb">Popper</a></li>
+<li><a href="#orgfd63573">Kuhn</a></li>
+<li><a href="#org29d5994">Qine</a></li>
+<li><a href="#org892fba9">Habermas</a></li>
+<li><a href="#orgcad66f4">Rawls</a></li>
+<li><a href="#org4910977">Derrida</a></li>
+<li><a href="#org7814c0c">Rorty</a></li>
+<li><a href="#org63f71fc">Gouldner</a></li>
+<li><a href="#orgecf322d">MacIntyre</a></li>
+<li><a href="#org8f40d1f">Nozick</a></li>
+</ul>
+</li>
+<li><a href="#org273a0b9">Modernity III</a>
+<ul>
+<li><a href="#orgf864c43">Jonathan Haidt - 1963</a></li>
+<li><a href="#org47122df">Jerry Fodor</a></li>
+<li><a href="#org3ca9b06">Daniel Dennett</a></li>
+<li><a href="#org3589be3">Paul Churchland</a></li>
+<li><a href="#org4667ccd">Thomas Nagel - 1937 -</a></li>
+<li><a href="#orge1386b6">W.W. Bartley - 1934-1990</a></li>
+<li><a href="#orgb84c4bb">Leonard Piekoff - 1933 -</a></li>
+<li><a href="#org7af3a57">Albert Camus - 1913-1960</a></li>
+<li><a href="#org49118b9">Jean-Paul Sartre - 1905-1980</a></li>
+<li><a href="#orgf6148df">Kurt Gödel - 1906 - 1978</a></li>
+<li><a href="#org4026756">Bertrand Russell - 1872 - 1970</a></li>
+<li><a href="#orgd1c84f1">Rudolf Carnap - 1891 - 1970</a></li>
+<li><a href="#org7f9e9a1">David J. Chalmers</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-org8054d67" class="outline-2">
+<h2 id="org8054d67">Western Philosophy</h2>
+<div class="outline-text-2" id="text-org8054d67">
+</div>
+<div id="outline-container-org01ecbb6" class="outline-3">
+<h3 id="org01ecbb6">Pre-Socratic</h3>
+<div class="outline-text-3" id="text-org01ecbb6">
+</div>
+<div id="outline-container-orgd359301" class="outline-4">
+<h4 id="orgd359301">Four elements: Earth, Water, Air and Fire</h4>
+</div>
+<div id="outline-container-org4d10bdf" class="outline-4">
+<h4 id="org4d10bdf">Sophists ~ 450BC</h4>
+<div class="outline-text-4" id="text-org4d10bdf">
+<p>
+<a href="http://en.wikipedia.org/wiki/Sophism">http://en.wikipedia.org/wiki/Sophism</a>
+</p>
+<ul class="org-ul">
+<li>First attempt at a full-fledged philosophical doctrine</li>
+</ul>
+</div>
+<ul class="org-ul">
+<li><a id="org1923d81"></a>Protagoras<br />
+<div class="outline-text-5" id="text-org1923d81">
+<ul class="org-ul">
+<li>Considered the first sophist</li>
+</ul>
+</div>
+</li>
+<li><a id="org8c0ed1f"></a>Professional teachers<br />
+<div class="outline-text-5" id="text-org8c0ed1f">
+<ul class="org-ul">
+<li>Despised by Plato
+<ul class="org-ul">
+<li>Because they charged fees</li>
+<li>Because they used rhetorical sleight-of-hand</li>
+</ul></li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+<div id="outline-container-orgc623bc2" class="outline-4">
+<h4 id="orgc623bc2">Pythagoreans ~ 500BC</h4>
+<div class="outline-text-4" id="text-orgc623bc2">
+<p>
+<a href="http://en.wikipedia.org/wiki/Pythagoreans">http://en.wikipedia.org/wiki/Pythagoreans</a>
+</p>
+<ul class="org-ul">
+<li>Believed in reincarnation</li>
+<li>Heavily influenced by mathematics and mysticism</li>
+<li>Transmigration of the Soul was a core belief</li>
+<li>Were vegetarians</li>
+</ul>
+</div>
+</div>
+<div id="outline-container-org5aad107" class="outline-4">
+<h4 id="org5aad107">Heraclitus - 535-475BC</h4>
+<div class="outline-text-4" id="text-org5aad107">
+<p>
+<a href="http://en.wikipedia.org/wiki/Heraclitus">http://en.wikipedia.org/wiki/Heraclitus</a>
+</p>
+<ul class="org-ul">
+<li>"No man steps in the same river twice."</li>
+<li>Diogenes primary biographer</li>
+</ul>
+</div>
+</div>
+<div id="outline-container-org5827837" class="outline-4">
+<h4 id="org5827837">Parmenides ~ 450BC</h4>
+<div class="outline-text-4" id="text-org5827837">
+<p>
+<a href="http://en.wikipedia.org/wiki/Parmenides">http://en.wikipedia.org/wiki/Parmenides</a>
+</p>
+<ul class="org-ul">
+<li>Only known work was "On Nature" - a poem</li>
+<li>Claimed that truth cannot be know through sensory perception, only through logos.</li>
+</ul>
+</div>
+</div>
+<div id="outline-container-orgd804ac4" class="outline-4">
+<h4 id="orgd804ac4">Zeno of Elea - 490-430BC</h4>
+<div class="outline-text-4" id="text-orgd804ac4">
+<p>
+<a href="http://en.wikipedia.org/wiki/Zeno">http://en.wikipedia.org/wiki/Zeno</a>
+</p>
+</div>
+<ul class="org-ul">
+<li><a id="orgc1b4023"></a>Reducto ad Absurdum<br /></li>
+<li><a id="orga6a767c"></a>Zeno's Paradox<br />
+<div class="outline-text-5" id="text-orga6a767c">
+<ul class="org-ul">
+<li>Arhilles and the Tortoise</li>
+</ul>
+<p>
+<a href="http://en.wikipedia.org/wiki/Zeno's_paradoxes#Achilles_and_the_tortoise">http://en.wikipedia.org/wiki/Zeno's_paradoxes#Achilles_and_the_tortoise</a>
+</p>
+</div>
+</li>
+</ul>
+</div>
+<div id="outline-container-orgce9b134" class="outline-4">
+<h4 id="orgce9b134">Herodotus - 484-425BC</h4>
+<div class="outline-text-4" id="text-orgce9b134">
+<p>
+<a href="http://en.wikipedia.org/wiki/Herodotus">http://en.wikipedia.org/wiki/Herodotus</a>
+</p>
+<ul class="org-ul">
+<li>Greek Historian</li>
+<li>First known writer to collect and document his ideas systematically.</li>
+</ul>
+</div>
+</div>
+<div id="outline-container-orgec9c518" class="outline-4">
+<h4 id="orgec9c518">Thucydides - 460-395BC</h4>
+<div class="outline-text-4" id="text-orgec9c518">
+<p>
+<a href="http://en.wikipedia.org/wiki/Thucydides">http://en.wikipedia.org/wiki/Thucydides</a>
+</p>
+<ul class="org-ul">
+<li>The Pelopomnesian War - his greatest contribution to history.</li>
+<li>"The Father of Scientific History"</li>
+<li>"The Father of the school of political realism"</li>
+</ul>
+</div>
+</div>
+</div>
+<div id="outline-container-orga7cfbe9" class="outline-3">
+<h3 id="orga7cfbe9">Classical Greek</h3>
+<div class="outline-text-3" id="text-orga7cfbe9">
+</div>
+<div id="outline-container-org5960643" class="outline-4">
+<h4 id="org5960643">Socrates - 469-399BC</h4>
+<div class="outline-text-4" id="text-org5960643">
+<p>
+<a href="http://en.wikipedia.org/wiki/Socrates">http://en.wikipedia.org/wiki/Socrates</a>
+</p>
+<ul class="org-ul">
+<li>Ethical truth was absolute</li>
+<li>"To Know the Good is to Do the Good"</li>
+</ul>
+</div>
+</div>
+<div id="outline-container-orgb06b26f" class="outline-4">
+<h4 id="orgb06b26f">Plato</h4>
+<div class="outline-text-4" id="text-orgb06b26f">
+<p>
+<a href="http://en.wikipedia.org/wiki/Plato">http://en.wikipedia.org/wiki/Plato</a>
+</p>
+<ul class="org-ul">
+<li>Invented Metaphysics</li>
+<li>The Socratic Method</li>
+<li>Forms</li>
+<li>Asked the question "What is virtue?"</li>
+<li>Invented Dualism of Mind and Body</li>
+</ul>
+</div>
+<ul class="org-ul">
+<li><a id="orgc5d9358"></a>Republic<br />
+<div class="outline-text-5" id="text-orgc5d9358">
+<ul class="org-ul">
+<li>Shadows on the Cave Wall</li>
+<li>Women should hold political power</li>
+<li>Political leaders chosen from among best &amp; brightest</li>
+<li>Anti-democratic</li>
+<li>What is Justice?
+<ul class="org-ul">
+<li>Give each man his due</li>
+<li>Might makes right</li>
+<li>Reason</li>
+</ul></li>
+<li>No nuclear family</li>
+<li>No private property</li>
+<li>Philosopher "guardians" of Reason will rule</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+<div id="outline-container-orgf9a27e5" class="outline-4">
+<h4 id="orgf9a27e5">Aristotle</h4>
+<div class="outline-text-4" id="text-orgf9a27e5">
+<p>
+<a href="http://en.wikipedia.org/wiki/Aristotle">http://en.wikipedia.org/wiki/Aristotle</a>
+</p>
+<ul class="org-ul">
+<li>Democratic principles</li>
+<li>Invented term "physics"
+<ul class="org-ul">
+<li>Greek for "Nature"</li>
+</ul></li>
+</ul>
+</div>
+<ul class="org-ul">
+<li><a id="orgaa20709"></a>Criticism of The Republic/Plato<br />
+<div class="outline-text-5" id="text-orgaa20709">
+<ul class="org-ul">
+<li>Family is rooted in human nature</li>
+<li>Idea of private property is 'natural'</li>
+<li>Rejected concentration of power</li>
+<li>Supported rule by middle class</li>
+</ul>
+</div>
+</li>
+<li><a id="orgfbba1a2"></a>Ethics<br />
+<div class="outline-text-5" id="text-orgfbba1a2">
+<ul class="org-ul">
+<li>Defined ethics as "What is the good goal of human life?"</li>
+<li>Happiness is the life lived by the virtuous person</li>
+<li>Happiness is the goal of human life
+<ul class="org-ul">
+<li>Happiness originally meant "success"</li>
+</ul></li>
+<li>Happiness means good at being human</li>
+</ul>
+</div>
+<ul class="org-ul">
+<li><a id="orgec92460"></a>Four Primary Virtues<br />
+<div class="outline-text-6" id="text-orgec92460">
+<ul class="org-ul">
+<li>Courage</li>
+<li>Temperance</li>
+<li>Justice</li>
+<li>Wisdom</li>
+</ul>
+</div>
+</li>
+</ul>
+</li>
+<li><a id="orgf862438"></a>Epistomology<br />
+<div class="outline-text-5" id="text-orgf862438">
+<ul class="org-ul">
+<li>We acquire our knowledge of the world via our senses</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+<div id="outline-container-orgd8a2471" class="outline-4">
+<h4 id="orgd8a2471">Epicureanism</h4>
+<div class="outline-text-4" id="text-orgd8a2471">
+<p>
+<a href="http://en.wikipedia.org/wiki/Epicureanism">http://en.wikipedia.org/wiki/Epicureanism</a>
+</p>
+<ul class="org-ul">
+<li>We are made of atoms</li>
+<li>No afterlife</li>
+<li>Abstain from Political Life</li>
+<li>Abstain from sexual involvement</li>
+<li>Take nothing to excess</li>
+</ul>
+</div>
+</div>
+<div id="outline-container-org439f711" class="outline-4">
+<h4 id="org439f711">Stoicism</h4>
+<div class="outline-text-4" id="text-org439f711">
+<p>
+<a href="http://en.wikipedia.org/wiki/Stoicism">http://en.wikipedia.org/wiki/Stoicism</a>
+</p>
+<ul class="org-ul">
+<li>Critical response to epicureanism</li>
+<li>Freedom from suffering through discipline</li>
+<li>Duty to community</li>
+<li>Considered philosophy a way of life</li>
+<li>Actions more important than beliefs</li>
+</ul>
+</div>
+<ul class="org-ul">
+<li><a id="orgf5514ec"></a>Zeno of Citium - 334-262BC<br />
+<div class="outline-text-5" id="text-orgf5514ec">
+<p>
+<a href="http://en.wikipedia.org/wiki/Zeno_of_Citium">http://en.wikipedia.org/wiki/Zeno_of_Citium</a>
+</p>
+<ul class="org-ul">
+<li>Considered founder of Stoicism</li>
+<li>"Happiness is a good flow of life"</li>
+<li>Pathos is a disturbance of the mind repugnant to Reason and against Nature.</li>
+<li>Virtua is the consistency of the soul with Right Reason and Universal Reason
+(logic)</li>
+</ul>
+</div>
+</li>
+<li><a id="org9fa158f"></a>Zeno of Elea - 490-430BC<br />
+<div class="outline-text-5" id="text-org9fa158f">
+<p>
+<a href="http://en.wikipedia.org/wiki/Zeno_of_Elea">http://en.wikipedia.org/wiki/Zeno_of_Elea</a>
+</p>
+<ul class="org-ul">
+<li>Realist/Materialist</li>
+<li>Best known for his Paradoxes</li>
+</ul>
+<p>
+<a href="http://en.wikipedia.org/wiki/Zeno's_paradoxes">http://en.wikipedia.org/wiki/Zeno's_paradoxes</a>
+</p>
+</div>
+</li>
+</ul>
+</div>
+</div>
+<div id="outline-container-org7d5bbab" class="outline-3">
+<h3 id="org7d5bbab">Romans</h3>
+<div class="outline-text-3" id="text-org7d5bbab">
+</div>
+<div id="outline-container-org37210c0" class="outline-4">
+<h4 id="org37210c0">Cicero - 106-43BC</h4>
+<div class="outline-text-4" id="text-org37210c0">
+<p>
+<a href="http://en.wikipedia.org/wiki/Cicero">http://en.wikipedia.org/wiki/Cicero</a>
+</p>
+<ul class="org-ul">
+<li>Brought Greek philosophy to the Romans</li>
+<li>Combined Skeptics, Epicureanism</li>
+<li>Virtue is happiness from Aristotle</li>
+<li>Epicurean principle of refined and disciplined pleasure</li>
+</ul>
+</div>
+</div>
+<div id="outline-container-orgeaa160b" class="outline-4">
+<h4 id="orgeaa160b">Skeptics</h4>
+<div class="outline-text-4" id="text-orgeaa160b">
+<p>
+<a href="http://en.wikipedia.org/wiki/Skeptics">http://en.wikipedia.org/wiki/Skeptics</a>
+</p>
+<ul class="org-ul">
+<li>Sextus Empiricus</li>
+<li>Raised the question "How do we know what we know?"</li>
+<li>Can we trust any of our own knowledge?</li>
+</ul>
+</div>
+</div>
+</div>
+<div id="outline-container-org153892e" class="outline-3">
+<h3 id="org153892e">Christians</h3>
+<div class="outline-text-3" id="text-org153892e">
+</div>
+<div id="outline-container-org1b9de4c" class="outline-4">
+<h4 id="org1b9de4c">Hebrew Bible</h4>
+<div class="outline-text-4" id="text-org1b9de4c">
+<p>
+<a href="http://en.wikipedia.org/wiki/Hebrew_Bible">http://en.wikipedia.org/wiki/Hebrew_Bible</a>
+</p>
+<ul class="org-ul">
+<li>Explores the relationship between God and the people of Jerusalem</li>
+<li>Central theme is the Covenant</li>
+</ul>
+</div>
+<ul class="org-ul">
+<li><a id="org4f2bf9c"></a>Abraham<br />
+<div class="outline-text-5" id="text-org4f2bf9c">
+<ul class="org-ul">
+<li>Isaac
+<ul class="org-ul">
+<li>Jacob (Israel)</li>
+</ul></li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+<div id="outline-container-org986a66f" class="outline-4">
+<h4 id="org986a66f">Old Testament</h4>
+<div class="outline-text-4" id="text-org986a66f">
+<p>
+<a href="http://en.wikipedia.org/wiki/Old_Testament">http://en.wikipedia.org/wiki/Old_Testament</a>
+</p>
+</div>
+<ul class="org-ul">
+<li><a id="org207f90b"></a>Book of Job<br />
+<div class="outline-text-5" id="text-org207f90b">
+<p>
+<a href="http://en.wikipedia.org/wiki/Book_of_Job">http://en.wikipedia.org/wiki/Book_of_Job</a>
+</p>
+<ul class="org-ul">
+<li>Asks the question "Why do the righteous suffer?"</li>
+<li>Satan challenges Lord</li>
+<li>Lord inflicts cruelty on Job</li>
+<li>Job does not forsake his Lord</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+<div id="outline-container-org2b0cdd6" class="outline-4">
+<h4 id="org2b0cdd6">New Testament</h4>
+<div class="outline-text-4" id="text-org2b0cdd6">
+<p>
+<a href="http://en.wikipedia.org/wiki/New_Testament">http://en.wikipedia.org/wiki/New_Testament</a>
+</p>
+</div>
+<ul class="org-ul">
+<li><a id="org5024530"></a>Paul<br />
+<div class="outline-text-5" id="text-org5024530">
+<ul class="org-ul">
+<li>Early author</li>
+<li>The Gospels</li>
+<li>Baptism as the means by which Jews become Christians</li>
+<li>Rejects circumcision as a necessary rite to become Christian</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+<div id="outline-container-org559758c" class="outline-4">
+<h4 id="org559758c">Augistine - 354 - 430</h4>
+<div class="outline-text-4" id="text-org559758c">
+<p>
+<a href="http://en.wikipedia.org/wiki/Augustine">http://en.wikipedia.org/wiki/Augustine</a>
+</p>
+<ul class="org-ul">
+<li>Combined christian with platonic</li>
+<li>Wrote "Confessions" <a href="http://en.wikipedia.org/wiki/Confessions_of_St._Augustine">http://en.wikipedia.org/wiki/Confessions_of_St._Augustine</a></li>
+<li>The Grace of God</li>
+<li>Is grace a gift of god, or must it be earned?</li>
+<li>Predestination - God knows from the start who will receive The Grace</li>
+</ul>
+</div>
+</div>
+<div id="outline-container-org5a9ccb1" class="outline-4">
+<h4 id="org5a9ccb1">Aquinus - 1225-1274</h4>
+<div class="outline-text-4" id="text-org5a9ccb1">
+<p>
+<a href="http://en.wikipedia.org/wiki/Aquinas">http://en.wikipedia.org/wiki/Aquinas</a>
+</p>
+<ul class="org-ul">
+<li>Argues that the eternity of the world cannot be demonstrated by pure logic.</li>
+<li>Wrote the "Summa Theologica"</li>
+<li>Aristotelian</li>
+<li>Truth could be achieved through natural or divine reason</li>
+</ul>
+</div>
+<ul class="org-ul">
+<li><a id="orgc806312"></a>Four Cardinal Virtues<br />
+<div class="outline-text-5" id="text-orgc806312">
+<ul class="org-ul">
+<li>Prudence</li>
+<li>Temperance</li>
+<li>Justice</li>
+<li>Fortitude</li>
+</ul>
+</div>
+</li>
+<li><a id="orgcb46053"></a>Five Ways on the Nature of God<br />
+<div class="outline-text-5" id="text-orgcb46053">
+<ul class="org-ul">
+<li>God is simple, without composition of parts</li>
+<li>God is perfect, lacking nothing</li>
+<li>God is infinite</li>
+<li>God is immutable</li>
+<li>God is one</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+<div id="outline-container-org3a95a6c" class="outline-4">
+<h4 id="org3a95a6c">Medieval Thought</h4>
+<div class="outline-text-4" id="text-org3a95a6c">
+</div>
+<ul class="org-ul">
+<li><a id="org132a2b1"></a>Realism<br />
+<div class="outline-text-5" id="text-org132a2b1">
+<ul class="org-ul">
+<li>Words have meaning in and of themselves</li>
+</ul>
+</div>
+</li>
+<li><a id="org815e30a"></a>Nominalism<br />
+<div class="outline-text-5" id="text-org815e30a">
+<ul class="org-ul">
+<li>Words have no inherit meaning</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+<div id="outline-container-org8c0f50a" class="outline-4">
+<h4 id="org8c0f50a">Luther - 1483-1546</h4>
+<div class="outline-text-4" id="text-org8c0f50a">
+<p>
+<a href="http://en.wikipedia.org/wiki/Luther">http://en.wikipedia.org/wiki/Luther</a>
+</p>
+<ul class="org-ul">
+<li>Disagreed with Augustine's automatic granting of grace by god</li>
+</ul>
+</div>
+<ul class="org-ul">
+<li><a id="org3ba0c3d"></a>Wrote the 95 Theses<br />
+<div class="outline-text-5" id="text-org3ba0c3d">
+<ul class="org-ul">
+<li>In response to Indulgences sold by the Pope</li>
+<li>Strongly believed that freedom from God's punishment could not be purchased with
+money.</li>
+</ul>
+</div>
+</li>
+<li><a id="org0bf7ce6"></a>Earned grace through belief in Jesus<br />
+<div class="outline-text-5" id="text-org0bf7ce6">
+<ul class="org-ul">
+<li>Salvation is not earned by good deeds</li>
+<li>Faith in Jesus brings salvation</li>
+</ul>
+</div>
+</li>
+<li><a id="org9649dea"></a>Once justified, you can be condemned  through the commission of sin.<br /></li>
+</ul>
+</div>
+<div id="outline-container-orgdde567d" class="outline-4">
+<h4 id="orgdde567d">Calvin - 1509-1564</h4>
+<div class="outline-text-4" id="text-orgdde567d">
+<p>
+<a href="http://en.wikipedia.org/wiki/Calvin">http://en.wikipedia.org/wiki/Calvin</a>
+</p>
+<ul class="org-ul">
+<li>Grace was given by god</li>
+<li>Knowledge of God not attainable through experience, only through studying of
+scripture</li>
+<li>Rejected catholic doctrine of merit</li>
+<li>Supported the notion of predestination</li>
+<li>Once justified, always justified</li>
+<li>Justification comes through having a conversion experience</li>
+<li>Proponent of the concept of the original sin</li>
+</ul>
+</div>
+</div>
+</div>
+<div id="outline-container-orgb04805b" class="outline-3">
+<h3 id="orgb04805b">The Renaissance</h3>
+<div class="outline-text-3" id="text-orgb04805b">
+</div>
+<div id="outline-container-org2cbf57f" class="outline-4">
+<h4 id="org2cbf57f">Machiavelli</h4>
+<div class="outline-text-4" id="text-org2cbf57f">
+<p>
+<a href="http://en.wikipedia.org/wiki/Machiavelli">http://en.wikipedia.org/wiki/Machiavelli</a>
+</p>
+<ul class="org-ul">
+<li>Inventor of Political Science</li>
+</ul>
+</div>
+<ul class="org-ul">
+<li><a id="orgacdfde4"></a>The Prince<br />
+<div class="outline-text-5" id="text-orgacdfde4">
+<ul class="org-ul">
+<li>"It is better to be feared than to be loved, because love is fickle but fear is
+constant.</li>
+<li>Reputation for honesty, integrity is important</li>
+<li>But not the practice of it.</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+<div id="outline-container-org497ec6a" class="outline-4">
+<h4 id="org497ec6a">Thomas Moore</h4>
+<div class="outline-text-4" id="text-org497ec6a">
+<p>
+<a href="http://en.wikipedia.org/wiki/Thomas_Moore">http://en.wikipedia.org/wiki/Thomas_Moore</a>
+</p>
+</div>
+<ul class="org-ul">
+<li><a id="org1464503"></a>Wrote "Utopia"<br />
+<div class="outline-text-5" id="text-org1464503">
+<ul class="org-ul">
+<li>Mocked modern English society</li>
+<li>All property is communal</li>
+<li>Marriage is by love, not arranged</li>
+<li>Elected parliament</li>
+<li>Price elected for life</li>
+<li>Moral Theory focused on happiness</li>
+</ul>
+</div>
+<ul class="org-ul">
+<li><a id="orge3f3274"></a>War for 3 Reasons<br />
+<div class="outline-text-6" id="text-orge3f3274">
+<ul class="org-ul">
+<li>Defend Territory</li>
+<li>Defend Ally Territory</li>
+<li>Liberate oppressed people</li>
+</ul>
+</div>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+<div id="outline-container-orgbfc5e49" class="outline-4">
+<h4 id="orgbfc5e49">Erasumus</h4>
+<div class="outline-text-4" id="text-orgbfc5e49">
+<p>
+<a href="http://en.wikipedia.org/wiki/Erasmus">http://en.wikipedia.org/wiki/Erasmus</a>
+</p>
+<ul class="org-ul">
+<li>Opposed strong enthusiasms</li>
+</ul>
+</div>
+</div>
+<div id="outline-container-orgd0ab91a" class="outline-4">
+<h4 id="orgd0ab91a">Galileo</h4>
+<div class="outline-text-4" id="text-orgd0ab91a">
+<p>
+<a href="http://en.wikipedia.org/wiki/Galileo">http://en.wikipedia.org/wiki/Galileo</a>
+</p>
+</div>
+</div>
+<div id="outline-container-org1cf2259" class="outline-4">
+<h4 id="org1cf2259">Francis Bacon</h4>
+<div class="outline-text-4" id="text-org1cf2259">
+<p>
+<a href="http://en.wikipedia.org/wiki/Francis_Bacon">http://en.wikipedia.org/wiki/Francis_Bacon</a>
+</p>
+<ul class="org-ul">
+<li>Sought to separate religion from natural philosophy</li>
+<li>Stressed Induction and Experimetnal Methods</li>
+<li>Father of Emperecism</li>
+<li>Strong advocate of inductive reasoning</li>
+<li>The father of emperecism</li>
+</ul>
+</div>
+</div>
+<div id="outline-container-orgc96b803" class="outline-4">
+<h4 id="orgc96b803">Descartes</h4>
+<div class="outline-text-4" id="text-orgc96b803">
+<p>
+<a href="http://en.wikipedia.org/wiki/Descartes">http://en.wikipedia.org/wiki/Descartes</a>
+</p>
+<ul class="org-ul">
+<li>"Cogito ergo sum"
+<ul class="org-ul">
+<li>The most basic of all ideas, the existence of which cannot be disputed</li>
+</ul></li>
+<li>Two Proofs of God
+<ul class="org-ul">
+<li>A perfect being could only come from a perfect being.</li>
+<li>From necessity: a perfect being must have existence to be perfect.</li>
+</ul></li>
+<li>Dualist (Mind/Body Dualism)</li>
+</ul>
+</div>
+</div>
+<div id="outline-container-org844f9cc" class="outline-4">
+<h4 id="org844f9cc">Hobbes</h4>
+<div class="outline-text-4" id="text-org844f9cc">
+<p>
+<a href="http://en.wikipedia.org/wiki/Hobbes">http://en.wikipedia.org/wiki/Hobbes</a>
+</p>
+<ul class="org-ul">
+<li>Leviathan</li>
+<li>We are guided by passions, not reason</li>
+<li>Passions
+<ul class="org-ul">
+<li>Desire for Power</li>
+<li>Fear of Death</li>
+</ul></li>
+<li>Government is a means of escaping struggle between power and fear</li>
+<li>Governments derive their power from the subjects in exchange for peace and security</li>
+<li>The Social Contract</li>
+<li>Brutish, solitary and short.</li>
+</ul>
+</div>
+</div>
+<div id="outline-container-orge80e8b8" class="outline-4">
+<h4 id="orge80e8b8">Spinoza</h4>
+<div class="outline-text-4" id="text-orge80e8b8">
+<p>
+<a href="http://en.wikipedia.org/wiki/Spinoza">http://en.wikipedia.org/wiki/Spinoza</a>
+</p>
+<ul class="org-ul">
+<li>Condemned by the Sephardic Jews of Amsterdam as a heretic.</li>
+<li>Freewill is a logical impossibility because all causes have precedents</li>
+<li>Rejected dualism of Descartes</li>
+</ul>
+</div>
+<ul class="org-ul">
+<li><a id="org0d8efa6"></a>God vs Nature<br />
+<div class="outline-text-5" id="text-org0d8efa6">
+<ul class="org-ul">
+<li>God is nature</li>
+<li>All there is, is nature</li>
+<li>Nature has no values - good or bad
+<ul class="org-ul">
+<li>Nature simply is</li>
+</ul></li>
+<li>"The wise man seeks to understand nature, not gape at it like a fool."</li>
+</ul>
+</div>
+</li>
+<li><a id="orgc09b117"></a>Hell and damnation<br />
+<div class="outline-text-5" id="text-orgc09b117">
+<ul class="org-ul">
+<li>A life dominated by the original sin is a life of bondage, not rational freedom.</li>
+<li>There is no afterlife or an immortal soul.</li>
+</ul>
+</div>
+</li>
+<li><a id="org0e485bb"></a>Passion vs Reason<br />
+<div class="outline-text-5" id="text-org0e485bb">
+<ul class="org-ul">
+<li>A people lead by passion are more easily manipulated.</li>
+<li>Denied that the bible was the literal word of god.</li>
+</ul>
+</div>
+</li>
+<li><a id="orgfbcebfe"></a>Religion and virtue<br />
+<div class="outline-text-5" id="text-orgfbcebfe">
+<ul class="org-ul">
+<li>What you believe is not important</li>
+<li>Only what you believe matters.</li>
+</ul>
+</div>
+</li>
+<li><a id="orgb6ce4e6"></a>Freedom<br />
+<div class="outline-text-5" id="text-orgb6ce4e6">
+<ul class="org-ul">
+<li>Freedom to philosophise was the mark of a free society.</li>
+<li>Freedom of expression should be granted to all. Including religious freedom.</li>
+<li>Any government that attempts to manipulate the minds of men is a tyranny.</li>
+<li>All that matters is the right of the individual.</li>
+<li>Attempts to control either speech or thought will end in failure.</li>
+<li>Governments should only be able to interfere with men's actions, not their thoughts
+or words.</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+<div id="outline-container-org0e8738a" class="outline-4">
+<h4 id="org0e8738a">Bayle</h4>
+<div class="outline-text-4" id="text-org0e8738a">
+<p>
+<a href="http://en.wikipedia.org/wiki/Pierre_Bayle">http://en.wikipedia.org/wiki/Pierre_Bayle</a>
+</p>
+<ul class="org-ul">
+<li>Skepticism</li>
+<li>What do we know with any certainty?</li>
+<li>God cannot be known via reason, only faith</li>
+</ul>
+</div>
+</div>
+<div id="outline-container-org30090b7" class="outline-4">
+<h4 id="org30090b7">Newton</h4>
+<div class="outline-text-4" id="text-org30090b7">
+<p>
+<a href="http://en.wikipedia.org/wiki/Isaac_Newton">http://en.wikipedia.org/wiki/Isaac_Newton</a>
+</p>
+<ul class="org-ul">
+<li>Principia</li>
+<li>Law of Gravity</li>
+<li>Laws of Motion</li>
+<li>Discovered calculus</li>
+<li>Modern optics</li>
+</ul>
+</div>
+</div>
+</div>
+<div id="outline-container-org1f36f76" class="outline-3">
+<h3 id="org1f36f76">The Enlightenment</h3>
+<div class="outline-text-3" id="text-org1f36f76">
+</div>
+<div id="outline-container-orgc593e68" class="outline-4">
+<h4 id="orgc593e68">Adam Smith - 1723-1790</h4>
+<div class="outline-text-4" id="text-orgc593e68">
+<p>
+<a href="http://en.wikipedia.org/wiki/Adam_smith">http://en.wikipedia.org/wiki/Adam_smith</a>
+</p>
+<ul class="org-ul">
+<li>He was aware of the dangers and problems that could arise from too much
+specialization of labor and the social isolation that could result.</li>
+<li>He worried about the moral impact on someone who shifted from a village-centric
+social context to that of a large city and the anonymity that could result.</li>
+<li>Smith is also concerned about class and wealth disparity and that impacts that
+would have on society.</li>
+</ul>
+</div>
+<ul class="org-ul">
+<li><a id="org43cb34d"></a>The Theory of Moral Sentiment<br />
+<div class="outline-text-5" id="text-org43cb34d">
+<ul class="org-ul">
+<li>Offers an explanation and basis for the cooperation and coordination that are
+required for the division of labor described in Wealth of Nations.</li>
+<li>Why?
+<ul class="org-ul">
+<li>We want the approval of others</li>
+<li>The reactions of others to us and our behaviors is important to us.</li>
+<li>We generally seek to behave as if there were an impartial spectator observing our behaviors. Would they approve of them?</li>
+<li>Our conscience is a product of these factors.</li>
+</ul></li>
+<li>Obeying the law
+<ul class="org-ul">
+<li>We do so because of the utility of doing so. In general, we derive benefit when we do so.</li>
+</ul></li>
+</ul>
+</div>
+</li>
+<li><a id="orgf024cc2"></a>The Wealth of Nations: The Division of Labor<br />
+<div class="outline-text-5" id="text-orgf024cc2">
+<ul class="org-ul">
+<li>Specialization of job function leads to massive gains in efficiency.</li>
+<li>Coordination and cooperation between specialists is done out of self-interest.</li>
+<li>We get what we need from others out of their self-interest, not their charity.</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+<div id="outline-container-orgfb6b0eb" class="outline-4">
+<h4 id="orgfb6b0eb">Rousseau - 1712-1778</h4>
+<div class="outline-text-4" id="text-orgfb6b0eb">
+<p>
+<a href="http://en.wikipedia.org/wiki/Rousseau">http://en.wikipedia.org/wiki/Rousseau</a>
+</p>
+<ul class="org-ul">
+<li>Claimed that enlightenment beliefs led to eventual collapse of civilizations</li>
+<li>Called for a return to nature</li>
+</ul>
+</div>
+<ul class="org-ul">
+<li><a id="orga0c4471"></a>Critiqued the progress of modern society<br />
+<div class="outline-text-5" id="text-orga0c4471">
+<ul class="org-ul">
+<li>Moral decadence always accompanies cultural progress</li>
+<li>American Indians in their simplistic life compare favorably to Europeans in their
+levels of happiness and virtue.</li>
+</ul>
+</div>
+</li>
+<li><a id="org71f7ae2"></a>Social Contract<br />
+<div class="outline-text-5" id="text-org71f7ae2">
+<ul class="org-ul">
+<li>All power is given to the state</li>
+<li>Your happiness is calculated as your share of the overall societal happiness</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+<div id="outline-container-org8f9b6bd" class="outline-4">
+<h4 id="org8f9b6bd">David Hume - 1711-1766</h4>
+<div class="outline-text-4" id="text-org8f9b6bd">
+<p>
+<a href="http://en.wikipedia.org/wiki/David_Hume">http://en.wikipedia.org/wiki/David_Hume</a>
+</p>
+</div>
+<ul class="org-ul">
+<li><a id="org516575c"></a>Epistemology<br />
+<div class="outline-text-5" id="text-org516575c">
+<ul class="org-ul">
+<li>Ideas are copies of our sense impressions</li>
+<li>Three relations among ideas
+<ul class="org-ul">
+<li>Resemblance</li>
+<li>Spatio-temporal</li>
+<li>Cause-effect</li>
+</ul></li>
+<li>Reason alone cannot justify our belief in experience</li>
+<li>Belief in our experiences as representing the external world accurately is based on
+our instinct or custom, and cannot be proven with reason.</li>
+</ul>
+</div>
+</li>
+<li><a id="org661d558"></a>Morality<br />
+<div class="outline-text-5" id="text-org661d558">
+<ul class="org-ul">
+<li>Scientific theory of morality</li>
+<li>Moral judgment cannot be based on rational deliberation, because simpletons and
+infants are also capable of making more judgments.</li>
+<li>There is no evidence that indicates that the most intellectually capable members of
+our species are the most moral.</li>
+<li>Therefore, our sense of morality is based in part on our biology and in part by our
+social context.</li>
+<li>What makes a moral rule a universal more rule?
+<ul class="org-ul">
+<li>Primarily, its utility</li>
+<li>All government and political institutions have their basis in utility to society.</li>
+</ul></li>
+<li>We have a natural appreciation for virtuous behavior, and are thus naturally moral
+at least in part.</li>
+<li>You cannot deterministically go from an "is" to an "ought"</li>
+</ul>
+</div>
+</li>
+<li><a id="org597c7c5"></a>Religion<br />
+<div class="outline-text-5" id="text-org597c7c5">
+<ul class="org-ul">
+<li>Basing religious belief on inference from experience has four flaws
+<ul class="org-ul">
+<li>It means that religion is probable at best, because all ideas are derived from experience, not reason.</li>
+<li>In all scientific inquiries, negative evidence counts more than positive evidence. So we would require positive evidence with zero negative evidence in order to justify our belief in god through experience.</li>
+</ul></li>
+<li>Effects do not prove a cause.</li>
+<li>In the end, Hume is dismissive of both religion in general and in the ability to
+base religious belief on experience.</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+<div id="outline-container-org39ebfcc" class="outline-4">
+<h4 id="org39ebfcc">Montesquieu - 1689-1755</h4>
+<div class="outline-text-4" id="text-org39ebfcc">
+<p>
+<a href="http://en.wikipedia.org/wiki/Montesquieu">http://en.wikipedia.org/wiki/Montesquieu</a>
+</p>
+<ul class="org-ul">
+<li>Objected to Locke's Epistemological Relativism</li>
+<li>The laws of nature are demonstrable across cultures, therefore not all knowledge is
+relative</li>
+<li>Believed that democratic republics are the most morally desirable but least stable
+forms of association</li>
+<li>Greatly influenced American Revolution
+<ul class="org-ul">
+<li>Must limit the ability of government to grow in power</li>
+</ul></li>
+<li>Affluence eventually leads to despotism</li>
+</ul>
+</div>
+</div>
+<div id="outline-container-org9e857f1" class="outline-4">
+<h4 id="org9e857f1">Bishop Berkeley - 1685-1733</h4>
+<div class="outline-text-4" id="text-org9e857f1">
+<p>
+<a href="http://en.wikipedia.org/wiki/Bishop_Berkeley">http://en.wikipedia.org/wiki/Bishop_Berkeley</a>
+</p>
+<ul class="org-ul">
+<li>There is no existence independent of perception</li>
+<li>To exist is to be perceived</li>
+<li>Disagreed with Locke's argument that human knowledge depends on the existence of
+material objects independent of minds.</li>
+<li>Claimed that materialism was dogmatic superstition.</li>
+<li>All of our ideas are derived from our experiences</li>
+</ul>
+</div>
+</div>
+<div id="outline-container-org9c5e540" class="outline-4">
+<h4 id="org9c5e540">Mandeville - 1670-1733</h4>
+<div class="outline-text-4" id="text-org9c5e540">
+<p>
+<a href="http://en.wikipedia.org/wiki/Bernard_Mandeville">http://en.wikipedia.org/wiki/Bernard_Mandeville</a>
+</p>
+<ul class="org-ul">
+<li>The Fable of the Bees</li>
+<li>Central Human Traits
+<ul class="org-ul">
+<li>Selfishness</li>
+<li>Egocentrism</li>
+</ul></li>
+</ul>
+</div>
+</div>
+<div id="outline-container-org7b8cbb5" class="outline-4">
+<h4 id="org7b8cbb5">Vico - 1678-1744</h4>
+<div class="outline-text-4" id="text-org7b8cbb5">
+<p>
+<a href="http://en.wikipedia.org/wiki/Giambattista_Vico">http://en.wikipedia.org/wiki/Giambattista_Vico</a>
+</p>
+<ul class="org-ul">
+<li>Philosophy of history</li>
+</ul>
+</div>
+<ul class="org-ul">
+<li><a id="orgc9c039d"></a>Human societies are cyclical<br />
+<div class="outline-text-5" id="text-orgc9c039d">
+<ul class="org-ul">
+<li>Worship of gods</li>
+<li>Emergence of Heroes and kings</li>
+<li>Age of man
+<ul class="org-ul">
+<li>Inherently unstable</li>
+<li>Leads to collapse</li>
+</ul></li>
+</ul>
+</div>
+</li>
+<li><a id="orge8446ae"></a>Disagreed with social contract theory<br />
+<div class="outline-text-5" id="text-orge8446ae">
+<ul class="org-ul">
+<li>Society is not a contract but the natural progression from customs and mores</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+<div id="outline-container-org3e9790b" class="outline-4">
+<h4 id="org3e9790b">Leibniz - 1646-1716</h4>
+<div class="outline-text-4" id="text-org3e9790b">
+<p>
+<a href="http://en.wikipedia.org/wiki/Gottfried_Wilhelm_Leibniz">http://en.wikipedia.org/wiki/Gottfried_Wilhelm_Leibniz</a>
+</p>
+</div>
+<ul class="org-ul">
+<li><a id="org68e72ec"></a>Co-inventory of Infinitesimal Calculus<br />
+<div class="outline-text-5" id="text-org68e72ec">
+<p>
+<a href="http://en.wikipedia.org/wiki/Infinitesimal_calculus">http://en.wikipedia.org/wiki/Infinitesimal_calculus</a>
+</p>
+</div>
+</li>
+<li><a id="orgef60c05"></a>Asserted "The best of all possible worlds"<br />
+<div class="outline-text-5" id="text-orgef60c05">
+<p>
+<a href="http://en.wikipedia.org/wiki/Best_of_all_possible_worlds">http://en.wikipedia.org/wiki/Best_of_all_possible_worlds</a>
+</p>
+</div>
+</li>
+<li><a id="org87542d4"></a>Metaphyics - La Monadologie<br />
+<div class="outline-text-5" id="text-org87542d4">
+<p>
+<a href="http://en.wikipedia.org/wiki/Monadology">http://en.wikipedia.org/wiki/Monadology</a>
+</p>
+<ul class="org-ul">
+<li>An attempt to resolve the problem of mind/body dualism</li>
+<li>Nothing arises from nothing</li>
+<li>Everything that exists has a reason to exist</li>
+<li>Everything which exists is better than anything non-existent</li>
+</ul>
+</div>
+</li>
+<li><a id="org3c90893"></a>Théodicée<br />
+<div class="outline-text-5" id="text-org3c90893">
+<p>
+<a href="http://en.wikipedia.org/wiki/Th%C3%A9odic%C3%A9e">http://en.wikipedia.org/wiki/Théodicée</a>
+</p>
+<ul class="org-ul">
+<li>Reason and faith are gifts from God</li>
+<li>Sin and Suffering are the result of metaphysical imperfections</li>
+<li>Although God has unlimited reason and willpower, humans do not which makes sin and
+suffering possible.</li>
+</ul>
+</div>
+</li>
+<li><a id="orga97d6ea"></a>Early developer of formal/algebraic logic<br />
+<div class="outline-text-5" id="text-orga97d6ea">
+<p>
+<a href="http://en.wikipedia.org/wiki/Algebraic_logic">http://en.wikipedia.org/wiki/Algebraic_logic</a>
+</p>
+</div>
+</li>
+</ul>
+</div>
+<div id="outline-container-orgfa01e1b" class="outline-4">
+<h4 id="orgfa01e1b">John Locke - 1632-1704</h4>
+<div class="outline-text-4" id="text-orgfa01e1b">
+<p>
+<a href="http://en.wikipedia.org/wiki/John_locke">http://en.wikipedia.org/wiki/John_locke</a>
+</p>
+</div>
+<ul class="org-ul">
+<li><a id="orgee3c3a7"></a>Politics<br />
+<div class="outline-text-5" id="text-orgee3c3a7">
+<ul class="org-ul">
+<li>A man is free when he is subject only to political authority to which he has
+consented.</li>
+<li>Natural liberty is freedom from the arbitrary power of others</li>
+<li>Beginning of modern democratic political theory.</li>
+<li>Denies need for authoritarian power, which leads to despotism and tyranny</li>
+<li>Denies that fear is the primary motivator of men</li>
+<li>Natural Rights
+<ul class="org-ul">
+<li>Life</li>
+<li>Liberty</li>
+<li>Property</li>
+</ul></li>
+<li>Men are governed by laws from a legislature</li>
+<li>Opposed monarchies</li>
+<li>Modern social contract theory
+<ul class="org-ul">
+<li>An agreement among free and equal men to exit the state of nature and by forming a limited polity.</li>
+</ul></li>
+<li>Stressed that equality was legal equality, not equality of material possessions.</li>
+</ul>
+</div>
+</li>
+<li><a id="org1b2de90"></a>Knowledge/Epistomology<br />
+<div class="outline-text-5" id="text-org1b2de90">
+<ul class="org-ul">
+<li>Empericist</li>
+<li>Ideas are acquired via experience</li>
+<li>Two forms of experience
+<ul class="org-ul">
+<li>The external world</li>
+<li>Reflection on the mind's own operations</li>
+</ul></li>
+<li>There are no innate ideas</li>
+<li>The mind is a Tabula Rasa</li>
+</ul>
+</div>
+</li>
+<li><a id="org3c32e51"></a>Ethics<br />
+<div class="outline-text-5" id="text-org3c32e51">
+<ul class="org-ul">
+<li>Ethics are learned, not innate</li>
+<li>Ethics are derived from experience, and thus relative to our experience of the
+world</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+</div>
+<div id="outline-container-org234b7b7" class="outline-3">
+<h3 id="org234b7b7">Age of Ideology</h3>
+<div class="outline-text-3" id="text-org234b7b7">
+</div>
+<div id="outline-container-orga775beb" class="outline-4">
+<h4 id="orga775beb">Kant</h4>
+<div class="outline-text-4" id="text-orga775beb">
+<p>
+<a href="http://en.wikipedia.org/wiki/Emmanuel_Kant">http://en.wikipedia.org/wiki/Emmanuel_Kant</a>
+</p>
+</div>
+<ul class="org-ul">
+<li><a id="org15a631b"></a>The Critique of Pure Reason<br />
+<div class="outline-text-5" id="text-org15a631b">
+<ul class="org-ul">
+<li>Science is the study of the world as perceived by our senses</li>
+<li>To experience that world, we impose upon it forms and categories that make our
+experience of the world possible and coherent.
+<ul class="org-ul">
+<li>Space and Time</li>
+<li>Object Persistence</li>
+<li>Causality</li>
+<li>Existence</li>
+<li>Plurality</li>
+<li>Unity</li>
+</ul></li>
+<li>Metaphysics goes beyond our experience, and thus outside of pure reason</li>
+<li>Disagreed with Locke and Hume and their empericism - the idea that all ideas and
+truths come from experience</li>
+<li>Without his 'categories of understanding' none of our experiences would make any
+sense.</li>
+</ul>
+</div>
+</li>
+<li><a id="orge6c3f1a"></a>The Critique of Practical Reason<br />
+<div class="outline-text-5" id="text-orge6c3f1a">
+<ul class="org-ul">
+<li>Maxim: Act only that that maxim by which you can at the same time will that it
+become a universal law.</li>
+<li>Practical Reason is concerned with how we ought to live.</li>
+<li>A moral law cannot consist primarily of hypothetical imperatives
+<ul class="org-ul">
+<li>Ex: If you want to stay healthy, you should eat right and exercise.</li>
+<li>Ex: If you want to become a doctor, than you should study.</li>
+</ul></li>
+<li>Hypothetical imperatives fail because they only apply to those who want the outcome
+they describe.</li>
+<li>Categorical Imperatives have no qualification clause
+<ul class="org-ul">
+<li>Instead of saying "Do not lie if you want to be trusted" (hypothetical), instead it should be "Do not lie".</li>
+<li>Categorical Imperatives must not depend on circumstance, desire or on the consequences of their actions</li>
+</ul></li>
+<li>The notion of Free Will is justified by our ability to self-legislate - to create
+rules that we should follow, and then to follow them.</li>
+</ul>
+</div>
+</li>
+<li><a id="org6e27c1c"></a>Freedom, Morality<br />
+<div class="outline-text-5" id="text-org6e27c1c">
+<p>
+<a href="http://reasonandmeaning.com/2015/03/29/finally-kants-ethics-in-two-pages/">http://reasonandmeaning.com/2015/03/29/finally-kants-ethics-in-two-pages/</a>
+</p>
+<ul class="org-ul">
+<li>Without freedom, morality is not possible</li>
+<li>Morality exists</li>
+<li>Therefore, freedom must exist</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+<div id="outline-container-org449ac2a" class="outline-4">
+<h4 id="org449ac2a">Burke</h4>
+<div class="outline-text-4" id="text-org449ac2a">
+<p>
+<a href="http://en.wikipedia.org/wiki/Edmund_Burke">http://en.wikipedia.org/wiki/Edmund_Burke</a>
+</p>
+<ul class="org-ul">
+<li>Strongly condemned the French Revolution</li>
+<li>Strongly supported of the American Revolution
+<ul class="org-ul">
+<li>Because it did not propose a social upheaval or overturn, only a political one.</li>
+<li>He believed that is used as its basis the notion of traditional rights - no taxation without representation - derived from English common law.</li>
+</ul></li>
+<li>Believed that individual rights were not derived from abstract principles but were
+instead based on traditions and conventions of the population.</li>
+<li>These are 'conventional' rights that could not be derived from theory.</li>
+</ul>
+</div>
+</div>
+<div id="outline-container-org4c07902" class="outline-4">
+<h4 id="org4c07902">Hegel</h4>
+<div class="outline-text-4" id="text-org4c07902">
+<p>
+<a href="http://en.wikipedia.org/wiki/Hegel">http://en.wikipedia.org/wiki/Hegel</a>
+</p>
+<ul class="org-ul">
+<li>Founder of Modern Historicism</li>
+<li>Opposed the Enlightenment concepts of materialism and that the unfolding of history
+was purely mechanical.</li>
+</ul>
+</div>
+</div>
+<div id="outline-container-orge5beaca" class="outline-4">
+<h4 id="orge5beaca">Marx</h4>
+<div class="outline-text-4" id="text-orge5beaca">
+<p>
+<a href="http://en.wikipedia.org/wiki/Marx">http://en.wikipedia.org/wiki/Marx</a>
+</p>
+<ul class="org-ul">
+<li>Historical materialism</li>
+<li>Division of Labor</li>
+<li>There will always be a scarcity of the goods needed to satisfy the cultural wants
+of all of society.
+<ul class="org-ul">
+<li>A consequence of this is that one part of society establishes itself as a ruling class in order to secure a dispropotionate share. This is inevitable as human nature</li>
+</ul></li>
+<li>Felt that the downfall of Capitalism was inevitable. And that Communism was its
+logical successor.</li>
+<li>Capitalism leads to exploitation and inequality, especially for women.</li>
+</ul>
+</div>
+<ul class="org-ul">
+<li><a id="org6e3f922"></a>Modes of Production<br />
+<div class="outline-text-5" id="text-org6e3f922">
+<ul class="org-ul">
+<li>Communism is the answer to the problems inherit in the Capitalist Mode of
+Production.</li>
+<li>It addresses the problem of disparate incomes.</li>
+<li>It addresses the problem of scarcity on a global basis.</li>
+</ul>
+</div>
+</li>
+<li><a id="org838e5d7"></a>Felt that Capitalism would lead to alienation.<br />
+<div class="outline-text-5" id="text-org838e5d7">
+<ul class="org-ul">
+<li>Capitalism and Private Property would alienate man from other men and from himself.</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+<div id="outline-container-org30f6317" class="outline-4">
+<h4 id="org30f6317">Mill - 1806-1873</h4>
+<div class="outline-text-4" id="text-org30f6317">
+<p>
+<a href="http://en.wikipedia.org/wiki/John_Stuart_Mill">http://en.wikipedia.org/wiki/John_Stuart_Mill</a>
+</p>
+<ul class="org-ul">
+<li>Wrote "On Liberty" - classical defense of freedom from intrusive government AND
+from majority rule.</li>
+<li>Main defender of Utilitarianism
+<ul class="org-ul">
+<li>The idea that one ought do what brings about the most benefits and causes the least amount of harm.</li>
+<li>The greatest good for the greatest number.</li>
+</ul></li>
+</ul>
+</div>
+</div>
+<div id="outline-container-org5c91bac" class="outline-4">
+<h4 id="org5c91bac">Jeremey Bentham - 1748-1832</h4>
+<div class="outline-text-4" id="text-org5c91bac">
+<p>
+<a href="http://en.wikipedia.org/wiki/Jeremy_Bentham">http://en.wikipedia.org/wiki/Jeremy_Bentham</a>
+</p>
+<ul class="org-ul">
+<li>Founder of Utilitatianism
+<ul class="org-ul">
+<li>it is the greatest happiness of the greatest number that is the measure of right and wrong</li>
+<li>Considered a hedonistic approach to utility.</li>
+</ul></li>
+<li>Early advocate for gender equality</li>
+<li>Supported the liberalization of laws against homosexuality</li>
+<li>Introduced the design of the Panopticon
+<ul class="org-ul">
+<li><a href="http://en.wikipedia.org/wiki/Panopticon">http://en.wikipedia.org/wiki/Panopticon</a></li>
+</ul></li>
+<li>Coined the term "Codify"
+<ul class="org-ul">
+<li>proponent for condensing all British common law into a single set of cohenrent statutes.</li>
+</ul></li>
+<li>An early advocate of animal rights
+<ul class="org-ul">
+<li>A full-grown horse or dog is beyond comparison a more rational, as well as a more conversible animal, than an infant of a day, a week or even a month old. But suppose the case were otherwise, what would it avail? The question is not, Can they reason? nor, Can they talk? but, Can they suffer?</li>
+</ul></li>
+</ul>
+</div>
+</div>
+<div id="outline-container-org87d0432" class="outline-4">
+<h4 id="org87d0432">Kierkegaard</h4>
+<div class="outline-text-4" id="text-org87d0432">
+<p>
+<a href="http://en.wikipedia.org/wiki/Kierkegaard">http://en.wikipedia.org/wiki/Kierkegaard</a>
+</p>
+<ul class="org-ul">
+<li>Founding figure of Existentialism</li>
+<li>Felt that true Christian faith required one to make a "Leap of Faith"</li>
+<li>Was concerned with Reason usurping the role and need for Faith.</li>
+<li>Felt that Abraham's willingness to sacrifice his only son Isaac when requested by
+God was a great "Leap of Faith"
+<ul class="org-ul">
+<li>Abraham's faith was justified when he raised up the knife to sacrifice his own son only to have his hand staid by God.</li>
+<li>This is true belief, true faith.</li>
+</ul></li>
+<li>Three States to Human Life
+<ul class="org-ul">
+<li>Aesthetic - the pursuit of immediate pleasures.</li>
+<li>Ethical - Through repentance and marriage.</li>
+<li>Religious - Faith in the incarnation of God in Christ.</li>
+</ul></li>
+</ul>
+</div>
+</div>
+<div id="outline-container-org5a7e642" class="outline-4">
+<h4 id="org5a7e642">Schopenhauer</h4>
+<div class="outline-text-4" id="text-org5a7e642">
+<p>
+<a href="http://en.wikipedia.org/wiki/Schopenhauer">http://en.wikipedia.org/wiki/Schopenhauer</a>
+</p>
+<ul class="org-ul">
+<li>First to bring eastern Buddhist philosophy into western circles.</li>
+<li>Very pessimistic view of human existence.</li>
+<li>Believed that experiences of aesthetic beauty were as close as one could come to
+the true nature of existence.</li>
+</ul>
+</div>
+<ul class="org-ul">
+<li><a id="orgc79739b"></a>Buddha's Four Noble Truths<br />
+<div class="outline-text-5" id="text-orgc79739b">
+<ul class="org-ul">
+<li>Life involves suffering</li>
+<li>Desire causes suffering</li>
+<li>Suffering will cease when desire ceases</li>
+<li>The solution to suffering is the renunciation of the will.</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+<div id="outline-container-org890245f" class="outline-4">
+<h4 id="org890245f">Nietzsche</h4>
+<div class="outline-text-4" id="text-org890245f">
+<p>
+<a href="http://en.wikipedia.org/wiki/Nietzsche">http://en.wikipedia.org/wiki/Nietzsche</a>
+</p>
+</div>
+<ul class="org-ul">
+<li><a id="orgc84bf77"></a>Perspectivism<br />
+<div class="outline-text-5" id="text-orgc84bf77">
+<ul class="org-ul">
+<li>Strongly rejected the Aristotelean notion of an objective real world.</li>
+<li>There is no true metaphysics.</li>
+<li>The world of appearances if the only world that we have access to.</li>
+<li>We have no access to knowledge about an objective world. We have only our
+perceptions, conceptions and interpretations.</li>
+<li>There is no 'Gods Eye View' of the real world.
+<ul class="org-ul">
+<li>This led to his proclomaition that 'God is Dead'</li>
+</ul></li>
+<li>His epistemology was practical, pragmatic.</li>
+</ul>
+</div>
+</li>
+<li><a id="org3587fdd"></a>The Will to Power<br />
+<div class="outline-text-5" id="text-org3587fdd">
+<ul class="org-ul">
+<li>Morality is an expression of The Will to Power</li>
+<li>Stressed master and slave morality, strength over weakness.</li>
+</ul>
+</div>
+</li>
+<li><a id="orgd6f11fa"></a>Morality is Subjective<br />
+<div class="outline-text-5" id="text-orgd6f11fa">
+<ul class="org-ul">
+<li>Values are relative to the time, place, circumstances and customs.</li>
+</ul>
+</div>
+</li>
+<li><a id="org2631c70"></a>"Become who you are!"<br />
+<div class="outline-text-5" id="text-org2631c70">
+<ul class="org-ul">
+<li>Ethics becomes an aesthetic pursuit of becoming a beautiful person - Give Style to
+your Character.</li>
+<li>We should not contradict our character, but instead cultivate our strengths and
+virtues.</li>
+<li>"Thus Spake Zarathustra"</li>
+<li>We should not follow the herd</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+</div>
+<div id="outline-container-org87a99ee" class="outline-3">
+<h3 id="org87a99ee">Modernity I</h3>
+<div class="outline-text-3" id="text-org87a99ee">
+</div>
+<div id="outline-container-org640102e" class="outline-4">
+<h4 id="org640102e">James</h4>
+<div class="outline-text-4" id="text-org640102e">
+<p>
+<a href="http://en.wikipedia.org/wiki/William_James">http://en.wikipedia.org/wiki/William_James</a>
+</p>
+<ul class="org-ul">
+<li>Pragmatism</li>
+<li>Saw his approach to philosophy as empowering the individual.</li>
+<li>There is no notion of absolute truth.</li>
+</ul>
+</div>
+</div>
+<div id="outline-container-orgc6ee608" class="outline-4">
+<h4 id="orgc6ee608">Freud</h4>
+<div class="outline-text-4" id="text-orgc6ee608">
+<p>
+<a href="http://en.wikipedia.org/wiki/Freud">http://en.wikipedia.org/wiki/Freud</a>
+</p>
+<ul class="org-ul">
+<li>"Civilization and Its Discontents"</li>
+<li>Conflict among these three factions leads to unhappiness.</li>
+</ul>
+</div>
+<ul class="org-ul">
+<li><a id="org63b3f93"></a>Id<br />
+<div class="outline-text-5" id="text-org63b3f93">
+<ul class="org-ul">
+<li>Represents the Self</li>
+<li>More powerful than ego, superego</li>
+<li>Seeks to gain pleasure, avoid pain</li>
+<li>Knows no moral judgements</li>
+<li>Produces frustration by making demands that cannot be fulfilled.</li>
+</ul>
+</div>
+</li>
+<li><a id="org581ae36"></a>Ego<br />
+<div class="outline-text-5" id="text-org581ae36">
+<ul class="org-ul">
+<li>Represents Reality</li>
+<li>Rational, cautious</li>
+<li>Weakest element of our personality</li>
+<li>Attempts to negotiate between Id and Superego</li>
+<li>Source of anxiety</li>
+</ul>
+</div>
+</li>
+<li><a id="org0ce3543"></a>Superego<br />
+<div class="outline-text-5" id="text-org0ce3543">
+<ul class="org-ul">
+<li>Represents Morality</li>
+<li>Imposes standards of moral perfection that cannot be sustained.</li>
+<li>It produces guilt.</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+<div id="outline-container-org1b99b00" class="outline-4">
+<h4 id="org1b99b00">AJ Ayer</h4>
+<div class="outline-text-4" id="text-org1b99b00">
+<p>
+<a href="http://en.wikipedia.org/wiki/Alfred_Jules_Ayer">http://en.wikipedia.org/wiki/Alfred_Jules_Ayer</a>
+</p>
+<ul class="org-ul">
+<li>Philosophy should abandon the pursuit of an absolute metaphysics.</li>
+<li>All talk about the world was a "logical construct" of our phenomenal and sensual
+experience.</li>
+<li>Considered philosophy the handmaiden of science - to help explain scientific
+meaning.</li>
+<li>Positivism was partly a response against the complete relativism of Kant. Positive
+= Pro-science</li>
+<li>Positivism was also built on the progress in symbolic logic and related
+mathematics.</li>
+<li>Language does not have a deterministic meaning or external provable correspondence.</li>
+<li>Believed that statements of ethical judgements were meaningless.</li>
+</ul>
+</div>
+</div>
+<div id="outline-container-org86de649" class="outline-4">
+<h4 id="org86de649">Max Weber</h4>
+<div class="outline-text-4" id="text-org86de649">
+<p>
+<a href="http://en.wikipedia.org/wiki/Max_weber">http://en.wikipedia.org/wiki/Max_weber</a>
+</p>
+<ul class="org-ul">
+<li>Founder of modern sociology</li>
+<li>Focused on how authority is legitimated in societies.</li>
+<li>Legitimacy has three forms
+<ul class="org-ul">
+<li>Legal</li>
+<li>Traditional</li>
+<li>Charismatic</li>
+</ul></li>
+</ul>
+</div>
+</div>
+<div id="outline-container-orgc188596" class="outline-4">
+<h4 id="orgc188596">Dewey</h4>
+<div class="outline-text-4" id="text-orgc188596">
+<p>
+<a href="http://en.wikipedia.org/wiki/John_Dewey">http://en.wikipedia.org/wiki/John_Dewey</a>
+</p>
+<ul class="org-ul">
+<li>Pragmatist</li>
+<li>Gave pragmatism a historical context -</li>
+<li>Pragmatism stats that the meaning of a statement was the practical results in
+experience that we would expect if that statement were true.</li>
+<li>Rejects the notion of truth and replaces it with "warranted assertability"</li>
+</ul>
+</div>
+</div>
+<div id="outline-container-org1663155" class="outline-4">
+<h4 id="org1663155">Heidegger</h4>
+<div class="outline-text-4" id="text-org1663155">
+<p>
+<a href="http://en.wikipedia.org/wiki/Heidigger">http://en.wikipedia.org/wiki/Heidigger</a>
+</p>
+</div>
+</div>
+<div id="outline-container-org2e9b81b" class="outline-4">
+<h4 id="org2e9b81b">Wittgenstein</h4>
+<div class="outline-text-4" id="text-org2e9b81b">
+<p>
+<a href="http://en.wikipedia.org/wiki/Wittgenstein">http://en.wikipedia.org/wiki/Wittgenstein</a>
+</p>
+<ul class="org-ul">
+<li>Greatly influenced by Bertrand Russell.</li>
+<li>Believed that metaphysics was flawed, because it was based on the mistaken use of
+language.</li>
+</ul>
+</div>
+<ul class="org-ul">
+<li><a id="org6cd1f64"></a>recent nytimes discussion<br />
+<div class="outline-text-5" id="text-org6cd1f64">
+<p>
+<a href="http://nyti.ms/161XrAu">http://nyti.ms/161XrAu</a>
+</p>
+<ul class="org-ul">
+<li>traditional philosophy was inherently scientific</li>
+<li>purely theoretic philosophy is in conflict with a scientistic approach</li>
+<li>traditional philosophy over analogizes and over simplifies in the name of
+theoretical consistency</li>
+<li>modern philosophy must therefore avoid theory creation and should be primarily
+therapeutic</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+<div id="outline-container-orgc3b0f56" class="outline-4">
+<h4 id="orgc3b0f56">Husserl</h4>
+<div class="outline-text-4" id="text-orgc3b0f56">
+<p>
+<a href="http://en.wikipedia.org/wiki/Husserl">http://en.wikipedia.org/wiki/Husserl</a>
+</p>
+<ul class="org-ul">
+<li>Criticized the relativism of Nietzsche, who believed that absolute truth cannot
+exist apart from our perspectives of it.</li>
+<li>Rejected skepticism for stating that even if there were absolute truths, we would
+have no way to know them.</li>
+<li>Rejected historicism for insisting that all truth is relative to the historical
+context in which it originates.</li>
+<li>Rejected positivism for insisting that only truths that are based on empirical
+phenomena are possible - partly because it leaves to room for mathematical
+axioms/truths which are not empirical.</li>
+<li>Husserl believed that philosophy should seek certainty, not facts.</li>
+</ul>
+</div>
+</div>
+</div>
+<div id="outline-container-orge64cae9" class="outline-3">
+<h3 id="orge64cae9">Modernity II</h3>
+<div class="outline-text-3" id="text-orge64cae9">
+</div>
+<div id="outline-container-orgef91f37" class="outline-4">
+<h4 id="orgef91f37">Hayek</h4>
+<div class="outline-text-4" id="text-orgef91f37">
+<p>
+<a href="http://en.wikipedia.org/wiki/Friedrich_Hayek">http://en.wikipedia.org/wiki/Friedrich_Hayek</a>
+</p>
+<ul class="org-ul">
+<li>Socialism and central planning is incompatible with individual freedom</li>
+<li>Argued that there is a social division/dispersion of knowledge that leads to an
+efficient determination of prices.</li>
+<li>Prices do not necessarily represent merit.</li>
+<li>Therefore, rewards and social justice will not always be dispersed according to
+merit.</li>
+</ul>
+</div>
+<ul class="org-ul">
+<li><a id="orgc41073e"></a>Wrote the "Road to Serfdom"<br />
+<div class="outline-text-5" id="text-orgc41073e">
+<ul class="org-ul">
+<li>People have incompatible preferences which central planning cannot possibly account
+for.</li>
+<li>Planned economies lead to concentrations of power.</li>
+<li>Therefore, central planning inevitably leads to a loss of freedom.</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+<div id="outline-container-org31824bb" class="outline-4">
+<h4 id="org31824bb">Popper</h4>
+<div class="outline-text-4" id="text-org31824bb">
+<p>
+<a href="http://en.wikipedia.org/wiki/Karl_Popper">http://en.wikipedia.org/wiki/Karl_Popper</a>
+</p>
+<ul class="org-ul">
+<li>Was strongly influenced by how Einstein challenged the thoroughly confirmed and
+widely held confidence in Newton.</li>
+<li>Argued that science can strive for truth, but will never be 100% sure if/when it
+has achieved it.</li>
+<li>Our best form of knowledge is science, but that cannot be taken as justified truth.</li>
+<li>Insisted on the testability of scientific ideas.</li>
+<li>The objectivity of any scientific idea could only be established through critique.</li>
+</ul>
+</div>
+</div>
+<div id="outline-container-orgfd63573" class="outline-4">
+<h4 id="orgfd63573">Kuhn</h4>
+<div class="outline-text-4" id="text-orgfd63573">
+<p>
+<a href="http://en.wikipedia.org/wiki/Thomas_Samuel_Kuhn">http://en.wikipedia.org/wiki/Thomas_Samuel_Kuhn</a>
+</p>
+<ul class="org-ul">
+<li>The Structure of Scientific Revolutions</li>
+<li>Paradigm Shift</li>
+<li>Most scientific work is spent filling out the details of the prevailing paradigm,
+not in divergent or critical investigation.</li>
+<li>Over time anomalies accumulate in the prevailing paradigm, eventually building into
+a 'paradigm shift'
+<ul class="org-ul">
+<li>Aristotle (earth is center of universe)</li>
+<li>Copernicus (sun is center of universe)</li>
+<li>Newton</li>
+<li>Einstein</li>
+<li>???</li>
+</ul></li>
+<li>A field of study is NOT a science until it has a single, unifying paradigm within
+which most of its practitioners work.</li>
+<li>Kuhn characterized progress in science as a highly social, and not necessarily
+rational, mechanism.</li>
+</ul>
+</div>
+</div>
+<div id="outline-container-org29d5994" class="outline-4">
+<h4 id="org29d5994">Qine</h4>
+<div class="outline-text-4" id="text-org29d5994">
+<p>
+<a href="http://en.wikipedia.org/wiki/Willard_Van_Orman_Quine">http://en.wikipedia.org/wiki/Willard_Van_Orman_Quine</a>
+</p>
+<ul class="org-ul">
+<li>Effective critic of logical positivism</li>
+<li>Attacked Empiricism
+<ul class="org-ul">
+<li>There is no real distinction between synthetic truths and analytic truths.</li>
+<li>The principle of reductionism - that every high level statement could ultimately be reduced to simpler statements of sense experience - does not work.</li>
+<li>This is because our ability to reason about sensory experience is constrained by the symbol language we use to reason about it.  These language impose their own boundary conditions to what can be reasoned.</li>
+</ul></li>
+</ul>
+</div>
+</div>
+<div id="outline-container-org892fba9" class="outline-4">
+<h4 id="org892fba9">Habermas</h4>
+<div class="outline-text-4" id="text-org892fba9">
+<p>
+<a href="http://en.wikipedia.org/wiki/J%C3%BCrgen_Habermas">http://en.wikipedia.org/wiki/Jürgen_Habermas</a>
+</p>
+<ul class="org-ul">
+<li>Stressed the importance of the 'public sphere' of communications and how it enabled
+democracy.</li>
+<li>These social institutions enabled groups of individuals to discuss and openly
+debate and ultimately impact their political institutions.</li>
+</ul>
+</div>
+<ul class="org-ul">
+<li><a id="org5994f83"></a>Wrote "Theory of Communivative Action"<br />
+<div class="outline-text-5" id="text-org5994f83">
+<ul class="org-ul">
+<li>Argued against the subject/object foundations of Marx and others.</li>
+<li>Instead, ethics and politics should be analyzed from a social perspective of
+self/other.</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+<div id="outline-container-orgcad66f4" class="outline-4">
+<h4 id="orgcad66f4">Rawls</h4>
+<div class="outline-text-4" id="text-orgcad66f4">
+<p>
+<a href="http://en.wikipedia.org/wiki/John_Rawls">http://en.wikipedia.org/wiki/John_Rawls</a>
+</p>
+</div>
+<ul class="org-ul">
+<li><a id="orge6fbc82"></a>Wrote "A Theory of Justice"<br />
+<div class="outline-text-5" id="text-orge6fbc82">
+<ul class="org-ul">
+<li>The task of any theory of social justice is the legitimate the inequalities that
+emerge in the basic structure of society.</li>
+<li>To assess any system, you must do so from the 'original position'
+<ul class="org-ul">
+<li>Veil of Ignorance: You must not know your place in the social structure of society, or what your natural talents may be.</li>
+<li>All participants must be disinterested in the outcome of the debate.</li>
+</ul></li>
+<li>Each person is to have an equal right to the most extensive basic liberty that is
+compatible with a similar liberty held by all others.</li>
+<li>If there are any inequalities in the system, they can only be justified if first -
+they are to everyone's advantage - and second - they be attached to positions or
+offices that are open to all.</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+<div id="outline-container-org4910977" class="outline-4">
+<h4 id="org4910977">Derrida</h4>
+<div class="outline-text-4" id="text-org4910977">
+<p>
+<a href="http://en.wikipedia.org/wiki/Derrida">http://en.wikipedia.org/wiki/Derrida</a>
+</p>
+<ul class="org-ul">
+<li>Deconstructionist</li>
+<li>Questioned the entire western tradition of trying to define a 'true logos' behind
+our empirical view of the world.
+<ul class="org-ul">
+<li>This began with Plato's forms, and has been carried forward ever since.</li>
+</ul></li>
+<li>Follower of Nietzsche, Freud and Heidegger
+<ul class="org-ul">
+<li>Nietzsche did away with the concept of absolute truth.</li>
+<li>Freud did away with the concept that the subjective self or consciousness has any special access to the 'logos' or true forms.</li>
+<li>Heidegger did away with the notion of an 'I am' that precedes existence.</li>
+<li>He argued (from Sartre) that you must exist in order to have an essence. There is no essence without existence.</li>
+</ul></li>
+<li>Deconstructionism directly opposes the Christian belief that Jesus/God embodies the
+perfect 'form' of man.</li>
+<li>Like Sartre (existentialism) - the absence of a higher plan or purpose to life does
+NOT render life meaningless.</li>
+<li>He wants to free us from the guilt over the absence of absolute meaning or purpose
+in life. There can be none, so get over it.</li>
+</ul>
+</div>
+</div>
+<div id="outline-container-org7814c0c" class="outline-4">
+<h4 id="org7814c0c">Rorty</h4>
+<div class="outline-text-4" id="text-org7814c0c">
+<p>
+<a href="http://en.wikipedia.org/wiki/Rorty">http://en.wikipedia.org/wiki/Rorty</a>
+</p>
+<ul class="org-ul">
+<li>Absolute truth cannot be found in language - it is merely a statement that we
+approve of.</li>
+<li>Modern philosophers should give up the pursuit of absolute truth, and instead
+should seek to eliminate the cruelties of everyday life that these historical
+social norms have placed upon us.</li>
+<li>His basic critique of western philosophy centers on the refutation of the existence
+of a "God's eye-view" of the world</li>
+<li>Pragmatism is the ultimate anti-philosophy
+<ul class="org-ul">
+<li>Rejects the goal of defining truth as the level of correspondence with an objective reality.</li>
+<li>Truth should be approached pragmatically: Does the statement work for us?</li>
+<li>Also rejects absolute realism. Our experience of reality will always be influenced by the conceptual framework in which we analyze it. And that framework is constantly changing.</li>
+</ul></li>
+<li>Argues that many aspects of our language and are beliefs are contingent - not
+necessarily true or false.</li>
+<li>But it is important for our overall system of beliefs to 'hand together' and to be
+free of inconsistencies.</li>
+</ul>
+</div>
+</div>
+<div id="outline-container-org63f71fc" class="outline-4">
+<h4 id="org63f71fc">Gouldner</h4>
+<div class="outline-text-4" id="text-org63f71fc">
+<p>
+<a href="http://en.wikipedia.org/wiki/Alvin_Ward_Gouldner">http://en.wikipedia.org/wiki/Alvin_Ward_Gouldner</a>
+</p>
+<ul class="org-ul">
+<li>Critic of the Marxist attempt to define society in terms of who owns the means of
+physical production, and the class distinctions that such a model result in.</li>
+<li>The succession of modern ideologies owes its existence to the American and French
+revolutions, which made it possible to be an intellectual dissident.</li>
+<li>Each ideology seeks to destroy competing ideologies while itself claiming to be
+disinterested.</li>
+<li>Class struggle in the modern west occur between old money and new intelligentsia
+(engineers, doctors, lawyers, scientists)
+<ul class="org-ul">
+<li>The struggle is not, as Marx described it, between those who controlled the means of production and the serfs below them.</li>
+</ul></li>
+</ul>
+</div>
+</div>
+<div id="outline-container-orgecf322d" class="outline-4">
+<h4 id="orgecf322d">MacIntyre</h4>
+<div class="outline-text-4" id="text-orgecf322d">
+<p>
+<a href="http://en.wikipedia.org/wiki/Alasdair_MacIntyre">http://en.wikipedia.org/wiki/Alasdair_MacIntyre</a>
+</p>
+<ul class="org-ul">
+<li>Rejects the moral relativism that began with the Enlightenment thinkers (Locke,
+Hume, Kant).</li>
+<li>Admits that an absolute proof of any particular moral theory is beyond reach, but
+that our social traditions are a valid basis by which to evaluate our moral
+theories.</li>
+<li>Claims that social tradition is a necessary precondition for rationality. Without
+those traditions, there can be no rationality.</li>
+<li>The moral relativism of 'modern philosophy' is itself yet another tradition.</li>
+<li>He sees 'modern philosophy' as a tradition that is hostile to the very notion of
+traditions, and is thus self-contradictory.</li>
+</ul>
+</div>
+<ul class="org-ul">
+<li><a id="org97c1dee"></a>The 'is-ought' gap<br />
+<div class="outline-text-5" id="text-org97c1dee">
+<ul class="org-ul">
+<li>This is the fundamental problem for all moral philosophy.</li>
+<li>If you believe in a fundamental difference between statements of fact
+vs. statements of value, it becomes impossible to to move from 'what is' to 'what
+ought to be'.</li>
+<li>This inability to find a rational justification to any given set of moral rules is
+a pervasive feature of modern philosophical endeavors.</li>
+<li>Thus modern philosophy leads to moral skepticism.</li>
+</ul>
+</div>
+</li>
+<li><a id="orga3d48e8"></a>What is a tradition?<br />
+<div class="outline-text-5" id="text-orga3d48e8">
+<ul class="org-ul">
+<li>The entire history of its world view over time.</li>
+<li>The community of people who are its bearers.</li>
+<li>The social practices of that community.</li>
+<li>They are like Kuhn's Scientific Paradigms.</li>
+<li>However, it must be possible for one tradition to judge other traditions based on
+rational criteria.
+<ul class="org-ul">
+<li>Example (Margaret Med): A primitive New Guinean tribe will have a tradition of beliefs, including truths about the world, that directly contradict most modern western traditions.</li>
+<li>But we should not conclude that their belief system is un-judge-able, or equal to our traditional system of beliefs - there MUST be a basic by which to critique.</li>
+<li>Nazi-ism, for example, is a tradition. We should be able to rationally argue why it is a bad tradition. Why it is wrong. Relativism would make this judgement impossible.</li>
+</ul></li>
+<li>The criteria: One tradition is more rational than another if
+<ul class="org-ul">
+<li>It can explain both the success and failures of the other tradition better than the other tradition itself can explain.</li>
+<li>If it can understand the other tradition well enough to explain its failures to it in the other tradition's own terms.</li>
+</ul></li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+<div id="outline-container-org8f40d1f" class="outline-4">
+<h4 id="org8f40d1f">Nozick</h4>
+<div class="outline-text-4" id="text-org8f40d1f">
+<p>
+<a href="http://en.wikipedia.org/wiki/Nozick">http://en.wikipedia.org/wiki/Nozick</a>
+</p>
+</div>
+<ul class="org-ul">
+<li><a id="orgbc23881"></a>Limited Governement<br />
+<div class="outline-text-5" id="text-orgbc23881">
+<ul class="org-ul">
+<li>Wrote "Anarchy, State, and Utopia"</li>
+<li>Starts with the basic principle that a lone individual has certain rights that no
+other person may infringe upon.</li>
+<li>Then asks the question: With that as the basis, is there a form of government that
+can adhere to that principle? If so, what would it look like?</li>
+<li>The starting point is an individual who has the right to personal property. That is
+the state of nature.
+<ul class="org-ul">
+<li>Nozick does not attempt to justify this starting point - where does that initial right derive from and can it be proven. He simply takes it 'as-is'.</li>
+<li>This is a weakness that others have used to refute much of his arguments.</li>
+</ul></li>
+<li>He then argues that only a very limited state may exist that would not infringe
+upon that fundamental right.
+<ul class="org-ul">
+<li>Involuntary redistribution of the wealth for even a single individual would be illegitimate.</li>
+</ul></li>
+<li>Nozick argues that a minimalist government is possible that does not infringe upon
+this basic right, and that it can be achieved without gaining the consent or
+participation of ALL individuals (which would necessarily entail some amount of
+coercion).
+<ul class="org-ul">
+<li>The only role of this minimal government is to enforce protection rights (police and judicial).</li>
+</ul></li>
+</ul>
+</div>
+</li>
+<li><a id="org34f31c6"></a>Redistribution of Wealth<br />
+<div class="outline-text-5" id="text-org34f31c6">
+<ul class="org-ul">
+<li>Taxes mean that others have a claim of ownership in you, and are therefore morally
+equivalent to forced labor and slavery.</li>
+<li>However, charitable redistribution is fine - only forced redistribution is wrong.</li>
+</ul>
+</div>
+</li>
+<li><a id="org3327bd0"></a>How do we assess a just society<br />
+<div class="outline-text-5" id="text-org3327bd0">
+<ul class="org-ul">
+<li>The means: The individual steps that led to the current distribution of wealth were
+each fair, just and entered into freely by both participants.</li>
+<li>The ends: The resulting distribution of wealth is equal among all participants,
+regardless of whether coercion was used to move some wealth from one to another.</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+</div>
+<div id="outline-container-org273a0b9" class="outline-3">
+<h3 id="org273a0b9">Modernity III</h3>
+<div class="outline-text-3" id="text-org273a0b9">
+</div>
+<div id="outline-container-orgf864c43" class="outline-4">
+<h4 id="orgf864c43">Jonathan Haidt - 1963</h4>
+<div class="outline-text-4" id="text-orgf864c43">
+</div>
+<ul class="org-ul">
+<li><a id="orga82c50c"></a>The Happiness Hypothesis<br />
+<div class="outline-text-5" id="text-orga82c50c">
+<ul class="org-ul">
+<li>Wisdom
+<ul class="org-ul">
+<li>Curiosity</li>
+<li>Love of learning</li>
+<li>Judgement</li>
+<li>Ingenuity</li>
+<li>Emotional Intelligence</li>
+<li>Perspective</li>
+</ul></li>
+<li>Courage
+<ul class="org-ul">
+<li>Valor</li>
+<li>Persaverance</li>
+<li>Integrity</li>
+</ul></li>
+<li>Humanity
+<ul class="org-ul">
+<li>Kindness</li>
+<li>Loving</li>
+</ul></li>
+<li>Justice
+<ul class="org-ul">
+<li>Citizenship</li>
+<li>Fairness</li>
+<li>Leadership</li>
+</ul></li>
+<li>Termperance
+<ul class="org-ul">
+<li>Self-control</li>
+<li>Prudence</li>
+<li>Humility</li>
+</ul></li>
+<li>Transcendance
+<ul class="org-ul">
+<li>Appreciation of beauty and excellence</li>
+<li>Gratitude</li>
+<li>Hope</li>
+<li>Spirituality</li>
+<li>Foregiveness</li>
+<li>Humor</li>
+<li>Zest</li>
+</ul></li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+<div id="outline-container-org47122df" class="outline-4">
+<h4 id="org47122df">Jerry Fodor</h4>
+<div class="outline-text-4" id="text-org47122df">
+<p>
+<a href="http://en.wikipedia.org/wiki/Jerry_Fodor">http://en.wikipedia.org/wiki/Jerry_Fodor</a>
+</p>
+<ul class="org-ul">
+<li>Proponent of psychological nativism</li>
+<li>mental states are relations between individuals and mental representations</li>
+<li>mental states are expressed in a Language of Thought</li>
+</ul>
+</div>
+</div>
+<div id="outline-container-org3ca9b06" class="outline-4">
+<h4 id="org3ca9b06">Daniel Dennett</h4>
+<div class="outline-text-4" id="text-org3ca9b06">
+<p>
+<a href="http://en.wikipedia.org/wiki/Daniel_Dennett">http://en.wikipedia.org/wiki/Daniel_Dennett</a>
+</p>
+<ul class="org-ul">
+<li>Believes that the notions of Free Will and Determinism can be reconciled</li>
+<li>Focused on establishing a philosophy of mind that is firmly empirical</li>
+<li>Has argued that natural selection can account for the emergence of morality</li>
+</ul>
+</div>
+</div>
+<div id="outline-container-org3589be3" class="outline-4">
+<h4 id="org3589be3">Paul Churchland</h4>
+<div class="outline-text-4" id="text-org3589be3">
+<p>
+<a href="http://en.wikipedia.org/wiki/Paul_Churchland">http://en.wikipedia.org/wiki/Paul_Churchland</a>
+</p>
+<ul class="org-ul">
+<li>Proponent of Eliminative Materialism
+<ul class="org-ul">
+<li><a href="http://en.wikipedia.org/wiki/Eliminative_materialism">http://en.wikipedia.org/wiki/Eliminative_materialism</a></li>
+</ul></li>
+<li>Every day mental concepts will eventually be eliminated by a fully mature
+neuroscience</li>
+</ul>
+</div>
+</div>
+<div id="outline-container-org4667ccd" class="outline-4">
+<h4 id="org4667ccd">Thomas Nagel - 1937 -</h4>
+<div class="outline-text-4" id="text-org4667ccd">
+<p>
+<a href="http://en.wikipedia.org/wiki/Thomas_Nagel">http://en.wikipedia.org/wiki/Thomas_Nagel</a>
+</p>
+<ul class="org-ul">
+<li>Believes that the current understanding of the physical world is insufficient to
+explain what it is like to "be some thing".</li>
+<li>Student of John Rawls</li>
+</ul>
+</div>
+<ul class="org-ul">
+<li><a id="org94a7951"></a>"What is it like to be a bat?"<br />
+<div class="outline-text-5" id="text-org94a7951">
+<p>
+<a href="http://en.wikipedia.org/wiki/What_Is_it_Like_to_Be_a_Bat?">http://en.wikipedia.org/wiki/What_Is_it_Like_to_Be_a_Bat?</a>
+</p>
+<ul class="org-ul">
+<li>A refutation of reductionism as it pertains to the mind.</li>
+<li>Consciousness cannot be explained without reference to the phenomenon of being that
+thing.</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+
+<div id="outline-container-orge1386b6" class="outline-4">
+<h4 id="orge1386b6">W.W. Bartley - 1934-1990</h4>
+<div class="outline-text-4" id="text-orge1386b6">
+<p>
+<a href="http://en.wikipedia.org/wiki/William_Warren_Bartley">http://en.wikipedia.org/wiki/William_Warren_Bartley</a>
+</p>
+<ul class="org-ul">
+<li>Close collaborator with Karl Popper</li>
+<li>Discussion of pancritical rationalism
+<ul class="org-ul">
+<li><a href="http://lesswrong.com/lw/5vm/pancritical_rationalism_can_apply_to_preferences/">http://lesswrong.com/lw/5vm/pancritical_rationalism_can_apply_to_preferences/</a></li>
+</ul></li>
+<li>Best known for pancritical rationalism
+<ul class="org-ul">
+<li><a href="http://en.wikipedia.org/wiki/Pancritical_rationalism">http://en.wikipedia.org/wiki/Pancritical_rationalism</a></li>
+<li>Every possible option or explanation will have one valid criticism.</li>
+<li>The goal is to choose the option whose criticism you are most willing to accept.</li>
+</ul></li>
+</ul>
+</div>
+</div>
+<div id="outline-container-orgb84c4bb" class="outline-4">
+<h4 id="orgb84c4bb">Leonard Piekoff - 1933 -</h4>
+<div class="outline-text-4" id="text-orgb84c4bb">
+<p>
+<a href="http://en.wikipedia.org/wiki/Leonard_Peikoff">http://en.wikipedia.org/wiki/Leonard_Peikoff</a>
+</p>
+<ul class="org-ul">
+<li>Intellectual hier to Ayn Rand</li>
+<li>Objectivism: The Philosophy of Ayn Rand
+<ul class="org-ul">
+<li><a href="http://en.wikipedia.org/wiki/Objectivism_(Ayn_Rand)">http://en.wikipedia.org/wiki/Objectivism_(Ayn_Rand)</a></li>
+</ul></li>
+<li>Metaphysics
+<ul class="org-ul">
+<li>There is an objective reality that exists independently of our experience of it.</li>
+</ul></li>
+<li>Epistomology
+<ul class="org-ul">
+<li>All knowledge is acquired via an intellectual process</li>
+</ul></li>
+<li>Ethics
+<ul class="org-ul">
+<li>Rational self-interest</li>
+<li>Rational egoism</li>
+</ul></li>
+<li>Economics
+<ul class="org-ul">
+<li>Unregulated Lassiez-faire Capitalism</li>
+</ul></li>
+<li>Politics
+<ul class="org-ul">
+<li>The role of government is to protect the rights of individuals</li>
+<li>Only government should have the right to apply justice and physical punishment.</li>
+<li>Democratic with guaranteed individual rights</li>
+<li>Government has no rights except those delegated to it by the citizens</li>
+</ul></li>
+<li>Foreign Policy
+<ul class="org-ul">
+<li>Use of armed forces strictly defensive</li>
+<li>Free trade should be encouraged</li>
+</ul></li>
+</ul>
+</div>
+</div>
+<div id="outline-container-org7af3a57" class="outline-4">
+<h4 id="org7af3a57">Albert Camus - 1913-1960</h4>
+<div class="outline-text-4" id="text-org7af3a57">
+<p>
+<a href="http://en.wikipedia.org/wiki/Albert_Camus">http://en.wikipedia.org/wiki/Albert_Camus</a>
+</p>
+<ul class="org-ul">
+<li>Absurdism</li>
+<li>We value our lives and existence</li>
+<li>But our mortality makes our lives meaningless</li>
+<li>To embrace that paradox is absurdism</li>
+</ul>
+</div>
+</div>
+<div id="outline-container-org49118b9" class="outline-4">
+<h4 id="org49118b9">Jean-Paul Sartre - 1905-1980</h4>
+<div class="outline-text-4" id="text-org49118b9">
+<p>
+<a href="http://en.wikipedia.org/wiki/Jean-Paul_Sartre">http://en.wikipedia.org/wiki/Jean-Paul_Sartre</a>
+</p>
+<ul class="org-ul">
+<li>Existentialism</li>
+<li>There is no creator</li>
+<li>We are condemned to be free</li>
+<li>Existence precedes essence</li>
+<li>Authenticity and individuality are earned, not learned</li>
+</ul>
+</div>
+</div>
+<div id="outline-container-orgf6148df" class="outline-4">
+<h4 id="orgf6148df">Kurt Gödel - 1906 - 1978</h4>
+<div class="outline-text-4" id="text-orgf6148df">
+<p>
+<a href="http://en.wikipedia.org/wiki/Kurt_G%C3%B6del">http://en.wikipedia.org/wiki/Kurt_Gödel</a>
+</p>
+<ul class="org-ul">
+<li>Best known for his "incompleteness theorems"</li>
+<li>For any computable axiomatic system
+<ul class="org-ul">
+<li>If the system is consistent, it cannot be complete</li>
+<li>The consistency of the axiums cannot be proven by the system itself</li>
+</ul></li>
+</ul>
+</div>
+</div>
+<div id="outline-container-org4026756" class="outline-4">
+<h4 id="org4026756">Bertrand Russell - 1872 - 1970</h4>
+<div class="outline-text-4" id="text-org4026756">
+<p>
+<a href="http://en.wikipedia.org/wiki/Bertrand_Russell">http://en.wikipedia.org/wiki/Bertrand_Russell</a>
+</p>
+<ul class="org-ul">
+<li>Developed Analytic Philosophy</li>
+<li>Co-authored Principia Mathematica
+<ul class="org-ul">
+<li><a href="http://en.wikipedia.org/wiki/Principia_Mathematica">http://en.wikipedia.org/wiki/Principia_Mathematica</a></li>
+</ul></li>
+<li>Established the logical underpinnings of mathematics</li>
+</ul>
+</div>
+</div>
+<div id="outline-container-orgd1c84f1" class="outline-4">
+<h4 id="orgd1c84f1">Rudolf Carnap - 1891 - 1970</h4>
+<div class="outline-text-4" id="text-orgd1c84f1">
+<p>
+<a href="http://en.wikipedia.org/wiki/Rudolf_Carnap">http://en.wikipedia.org/wiki/Rudolf_Carnap</a>
+</p>
+<ul class="org-ul">
+<li>Member of the Vienna Circle</li>
+<li>Supporter of Logical Positivism</li>
+<li>Developed a formal version of empericism</li>
+</ul>
+</div>
+</div>
+<div id="outline-container-org7f9e9a1" class="outline-4">
+<h4 id="org7f9e9a1">David J. Chalmers</h4>
+<div class="outline-text-4" id="text-org7f9e9a1">
+</div>
+<ul class="org-ul">
+<li><a id="org698f427"></a>The Hard Problem of Consciousness<br />
+<div class="outline-text-5" id="text-org698f427">
+<p>
+<a href="http://consc.net/papers/facing.html">http://consc.net/papers/facing.html</a>
+</p>
+<ul class="org-ul">
+<li>Our ability to explain visual perception does not tell us what it is like to
+experience red.</li>
+<li>The easy problem is the explain the mechanics of how consciousness functions.</li>
+<li>The hard problem: there is something it is like to be a conscious organism.</li>
+<li>What makes up consciousness? Everything that we can report back on verbally.</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+<div id="postamble" class="status">
+<p class="date">Created: 2018-08-02 Thu 00:57</p>
+<p class="validation"><a href="http://validator.w3.org/check?uri=referer">Validate</a></p>
+</div>
+</body>
+</html>
