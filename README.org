@@ -1,0 +1,11 @@
+* Episteme
+
+#+begin_src text
+Personification of Episteme in Celsus Library in Ephesus, Turkey.  "Episteme" is a
+philosophical term derived from the Ancient Greek word ἐπιστήμη epistēmē, which can
+refer to knowledge, science or understanding, and which comes from the verb
+ἐπίστασθαι, meaning "to know, to understand, or to be acquainted with".
+#+end_src
+
+This repository contains [[https://orgmode.org/manual/Search-options.html#Search-options][org-mode]] files making up a collaborative knowledge-base of
+the ##apoptosis community on Freenode.
