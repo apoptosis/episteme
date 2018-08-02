@@ -10,7 +10,7 @@
 #+html_head: <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
 #+html_head: <script type="text/javascript" src="https://www.pirilampo.org/styles/lib/js/jquery.stickytableheaders.js"></script>
 #+html_head: <script type="text/javascript" src="https://www.pirilampo.org/styles/readtheorg/js/readtheorg.js"></script>
-#+html_head: <script type="text/css" src="/episteme/extra.css"></script>
+#+html_head: <link rel="stylesheet" type="text/css" href="/episteme/extra.css"/>
 
 * Pre-Socratic
 ** Four elements: Earth, Water, Air and Fire
