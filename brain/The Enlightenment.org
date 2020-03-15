@@ -1,0 +1,29 @@
+#+BRAIN_CHILDREN: Adam%20Smith%201723-1790 Rousseau%201712-1778 David%20Hume%201711-1766 Montesquieu%201689-1755 Bishop%20Berkeley%201685-1733 Mandeville%201670-1733 Vico%201678-1744 Leibniz%201646-1716 John%20Locke%201632-1704
+
+#+BRAIN_PARENTS: Philosophy
+
+- Was aware of the dangers and problems that could arise from too much
+  specialization of labout and the social isolation that could result.
+- Worried about the moral impact on someone who shifted from a village-centric
+  social context to that of a large city and the anonymity that could result.
+- Also concered about class and wealth disparity and impacts that would have on
+  society.
+
+* The Wealth of Nations: The Division of Labour
+- Specialization of job function leads to massive gains in efficiency.
+- Coordination and cooperation between specialists is done out of self-interest.
+- We get what we need from others out of their self-interest, not their
+  charity.
+* The Theory of Moral Sentiment
+- Offers an explanation and basis for the cooperation and coordination that are
+  required for the division of labout described in Wealth of Nations.
+**  Why?
+- We want the approval of others.
+- The reactions of others to us and our behaviors is important to us.
+- We generally seek to behave as if there were an impartial spectator observing
+  our behaviours. Would they approve of them?
+- Our conscience is a product of these factors.
+** Obeying the Law
+We do so because of the utility of doing so. In genera, we derive benefit when
+we do so.
+

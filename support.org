@@ -1,0 +1,607 @@
+
+The following Emacs configuration will allow one to use our knowledge-base
+comfortably. You do not need to use the configuration as exactly provided
+here. Feel free to take parts and integrate it into your own
+configuration.
+
+That said this configuration ought to work out of the box.
+
+*Customize these variables*:
+
+#+begin_src emacs-lisp
+  (setq path-of-this-repo "/home/you/this-repo")
+#+end_src
+
+* setup
+
+The following sections take care of bootstrapping =straight.el= for
+package-management and some other concerns before things can get started.
+
+** lexical binding
+
+This line controls how the elisp scoping works in the rest of the file. Lexical
+binding is explained in the Emacs documentation.
+
+#+begin_src emacs-lisp
+;;; -*- lexical-binding: t; -*-
+#+end_src
+
+** straight.el
+[[https://github.com/raxod502/straight.el][straight.el]] is an alternative to [[https://www.gnu.org/software/emacs/manual/html_node/emacs/Packages.html][package.el]] with many advantages including the
+ability to integrate with [[https://github.com/jwiegley/use-package][use-package]] and installing packages from git or
+github.
+
+*** bootstrap
+#+begin_src emacs-lisp
+  (let ((bootstrap-file (concat user-emacs-directory "straight/repos/straight.el/bootstrap.el"))
+        (bootstrap-version 3))
+    (unless (file-exists-p bootstrap-file)
+      (with-current-buffer
+          (url-retrieve-synchronously
+           "https://raw.githubusercontent.com/raxod502/straight.el/develop/install.el"
+           'silent 'inhibit-cookies)
+        (goto-char (point-max))
+        (eval-print-last-sexp)))
+    (load bootstrap-file nil 'nomessage))
+#+end_src
+
+*** use-package integration
+#+begin_src emacs-lisp
+  (setq straight-use-package-by-default t)
+  (straight-use-package 'use-package)
+  (use-package git) ;; ensure we can install from git sources
+#+end_src
+
+** general dependencies
+
+The following package dependencies are used throughout the rest of the
+configuration. They provide contemporary APIs for working with various elisp
+data structures.
+
+#+begin_src emacs-lisp
+  (require 'cl)
+  (use-package f :demand t)          ;; files
+  (use-package dash :demand t)       ;; lists
+  (use-package ht :demand t)         ;; hash-tables
+  (use-package s :demand t)          ;; strings
+  (use-package a :demand t)          ;; association lists
+  (use-package anaphora :demand t)   ;; anaphora
+#+end_src
+
+* core
+** minor-modes
+*** electric-pair-mode
+Matching closed brackets are inserted for any typed open bracket.
+#+BEGIN_SRC emacs-lisp
+  (electric-pair-mode 1)
+#+END_SRC
+
+*** rainbow-delimeters-mode
+#+BEGIN_SRC emacs-lisp
+  (require 'color)
+  (defun gen-col-list (length s v &optional hval)
+    (cl-flet ( (random-float () (/ (random 10000000000) 10000000000.0))
+            (mod-float (f) (- f (ffloor f))) )
+      (unless hval
+        (setq hval (random-float)))
+      (let ((golden-ratio-conjugate (/ (- (sqrt 5) 1) 2))
+            (h hval)
+            (current length)
+            (ret-list '()))
+        (while (> current 0)
+          (setq ret-list
+                (append ret-list
+                        (list (apply 'color-rgb-to-hex (color-hsl-to-rgb h s v)))))
+          (setq h (mod-float (+ h golden-ratio-conjugate)))
+          (setq current (- current 1)))
+        ret-list)))
+
+  (defun set-random-rainbow-colors (s l &optional h)
+    ;; Output into message buffer in case you get a scheme you REALLY like.
+    ;; (message "set-random-rainbow-colors %s" (list s l h))
+    (interactive)
+    (rainbow-delimiters-mode t)
+
+    ;; Show mismatched braces in bright red.
+    (set-face-background 'rainbow-delimiters-unmatched-face "red")
+
+    ;; Rainbow delimiters based on golden ratio
+    (let ( (colors (gen-col-list 9 s l h))
+           (i 1) )
+      (let ( (length (length colors)) )
+        ;;(message (concat "i " (number-to-string i) " length " (number-to-string length)))
+        (while (<= i length)
+          (let ( (rainbow-var-name (concat "rainbow-delimiters-depth-" (number-to-string i) "-face"))
+                 (col (nth i colors)) )
+            ;; (message (concat rainbow-var-name " => " col))
+            (set-face-foreground (intern rainbow-var-name) col))
+          (setq i (+ i 1))))))
+
+  (use-package rainbow-delimiters :commands rainbow-delimiters-mode :hook ...
+    :init
+    (setq rainbow-delimiters-max-face-count 16)
+    (set-random-rainbow-colors 0.6 0.7 0.5)
+    (add-hook 'prog-mode-hook 'rainbow-delimiters-mode))
+#+END_SRC
+
+*** show-paren-mode
+#+begin_src emacs-lisp
+  (show-paren-mode 1)
+  (setq show-paren-delay 0)
+  (require 'paren)
+  (set-face-background 'show-paren-match nil)
+  (set-face-background 'show-paren-mismatch nil)
+  (set-face-foreground 'show-paren-match "#ff0")
+  (set-face-foreground 'show-paren-mismatch "#f00")
+  (set-face-attribute 'show-paren-match nil :weight 'extra-bold)
+#+end_src
+
+* org-mode
+** straight.el fixes
+There are some issues with straight.el and org. These the following boilerplate
+fixes all that until [[https://github.com/raxod502/straight.el#installing-org-with-straightel][that is resolved]].
+*** fix-org-git-version
+#+begin_src emacs-lisp
+  (defun fix-org-git-version ()
+    "The Git version of org-mode.
+    Inserted by installing org-mode or when a release is made."
+    (require 'git)
+    (let ((git-repo (expand-file-name
+                     "straight/repos/org/" user-emacs-directory)))
+      (string-trim
+       (git-run "describe"
+                "--match=release\*"
+                "--abbrev=6"
+                "HEAD"))))
+#+end_src
+
+*** fix-org-release
+#+begin_src emacs-lisp
+  (defun fix-org-release ()
+    "The release version of org-mode.
+    Inserted by installing org-mode or when a release is made."
+    (require 'git)
+    (let ((git-repo (expand-file-name
+                     "straight/repos/org/" user-emacs-directory)))
+      (string-trim
+       (string-remove-prefix
+        "release_"
+        (git-run "describe"
+                 "--match=release\*"
+                 "--abbrev=0"
+                 "HEAD")))))
+#+end_src
+
+** installation
+#+begin_src emacs-lisp
+  (use-package org
+    :demand t
+    :mode ("\\.org\\'" . org-mode)
+    :config
+    ;; these depend on the 'straight.el fixes' above
+    (defalias #'org-git-version #'fix-org-git-version)
+    (defalias #'org-release #'fix-org-release)
+    (require 'org-capture)
+    (require 'org-tempo))
+#+end_src
+
+** security
+#+begin_src emacs-lisp
+  (progn
+    (setq org-confirm-babel-evaluate nil)
+    (setq org-confirm-elisp-link-function nil)
+    (setq org-confirm-shell-link-function nil))
+#+end_src
+
+** look
+The following sections change how Org-mode documents look.
+*** indent by header level
+Hide the heading asterisks. Instead indent headings based on depth.
+#+begin_src emacs-lisp
+  (with-eval-after-load 'org
+    (add-hook 'org-mode-hook #'org-indent-mode))
+#+end_src
+
+*** pretty heading bullets
+Use nice unicode bullets instead of the default asterisks.
+#+begin_src emacs-lisp
+  (use-package org-bullets
+    :after (org)
+    :config
+    (add-hook 'org-mode-hook 'org-bullets-mode))
+#+end_src
+
+*** pretty priority cookies
+Instead of the default =[#A]= and =[#C]= priority cookies, use little unicode arrows to
+indicate high and low priority. =[#B]=, which is the same as no priority, is shown as
+normal.
+#+begin_src emacs-lisp
+  (with-eval-after-load 'org
+    (defun nougat/org-pretty-compose-p (start end match)
+      (if (or (string= match "[#A]") (string= match "[#C]"))
+          ;; prettify asterisks in headings
+          (org-match-line org-outline-regexp-bol)
+        ;; else rely on the default function
+        (funcall #'prettify-symbols-default-compose-p start end match)))
+
+    (global-prettify-symbols-mode)
+
+    (add-hook
+     'org-mode-hook
+     (lambda ()
+       (setq-local prettify-symbols-compose-predicate #'nougat/org-pretty-compose-p)
+       (setq-local prettify-symbols-alist
+                   (todo-prettify-symbols-alist todo-keywords)))))
+#+end_src
+
+*** pretty heading ellipsis
+#+begin_src emacs-lisp
+  (with-eval-after-load 'org
+    (setq org-ellipsis " ▿"))
+#+end_src
+
+*** dynamic tag position
+#+begin_src emacs-lisp
+  (defun org-realign-tags ()
+    (interactive)
+    (setq org-tags-column (- 0 (window-width)))
+    (org-align-tags t))
+
+  (add-hook 'window-configuration-change-hook 'org-realign-tags)
+#+end_src
+
+** feel
+The following sections change how it feels to use Org-mode.
+*** don't fold blocks on open
+#+begin_src emacs-lisp
+  (with-eval-after-load 'org
+    (setq org-hide-block-startup nil))
+#+end_src
+
+*** auto-fill paragraphs
+#+begin_src emacs-lisp
+  (with-eval-after-load 'org
+    (add-hook 'org-mode-hook 'turn-on-auto-fill))
+#+end_src
+
+*** respect content on heading insert
+If you try to insert a heading in the middle of an entry, don't split it in half, but
+instead insert the new heading after the end of the current entry.
+
+#+begin_src emacs-lisp
+  (with-eval-after-load 'org
+    (setq org-insert-heading-respect-content nil))
+#+end_src
+
+*** ensure one-line between headers
+When you save, this section will ensure that there is a one-line space between each
+heading. This helps with the background color of code-blocks not showing up on folded
+headings.
+#+begin_src emacs-lisp
+  (with-eval-after-load 'org
+    (defun org-mode--ensure-one-blank-line ()
+      (save-excursion
+        (goto-char (point-min))
+        (while (re-search-forward "#\\+[a-z_]+\\s-\\*" nil t)
+          (replace-match "#+end_src
+
+  ,*")
+          (call-interactively 'org-previous-visible-heading)
+          (call-interactively 'org-cycle)
+          (call-interactively 'org-cycle))
+        (org-save-outline-visibility t
+          (org-mode))))
+
+    (add-hook
+     'org-mode-hook
+     (lambda () (add-hook
+                 'before-save-hook
+                 'org-mode--ensure-one-blank-line
+                 nil 'make-it-local))))
+#+end_src
+
+*** initial visibility
+#+begin_src emacs-lisp
+  (setq org-startup-folded 'content)
+#+end_src
+
+** todo states
+#+begin_src emacs-lisp
+  (setq todo-keywords
+        ;; normal workflow
+        '((("TODO" "t"
+            :icon "… "
+            :face org-todo-face)
+
+           ("DOING" "d"
+            :icon "🏃"
+            :face org-doing-face)
+
+           ("DONE" "D"
+            :icon "✓ "
+            :face org-done-face
+            :done-state t))
+
+          ;; auxillary states
+          (("SOON" "s"
+            :icon "❗ "
+            :face org-soon-face)
+
+           ("SOMEDAY" "S"
+            :icon "🛌"
+            :face org-doing-face))))
+
+
+  ;; parsing
+
+  (defun todo-make-state-model (name key props)
+    (append (list :name name :key key) props))
+
+  (defun todo-parse-state-data (state-data)
+    (-let* (((name second &rest) state-data)
+            ((key props) (if (stringp second)
+                             (list second (cddr state-data))
+                           (list nil (cdr state-data)))))
+      (todo-make-state-model name key props)))
+
+  (defun todo-make-sequence-model (states)
+    (mapcar 'todo-parse-state-data states))
+
+  (defun todo-parse-sequences-data (sequences-data)
+    (mapcar 'todo-make-sequence-model sequences-data))
+
+
+  ;; org-todo-keywords
+
+  (defun todo-keyword-name (name key)
+    (if key (format "%s(%s)" name key) name))
+
+  (defun todo-keyword-name-for-state (state)
+    (todo-keyword-name (plist-get state :name)
+                       (plist-get state :key)))
+
+  (defun todo-is-done-state (state)
+    (equal t (plist-get state :done-state)))
+
+  (defun todo-is-not-done-state (state)
+    (equal nil (plist-get state :done-state)))
+
+  (defun todo-org-sequence (states)
+    (let ((active (seq-filter 'todo-is-not-done-state states))
+          (inactive (seq-filter 'todo-is-done-state states)))
+      (append '(sequence)
+              (mapcar 'todo-keyword-name-for-state active)
+              '("|")
+              (mapcar 'todo-keyword-name-for-state inactive))))
+
+  (defun todo-org-todo-keywords (sequences)
+    (mapcar 'todo-org-sequence (todo-parse-sequences-data sequences)))
+  ;; (todo-org-todo-keywords todo-keywords)
+
+
+  (with-eval-after-load 'org
+    (setq org-todo-keywords (todo-org-todo-keywords todo-keywords)))
+
+
+  (defun todo-org-todo-keyword-faces (sequences)
+    (cl-loop for sequence in (todo-parse-sequences-data sequences)
+             append (cl-loop for state in sequence
+                             for name = (plist-get state :name)
+                             for face = (plist-get state :face)
+                             collect (cons name face))))
+  ;; (todo-org-todo-keyword-faces todo-keywords)
+
+  (with-eval-after-load 'org
+    (setq org-todo-keyword-faces (todo-org-todo-keyword-faces todo-keywords)))
+
+  (defun todo-prettify-symbols-alist (sequences)
+    (cl-loop for sequence in (todo-parse-sequences-data sequences)
+             append (cl-loop for state in sequence
+                             for name = (plist-get state :name)
+                             for icon = (plist-get state :icon)
+                             collect (cons name icon))))
+  ;; (todo-prettify-symbols-alist todo-keywords)
+
+  (defun todo-finalize-agenda-for-state (state)
+    (-let (((&plist :name :icon :face) state))
+      (beginning-of-buffer)
+      (while (search-forward name nil 1)
+        (let* ((line-props (text-properties-at (point)))
+               (line-props (ecl-plist-remove line-props 'face)))
+          (call-interactively 'set-mark-command)
+          (search-backward name)
+          (call-interactively 'kill-region)
+          (let ((symbol-pos (point)))
+            (insert icon)
+            (beginning-of-line)
+            (let ((start (point))
+                  (end (progn (end-of-line) (point))))
+              (add-text-properties start end line-props)
+              (add-face-text-property symbol-pos (+ 1 symbol-pos) face))))))
+    (beginning-of-buffer)
+    (replace-regexp "[[:space:]]+[=]+" ""))
+
+  (defun todo-finalize-agenda ()
+    (--each (todo-parse-sequences-data todo-keywords)
+      (-each it 'todo-finalize-agenda-for-state)))
+
+  (add-hook 'org-agenda-finalize-hook 'todo-finalize-agenda)
+#+end_src
+
+** org-babel
+*** add languages to babel
+#+begin_src emacs-lisp
+  (with-eval-after-load 'org
+    (org-babel-do-load-languages
+     'org-babel-load-languages
+     '((shell . t)
+       (emacs-lisp . t))))
+#+end_src
+
+*** set default header args
+#+begin_src emacs-lisp
+  (with-eval-after-load 'org
+    (setq org-babel-default-header-args
+          '((:session . "none")
+            (:results . "silent")
+            (:exports . "code")
+            (:cache . "no")
+            (:noweb . "no")
+            (:hlines . "no")
+            (:tangle . "no"))))
+#+end_src
+
+*** disable code evaluation prompts
+#+begin_src emacs-lisp
+  (with-eval-after-load 'org
+    (setq org-confirm-babel-evaluate nil)
+    (setq org-confirm-shell-link-function nil)
+    (setq org-confirm-elisp-link-function nil))
+#+END_SRC
+
+** org-helm
+#+begin_src emacs-lisp
+  (use-package helm-org)
+#+end_src
+
+** don't prompt to confirm not prompting to confirm
+#+begin_src emacs-lisp
+(setq safe-local-variable-values '((org-confirm-elisp-link-function . nil)))
+#+end_src
+
+* org-brain
+#+begin_src emacs-lisp
+  (use-package org-brain
+    :straight (org-brain :type git :host github :repo "dustinlacewell/org-brain")
+    :config
+    ;; this unbinds all default org-brain bindings
+    (setcdr org-brain-visualize-mode-map nil)
+    (setq
+     org-brain-path (f-join path-of-this-repo "brain")
+     org-brain-visualize-default-choices 'root
+     org-brain-include-file-entries t
+     org-brain-scan-for-header-entries nil
+     org-brain-file-entries-use-title nil
+     org-brain-show-full-entry t
+     org-brain-show-text t
+     org-id-track-globally t
+     org-brain-vis-current-title-append-functions '(org-brain-entry-tags-string)
+     org-brain-title-max-length 24))
+#+end_src
+
+** Navigation Helpers
+#+begin_src emacs-lisp
+  (defun my/org-brain-visualize-parent ()
+    (interactive)
+    (when (org-brain-parents (org-brain-entry-at-pt)) (org-brain-visualize-parent (org-brain-entry-at-pt))))
+
+  (defun my/org-brain-visualize-child (entry &optional all)
+    (interactive (list (org-brain-entry-at-pt)))
+    (when (org-brain-children entry)
+      (let* ((entries (if all (org-brain-children entry)
+                      (org-brain--linked-property-entries
+                       entry org-brain-children-property-name)))
+           (child (cond
+                   ((equal 1 (length entries)) (car-safe entries))
+                   ((not entries) (error (concat entry " has no children")))
+                   (t (org-brain-choose-entry "Goto child: " entries nil t)))))
+        (org-brain-visualize child))))
+
+  (defun my/next-button-with-category (category)
+    (let ((original-point (point))
+          (first-result (text-property-search-forward 'brain-category category t t)))
+      (when first-result
+            (goto-char (prop-match-beginning first-result)))
+      (when (eq original-point (point))
+        (beginning-of-buffer)
+        (let ((second-result (text-property-search-forward 'brain-category category t t)))
+          (when second-result
+            (goto-char (prop-match-beginning second-result))))
+        (when (eq 0 (point))
+          (goto-char original-point))
+        )
+      ))
+
+  (defun my/previous-button-with-category (category)
+    (let ((result (text-property-search-backwards 'brain-category category nil t)))))
+
+  (defun my/next-brain-child ()
+    (interactive)
+    (my/next-button-with-category 'child))
+
+  (defun my/next-brain-history ()
+    (interactive)
+    (my/next-button-with-category 'history))
+
+  (defun my/avy-brain-jump (category)
+    (avy-jump "\\<." :pred (lambda () (and (eq category (get-text-property (point) 'brain-category))
+                                      (eq (- (point) 1) (button-start (button-at (point))))))
+              :action (lambda (p) (goto-char (+ 1 p)) (push-button))))
+
+  (defun my/avy-brain-jump-history ()
+    (interactive)
+    (my/avy-brain-jump 'history))
+
+  (defun my/avy-brain-jump-child ()
+    (interactive)
+    (my/avy-brain-jump 'child))
+
+  (defun my/avy-brain-jump-parent ()
+    (interactive)
+    (my/avy-brain-jump 'parent))
+
+  (defun my/avy-brain-jump-friend ()
+    (interactive)
+    (my/avy-brain-jump 'friend))
+
+  (defun my/avy-brain-jump-sibling ()
+    (interactive)
+    (my/avy-brain-jump 'sibling))
+#+end_src
+
+* polybrain
+#+begin_src emacs-lisp
+  (use-package polybrain
+    :defer nil
+    :straight (polybrain :type git :host github :repo "dustinlacewell/polybrain")
+    :bind (:map org-brain-visualize-mode-map
+           ("m" . org-brain-visualize-mind-map)
+           ("<tab>" . backward-button)
+           ("S-<tab>" . forward-button)
+           ("DEL" . org-brain-visualize-back)
+           ("r" . org-brain-open-resource)
+           ("v" . org-brain-visualize)
+
+           ("i" . org-brain-pin)
+           ("T" . org-brain-set-title)
+           ("t" . org-brain-set-tags)
+           ("d" . org-brain-delete-entry)
+           ("R" . org-brain-visualize-add-resource)
+           ("o" . org-brain-goto-current)
+           ("O" . org-brain-goto)
+
+           ("c" . org-brain-add-child)
+           ("C" . org-brain-remove-child)
+
+           ("p" . org-brain-add-parent)
+           ("P" . org-brain-remove-parent)
+
+           ("f" . org-brain-add-friendship)
+           ("F" . org-brain-remove-friendship)
+
+           ("e" . org-brain-annotate-edge)
+
+
+           ("M-p" . my/avy-brain-jump-parent)
+           ("M-c" . my/avy-brain-jump-child)
+           ("M-s" . my/avy-brain-jump-sibling)
+           ("M-f" . my/avy-brain-jump-friend)
+           ("M-h" . my/avy-brain-jump-history)
+
+           :map poly-brain-mode-map
+           ("C-x C-s" . polybrain-save)
+           ("<M-SPC>" . polybrain-switch)))
+
+  (require 'polybrain)
+#+end_src
+

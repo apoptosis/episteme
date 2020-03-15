@@ -1,0 +1,28 @@
+#+BRAIN_PARENTS: The%20Enlightenment
+* Politics
+- A man is free when he is subject only to political authority to which he has consented.
+- Natural liberty is freedom from the arbitrary power of others.
+- Beginning of modern democratic political theory.
+- Denies need for authoritarian power, which leads to despotism and tyranny.
+- Denies that fear is the primary motivator of men.
+- Men are overned by laws from a legislature.
+- Opposed monarchies.
+- Stressed that squality was legal equality, not of material possessions.
+** Natural Rights
+- Life, Liberty, Property
+** Social Contract Theory
+An agreement among free and equal men to exit the state of nature by forming a
+limited polity.
+* Epistemology
+- Empericist
+- Ideas are acquired via experience
+- Two forms of expeirence:
+  - The external world
+  - Reflection on the mind's own operations
+- There are no innate ideas
+- The mind is a Tabula Rasa
+* Ethics
+- Ethics are learned, not innate
+- Ethics are derived from experience, and thus relative to our experience of
+  the world.
+
