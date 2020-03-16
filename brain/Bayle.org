@@ -1,0 +1,9 @@
+#+BRAIN_PARENTS: The%20Renaissance
+
+- Skepticism
+- What do we know with any certainity?
+
+
+#+BEGIN_QUOTE
+God cannot be known via reason, only faith. 
+#+END_QUOTE

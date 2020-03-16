@@ -1,0 +1,9 @@
+#+BRAIN_CHILDREN: Principia%20Mathematica
+
+#+BRAIN_PARENTS: The%20Renaissance
+
+- Discovered or invented
+  - Laws of Gravity
+  - Laws of Motion
+  - Calculus
+  - Modern Optics
