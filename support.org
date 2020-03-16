@@ -563,7 +563,7 @@ headings.
 #+begin_src emacs-lisp
   (use-package polybrain
     :defer nil
-    :straight (polybrain :type git :host github :repo "dustinlacewell/polybrain")
+    :straight (polybrain :type git :host github :repo "dustinlacewell/polybrain.el")
     :bind (:map org-brain-visualize-mode-map
            ("m" . org-brain-visualize-mind-map)
            ("<tab>" . backward-button)
