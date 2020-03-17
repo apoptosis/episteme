@@ -1,3 +1,4 @@
+#+TITLE: Bishop Berkeley 1685-1733
 #+BRAIN_PARENTS: The%20Enlightenment
 
 - There is no existence independent of perception

@@ -1,3 +1,4 @@
+#+TITLE: Leibniz 1646-1716
 #+BRAIN_PARENTS: The%20Enlightenment
 
 - Co-inventor of Infintesimal Calculus

@@ -1,3 +1,4 @@
+#+TITLE: Descartes
 #+BRAIN_CHILDREN: Two%20Proofs%20of%20God
 
 #+BRAIN_PARENTS: The%20Renaissance

@@ -1,3 +1,4 @@
+#+TITLE: The Hebrew Bible
 #+BRAIN_PARENTS: Christians
 
 - Explores the relationship between God and the people of Jerusalem.

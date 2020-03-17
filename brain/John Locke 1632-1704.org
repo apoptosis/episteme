@@ -1,4 +1,6 @@
+#+TITLE: John Locke 1632-1704
 #+BRAIN_PARENTS: The%20Enlightenment
+
 * Politics
 - A man is free when he is subject only to political authority to which he has consented.
 - Natural liberty is freedom from the arbitrary power of others.
@@ -25,4 +27,3 @@ limited polity.
 - Ethics are learned, not innate
 - Ethics are derived from experience, and thus relative to our experience of
   the world.
-

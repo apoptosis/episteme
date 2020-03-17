@@ -1,3 +1,4 @@
+#+TITLE: The Enlightenment
 #+BRAIN_CHILDREN: Adam%20Smith%201723-1790 Rousseau%201712-1778 David%20Hume%201711-1766 Montesquieu%201689-1755 Bishop%20Berkeley%201685-1733 Mandeville%201670-1733 Vico%201678-1744 Leibniz%201646-1716 John%20Locke%201632-1704
 
 #+BRAIN_PARENTS: Philosophy
@@ -26,4 +27,3 @@
 ** Obeying the Law
 We do so because of the utility of doing so. In genera, we derive benefit when
 we do so.
-

@@ -1,3 +1,4 @@
+#+TITLE: Aquinus 1225 - 1274
 #+BRAIN_PARENTS: Christians
 
 - Argues that the eternity of the world cannot be demonstrated by pure logic.
@@ -12,4 +13,3 @@
   - God is infinite
   - God is immutable
   - God is one
-

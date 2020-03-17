@@ -1,3 +1,4 @@
+#+TITLE: Thomas Moore
 #+BRAIN_PARENTS: The%20Renaissance
 
 - Wrote Utopia

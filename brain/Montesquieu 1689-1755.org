@@ -1,3 +1,4 @@
+#+TITLE: Montesquieu 1689-1755
 #+BRAIN_PARENTS: The%20Enlightenment
 
 - Objected to Locke's "Epistemological Relativism"

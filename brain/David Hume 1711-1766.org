@@ -1,3 +1,4 @@
+#+TITLE: David Hume 1711-1766
 #+BRAIN_PARENTS: The%20Enlightenment
 
 * Epistemology
