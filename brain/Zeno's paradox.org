@@ -1,0 +1,4 @@
+#+TITLE: Zeno's paradox
+#+BRAIN_PARENTS: Zeno%20of%20Elea%20490-430BC
+
+Achilles and the Tortoise

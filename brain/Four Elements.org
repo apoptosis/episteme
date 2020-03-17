@@ -1,0 +1,5 @@
+#+BRAIN_PARENTS: Pre-Socratic%20Philosophy
+- Earth
+- Air
+- Fire
+- Water
