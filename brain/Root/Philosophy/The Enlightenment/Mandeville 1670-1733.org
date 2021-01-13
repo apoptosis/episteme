@@ -1,7 +1,0 @@
-#+TITLE: Mandeville 1670-1733
-#+BRAIN_PARENTS: The%20Enlightenment
-
-* The Fable of the Bees
-* Central Human Traits
-- Selfishness
-- Egotism

@@ -1,3 +1,0 @@
-#+TITLE: Galileo
-#+BRAIN_PARENTS: The%20Renaissance
-

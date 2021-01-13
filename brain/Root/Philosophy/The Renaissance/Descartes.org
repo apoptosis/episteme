@@ -1,9 +1,0 @@
-#+TITLE: Descartes
-#+BRAIN_CHILDREN: Two%20Proofs%20of%20God
-
-#+BRAIN_PARENTS: The%20Renaissance
-
-- "Cogito ergo sum" : The most basic of all ideas, the existence of which
-  cannot be disputed. 
-
-- Dualist (Mind/Body Dualism)

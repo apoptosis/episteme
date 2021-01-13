@@ -1,7 +1,0 @@
-#+TITLE: Thucydides 460-395BC
-#+BRAIN_CHILDREN: The%20Pelopomnesian%20War
-
-#+BRAIN_PARENTS: Pre-Socratic%20Philosophy
-
-- "Father of scientific history"
-- "The Father of the school of political realism" 
