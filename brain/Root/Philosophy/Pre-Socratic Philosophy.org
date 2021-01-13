@@ -1,4 +1,0 @@
-#+BRAIN_CHILDREN: Sophists%20~450BC Heraclitus%20535-475BC Pamenides%20~450BC Zeno%20of%20Elea%20490-430BC Herodotus%20484-425BC Thucydides%20460-395BC Pythagoreans%20~500BC Four%20Elements
-
-#+BRAIN_PARENTS: Philosophy
-

@@ -1,2 +1,0 @@
-#+BRAIN_CHILDREN: Philosophy
-

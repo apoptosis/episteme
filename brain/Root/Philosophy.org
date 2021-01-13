@@ -1,5 +1,0 @@
-#+TITLE: Philosophy
-#+BRAIN_CHILDREN: The%20Enlightenment The%20Renaissance Romans Modernity%20III Classical%20Greek Age%20Of%20Ideology Pre-Socratic%20Philosophy Christians
-#+BRAIN_PARENTS: Root
-
-This section covers the tradition of Western Philosophy.

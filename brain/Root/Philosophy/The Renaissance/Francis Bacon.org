@@ -1,5 +1,0 @@
-#+TITLE: Francis Bacon
-#+BRAIN_PARENTS: The%20Renaissance
-
-- Sought to separate religion from natural philosophy.
-- Stressed Induction and Experimental methods.

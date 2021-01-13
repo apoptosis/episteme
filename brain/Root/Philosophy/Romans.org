@@ -1,4 +1,0 @@
-#+BRAIN_CHILDREN: cicero%20106-43BC Skeptics
-
-#+BRAIN_PARENTS: Philosophy
-

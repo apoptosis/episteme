@@ -1,4 +1,0 @@
-#+BRAIN_CHILDREN: Zeno's%20paradox Reducto%20and%20Absurdum
-
-#+BRAIN_PARENTS: Pre-Socratic%20Philosophy
-

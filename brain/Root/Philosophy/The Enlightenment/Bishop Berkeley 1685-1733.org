@@ -1,9 +1,0 @@
-#+TITLE: Bishop Berkeley 1685-1733
-#+BRAIN_PARENTS: The%20Enlightenment
-
-- There is no existence independent of perception
-- To exist is to be perceived
-- Disagreed with Locke's argument that human knowledge depends on the existence
-  of material objects independent of minds.
-- Claimed that materialism was dogmatic superstition.
-- All of our ideas are derived from our experienced.

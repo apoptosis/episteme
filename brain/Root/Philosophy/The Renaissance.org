@@ -1,5 +1,0 @@
-#+TITLE: The Renaissance
-#+BRAIN_CHILDREN: Machiavelli Thomas%20Moore Erasumus Galileo Francis%20Bacon Descartes Hobbes Spinoza Bayle Newton
-
-#+BRAIN_PARENTS: Philosophy
-

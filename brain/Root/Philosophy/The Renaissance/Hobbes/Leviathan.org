@@ -1,2 +1,0 @@
-#+BRAIN_PARENTS: Hobbes
-
