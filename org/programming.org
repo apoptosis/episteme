@@ -1,0 +1,76 @@
+#+title: Programming Languages: Descriptions and Resources
+#+description: Programming knowledge base of the ##apoptosis community on Freenode
+#+language: en
+#+startup: overview indent align
+#+babel: :cache no
+#+options: ^:nil num:nil tags:nil
+#+html_head: <link rel="stylesheet" type="text/css" href="https://www.pirilampo.org/styles/readtheorg/css/htmlize.css"/>
+#+html_head: <link rel="stylesheet" type="text/css" href="https://www.pirilampo.org/styles/readtheorg/css/readtheorg.css"/>
+#+html_head: <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+#+html_head: <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+#+html_head: <script type="text/javascript" src="https://www.pirilampo.org/styles/lib/js/jquery.stickytableheaders.js"></script>
+#+html_head: <script type="text/javascript" src="https://www.pirilampo.org/styles/readtheorg/js/readtheorg.js"></script>
+#+html_head: <link rel="stylesheet" type="text/css" href="/episteme/extra.css"/>
+
+Maybe add:
+
+- useful Emacs packages and configuration to program in these
+  languages
+* Lisps
+** Scheme
+Programming style:  meta, functional, imperative
+
+Scheme is one of the oldest Lisps and is well known for being an
+"academic" language with its small size.  Its various implementations
+are Chez Scheme, CHICKEN, and GNU Guile.  It has heavily inspired
+other Lisps such as Racket.
+
+No introduction to Scheme is complete without a mention of /Structure
+and Interpretation of Computer Programs/.  It uses Scheme, but teaches
+one more about programming and computer science in general.
+
+Topics Covered:
+
+- Data abstraction
+- Functional programming
+- Message passing object orientation
+- Lazy/non-deterministic programming
+- Meta-circular evaluators
+- Compilers
+-- and more!
+
+[[https://www.youtube.com/watch?v=2Op3QLzMgSY&list=PLE18841CABEA24090][Watch the lectures first.]]
+
+[[https://github.com/sarabander/sicp-pdf][Then read the book for a deeper dive.]]
+
+For more "practical" uses of Scheme see [[https://www.gnu.org/software/guile/][Guile]], it's used in the [[https://www.gnu.org/software/guix/][Guix]]
+package manager/GNU/Linux Distribution, and is the official extension
+language of the GNU Project.
+
+The IRC channel #scheme is very quiet, so documentation is your friend
+:).
+** Common Lisp
+Programming style: meta, functional, object-oriented, imperative
+[[http://www.gigamonkeys.com/book/][Practical Common Lisp]] is a great book for learning Common Lisp.
+
+Thanks to the CLOS (Common Lisp Object System), object-oriented
+programmers will feel right at home.
+
+** Emacs Lisp
+Programming Style: imperative, functional, object-oriented, meta
+
+Another old Lisp.  As the name implies it's used heavily in the Emacs
+Text Editor [link to the editor Org file here].  According to a
+certain IRC user, "it is perhaps the most popular lisp by lines of
+code written", thanks to its hundreds of packages and active
+community.
+
+See: [[https://www.gnu.org/software/emacs/manual/html_node/elisp/index.html][Emacs Lisp Reference Manual]] and [[https://www.gnu.org/software/emacs/manual/html_mono/eintr.html][Introduction to Emacs Lisp]].
+
+The IRC channel #emacs is a great place to hang out to learn more
+about Emacs and Emacs Lisp.
+* Haskell
+* C
+* Python
+* Forth
+* etc...
