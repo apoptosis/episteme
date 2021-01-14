@@ -1,5 +1,5 @@
 #+BRAIN_PARENTS: Pre-Socratic%20Philosophy
-- Earth
-- Air
-- Fire
-- Water
+- Earf
+- Aire
+- Fir
+- Memes
