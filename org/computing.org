@@ -4,14 +4,13 @@
 #+startup: overview indent align
 #+babel: :cache no
 #+options: ^:nil num:nil tags:nil
-#+html_head: <link rel="stylesheet" type="text/css" href="https://www.pirilampo.org/styles/readtheorg/css/htmlize.css"/>
+#+html_head: <link rel="stylesheet" type="text/css" ref="https://www.pirilampo.org/styles/readtheorg/css/htmlize.css"/>
 #+html_head: <link rel="stylesheet" type="text/css" href="https://www.pirilampo.org/styles/readtheorg/css/readtheorg.css"/>
 #+html_head: <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
 #+html_head: <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
 #+html_head: <script type="text/javascript" src="https://www.pirilampo.org/styles/lib/js/jquery.stickytableheaders.js"></script>
 #+html_head: <script type="text/javascript" src="https://www.pirilampo.org/styles/readtheorg/js/readtheorg.js"></script>
 #+html_head: <link rel="stylesheet" type="text/css" href="/episteme/extra.css"/>
-
 * Hardware
 ** Keyboards
 *** Atreus
