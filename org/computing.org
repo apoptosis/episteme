@@ -12,21 +12,21 @@
 #+html_head: <script type="text/javascript" src="https://www.pirilampo.org/styles/readtheorg/js/readtheorg.js"></script>
 #+html_head: <link rel="stylesheet" type="text/css" href="/episteme/extra.css"/>
 
-* Hardware
-** Keyboards
-*** Atreus
+** Hardware
+*** Keyboards
+**** Atreus
 https://github.com/technomancy/atreus
-*** Diverge
+**** Diverge
 https://unikeyboard.io/product/diverge/
-*** Iris
+**** Iris
 https://keeb.io/products/iris-keyboard-split-ergonomic-keyboard?variant=8034004860958
-*** Mitosis
+**** Mitosis
 https://flashquark.com/product/gb-mitosis-wireless-split-ergonomic-keyboard-w-acrylic-case/
-*** ErgoPro
+**** ErgoPro
 https://matias.ca/ergopro/pc/
-*** Ultimate Hacking Keyboard
+**** Ultimate Hacking Keyboard
 https://ultimatehackingkeyboard.com/
-*** Keyboardio
+**** Keyboardio
 https://shop.keyboard.io/
 * Software
 ** Editors
