@@ -1,5 +1,5 @@
 #+title: western philosophy
-#+description: Knowledge-base of the ##apoptosis community on Freenode
+#+description: Philosophy knowledge-base of the ##apoptosis community on Freenode
 #+language: en
 #+startup: overview indent align
 #+babel: :cache no
