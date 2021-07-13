@@ -12,31 +12,46 @@ configuration.
 
 That said this configuration ought to work out of the box.
 
-*Customize these variables*:
 
+* globals
 #+begin_src emacs-lisp
-  (setq episteme/root (expand-file-name default-directory))
-  (setq episteme/org (concat episteme/root "org"))
-  (setq episteme/home (concat (getenv "HOME") "/.config/" "episteme/"))
-  (setq episteme/autosaves (concat episteme/home "autosaves"))
-  (setq episteme/backups (concat episteme/home "backups"))
-  
-  (setq org-directory episteme/org)
-  (setq user-emacs-directory episteme/home)
+  (setq episteme/repo (getenv "repo"))
+  (setq episteme/home (getenv "config"))
+  (setq episteme/config (concat episteme/home "/config.el"))
+  (setq episteme/org (concat episteme/repo "/org"))
+  (setq episteme/autosaves (concat episteme/home "/autosaves"))
+  (setq episteme/backups (concat episteme/home "/backups"))
+
+  (setq episteme/main-menu-key "C-c x")
+  (setq episteme/mode-menu-key "C-c m")
+  (setq episteme/zoom 1)
+
   (unless (file-exists-p episteme/home)
     (make-directory episteme/home))
-  
-  (defun episteme/setup ()
-    (setq episteme/zoom 4)
-    (:bind "C-x g" magit-status)
-    (:bind "<f12>" (hera-start 'episteme-hydra-default/body))
-    (:bind "<f13>" episteme:hydra-dwim)
-    ;; probably leave these alone though
-    )
-  (setq byte-complile-warnings '(not cl-functions))
+
+  (unless (file-exists-p episteme/config)
+    (with-temp-file episteme/config
+      (insert "
+  ;; keybind for default menu
+  (setq episteme/default-hydra \"C-c x\")
+
+  ;; keybind for major-mode menu
+  (setq episteme/modal-hydra \"C-c m\")
+
+  ;; defaut zoom level
+  (setq episteme/zoom 1)
+  ")))
+
+  (let ((config (concat episteme/home "/config.el")))
+    (when (file-exists-p config)
+      (message "Loading config from: %s" config)
+      (load-file config)))
+
+  (setq org-directory episteme/org)
+  (setq user-emacs-directory episteme/home)
 #+end_src
 
-* setup
+* bootstrap
 
 The following sections take care of bootstrapping =straight.el= for
 package-management and some other concerns before things can get started.
@@ -58,7 +73,7 @@ github.
 *** bootstrap
 Run the [[https://github.com/raxod502/straight.el#bootstrapping-straightel][straight.el bootstrap]].
 #+begin_src emacs-lisp
-  (let ((bootstrap-file (concat user-emacs-directory "straight/repos/straight.el/bootstrap.el"))
+  (let ((bootstrap-file (concat user-emacs-directory "/straight/repos/straight.el/bootstrap.el"))
         (bootstrap-version 5))
     (unless (file-exists-p bootstrap-file)
       (with-current-buffer
@@ -223,9 +238,11 @@ e.g. =(:bind org-mode "C-m" (message "Hello world."))=
       (_ `(global-set-key (kbd ,key) ,(eval `(:command ,@body))))))
 #+end_src
 
-* initialize
+* keybinds
 #+begin_src emacs-lisp
-  (episteme/setup)
+  (:bind "C-x g" magit-status)
+  (:bind episteme/main-menu-key (hera-start 'episteme-hydra-default/body))
+  (:bind episteme/mode-menu-key episteme:hydra-dwim)
 #+end_src
 
 * aesthetics
@@ -1283,7 +1300,7 @@ Macro for defining Hydras.
 
 #+end_src
 
-* default hydra
+* main menu
 ** hydra-help
 Many of the Emacs help facilities at your fingertips!
 
@@ -1412,7 +1429,7 @@ Many of the Emacs help facilities at your fingertips!
        ((";" embrace-commander "embrace"))))
 #+end_src
 
-* modal hydras
+* mode menus
 ** boilerplate
 *** hydra-dwim
 Open hydra for current major mode if one exists, otherwise the default hydra.
