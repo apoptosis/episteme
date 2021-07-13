@@ -1,18 +1,6 @@
 with import <nixpkgs> {};
 
-let
-  deps = [
-    nodejs
-    gcc binutils gnumake
-  ];
-
-  binPath = lib.makeBinPath deps;
-
-  episteme-support = runCommand "episteme-lisp" {} ''
-    cp -r ${./support.el} $out
-  '';
-
-in writeScriptBin "episteme" ''
+writeScriptBin "episteme" ''
    #!${pkgs.stdenv.shell}
 
    RED='\033[0;31m'
@@ -25,6 +13,7 @@ in writeScriptBin "episteme" ''
 
   EPISTEME-OPTS:
     -h             list usage
+    -repo          Episteme repo (default: $PWD)
     -themes        print theme names & exit
     -theme NAME    use theme called NAME
 
@@ -48,6 +37,9 @@ in writeScriptBin "episteme" ''
    themeFlag=""
    export theme="laserwave"
 
+   repoFlag=""
+   export repo="$PWD"
+
    for arg do
      shift
 
@@ -66,8 +58,19 @@ in writeScriptBin "episteme" ''
        continue
      fi
 
+     if [ ! -z "$repoFlag" ]; then
+       export repo="$arg"
+       repoFlag=""
+       continue
+     fi
+
      if [ "$arg" = "-theme" ]; then
        themeFlag="1"
+       continue
+     fi
+
+     if [ "$arg" = "-repo" ]; then
+       repoFlag="1"
        continue
      fi
 
@@ -76,11 +79,15 @@ in writeScriptBin "episteme" ''
 
    CONFIG_DIR="$HOME/.config/episteme"
 
-   emacs -Q \
+   emacs -q \
+      --chdir $repo \
       --eval "(setq byte-compile-warnings '(cl-functions))" \
+      --eval "(require 'org)" \
+      --eval "(org-babel-tangle-file \"$repo/support.org\")" \
       --eval "(setq user-emacs-directory \"$CONFIG_DIR\")" \
-      --eval "(setq user-init-file \"${./support.el}\")" \
-      --load "${./support.el}" \
+      --eval "(setq user-init-file \"$repo/support.el\")" \
+      --load $repo/support.el \
+      --eval "(helm-org-walk '(4))" \
       --debug-init \
       $@
-''
+  ''
