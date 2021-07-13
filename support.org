@@ -1,3 +1,9 @@
+#+title: Support.org
+#+startup: overview align
+#+babel: :cache no
+#+Options: ^:nil num:nil tags:nil
+#+PROPERTY: header-args    :tangle yes
+
 
 The following Emacs configuration will allow one to use our knowledge-base
 comfortably. You do not need to use the configuration as exactly provided
@@ -9,7 +15,25 @@ That said this configuration ought to work out of the box.
 *Customize these variables*:
 
 #+begin_src emacs-lisp
-  (setq path-of-this-repo "/home/you/this-repo")
+  (setq episteme/root (expand-file-name default-directory))
+  (setq episteme/org (concat episteme/root "org"))
+  (setq episteme/home (concat (getenv "HOME") "/.config/" "episteme/"))
+  (setq episteme/autosaves (concat episteme/home "autosaves"))
+  (setq episteme/backups (concat episteme/home "backups"))
+  
+  (setq org-directory episteme/org)
+  (setq user-emacs-directory episteme/home)
+  (unless (file-exists-p episteme/home)
+    (make-directory episteme/home))
+  
+  (defun episteme/setup ()
+    (setq episteme/zoom 4)
+    (:bind "C-x g" magit-status)
+    (:bind "<f12>" (hera-start 'episteme-hydra-default/body))
+    (:bind "<f13>" episteme:hydra-dwim)
+    ;; probably leave these alone though
+    )
+  (setq byte-complile-warnings '(not cl-functions))
 #+end_src
 
 * setup
@@ -32,9 +56,10 @@ ability to integrate with [[https://github.com/jwiegley/use-package][use-package
 github.
 
 *** bootstrap
+Run the [[https://github.com/raxod502/straight.el#bootstrapping-straightel][straight.el bootstrap]].
 #+begin_src emacs-lisp
   (let ((bootstrap-file (concat user-emacs-directory "straight/repos/straight.el/bootstrap.el"))
-        (bootstrap-version 3))
+        (bootstrap-version 5))
     (unless (file-exists-p bootstrap-file)
       (with-current-buffer
           (url-retrieve-synchronously
@@ -46,6 +71,7 @@ github.
 #+end_src
 
 *** use-package integration
+Ensure that =use-package= is [[https://github.com/raxod502/straight.el#integration-with-use-package-1][working with straight.el]]
 #+begin_src emacs-lisp
   (setq straight-use-package-by-default t)
   (straight-use-package 'use-package)
@@ -59,7 +85,7 @@ configuration. They provide contemporary APIs for working with various elisp
 data structures.
 
 #+begin_src emacs-lisp
-  (require 'cl)
+  (require 'cl-lib)
   (use-package f :demand t)          ;; files
   (use-package dash :demand t)       ;; lists
   (use-package ht :demand t)         ;; hash-tables
@@ -68,16 +94,370 @@ data structures.
   (use-package anaphora :demand t)   ;; anaphora
 #+end_src
 
-* core
+* helpers
+These macros are conveinent shorthands.
+
+** :function
+Make non-interactive functions out of forms or a symbol.
+
+e.g. =(:function (message "Hello world.")=
+e.g. =(:function foobar)=
+
+#+begin_src emacs-lisp
+  (defmacro :function (&rest body)
+    (if (->> body length (< 1))
+        `(lambda () ,@body)
+      (pcase (car body)
+        ;; command symbol
+        ((and v (pred commandp))
+         `(lambda () (call-interactively (quote ,v))))
+        ;; function symbol
+        ((and v (pred symbolp))
+         `(lambda () (,v)))
+        ;; quoted command symbol
+        ((and v (pred consp) (guard (eq 'quote (car v))) (pred commandp (cadr v)))
+         `(lambda () (call-interactively ,v)))
+        ;; quoted function symbol
+        ((and v (pred consp) (guard (eq 'quote (car v))))
+         `(lambda () (,(cadr v))))
+        ;; body forms
+        (_ `(lambda () ,@body) ))))
+#+end_src
+
+** :command
+Make interactive commands out of forms or a symbol.
+
+e.g. =(:command (message "Hello world."))=
+e.g. =(:command foobar)=
+
+#+begin_src emacs-lisp
+  (defmacro :command (&rest body)
+    (if (->> body length (< 1))
+        `(lambda () (interactive) ,@body)
+      (pcase (car body)
+        ;; command symbol
+        ((and v (pred commandp))
+         `(lambda () (interactive) (call-interactively (quote ,v))))
+        ;; function symbol
+        ((and v (pred symbolp))
+         `(lambda () (interactive) (,v)))
+        ;; quoted command symbol
+        ((and v (pred consp) (guard (eq 'quote (car v))) (pred commandp (cadr v)))
+         `(lambda () (interactive) (call-interactively ,v)))
+        ;; quoted function symbol
+        ((and v (pred consp) (guard (eq 'quote (car v))))
+         `(lambda () (interactive) (,(cadr v))))
+        ;; body forms
+        (_ `(lambda () (interactive) ,@body) ))))
+#+end_src
+
+** :after
+Defer some forms until the given package is loaded.
+
+e.g. =(:after org (message "Hello world"))=
+
+#+begin_src emacs-lisp
+  (defmacro :after (package &rest body)
+    "A simple wrapper around `with-eval-after-load'."
+    (declare (indent defun))
+    `(with-eval-after-load ',package ,@body))
+#+end_src
+
+** :hook
+Register some forms or a symbol with a hook.
+
+e.g. =(:hook org-mode (message "hello world")=
+e.g. (:hook org-mode foobar)
+
+#+begin_src emacs-lisp
+  (defmacro :hook (hook-name &rest body)
+    "A simple wrapper around `add-hook'"
+    (declare (indent defun))
+    (let* ((hook-name (format "%s-hook" (symbol-name hook-name)))
+           (hook-sym (intern hook-name))
+           (first (car body))
+           (local (eq :local first))
+           (body (if local (cdr body) body))
+           (first (car body))
+           (body (if (consp first)
+                     (if (eq (car first) 'quote)
+                         first
+                       `(lambda () ,@body))
+                   `',first)))
+      `(add-hook ',hook-sym ,body nil ,local)))
+#+end_src
+
+** :push
+A wrapper around help:add-to-list.
+
+e.g. =(:push some-list 1 2 3)=
+
+#+begin_src emacs-lisp
+  (defmacro :push (sym &rest body)
+    (declare (indent defun))
+    (if (consp body)
+        `(setq ,sym (-snoc ,sym ,@body))
+      `(add-to-list ,sym ,body)))
+#+end_src
+
+** :bind
+Bind some forms or a symbol to a key.
+
+e.g. =(:bind "C-m" (message "Hello world."=
+e.g. =(:bind org-mode "C-m" (message "Hello world."))=
+
+#+begin_src emacs-lisp
+  (defmacro :bind (key &rest body)
+    (declare (indent defun))
+    (pcase key
+      ;; kbd string resolving symbol
+      ((and k (pred symbolp) (pred boundp) (guard (stringp (eval key))))
+       `(global-set-key (kbd ,(eval key)) ,(eval `(:command ,@body))))
+      ;; partial mode symbol
+      ((pred symbolp)
+       (let ((mode (intern (format "%s-map" key)))
+             (key (eval (car body)))
+             (body (eval `(:command ,@(cdr body)))))
+         `(define-key ,mode (kbd ,key) ,body)))
+      ;; global binding
+      (_ `(global-set-key (kbd ,key) ,(eval `(:command ,@body))))))
+#+end_src
+
+* initialize
+#+begin_src emacs-lisp
+  (episteme/setup)
+#+end_src
+
+* aesthetics
+** vertical border
+Make the border between windows visible.
+
+#+begin_src emacs-lisp
+  (set-face-foreground 'vertical-border "gray")
+#+end_src
+
+** blend in the fringes
+Hide the default buffer margins.
+
+#+begin_src emacs-lisp
+  (set-face-attribute 'fringe nil :background nil)
+#+end_src
+
+** column number
+Show column number in addition to line number.
+
+#+begin_src emacs-lisp
+  (column-number-mode 1)
+#+end_src
+
+** doom modeline
+Use [[https://github.com/seagle0128/doom-modeline][doom-modeline]] to ornament the modeline.
+
+#+begin_src emacs-lisp
+  (use-package doom-modeline
+    :ensure t
+    :config
+    (doom-modeline-def-modeline
+     'my-modeline
+
+     '(bar workspace-name window-number modals matches buffer-info remote-host selection-info)
+     '(objed-state misc-info buffer-position major-mode process vcs checker))
+
+    (doom-modeline-mode 1)
+    (setq doom-modeline-height 35)
+    (setq doom-modeline-bar-width 5)
+    :init
+    (defun setup-custom-doom-modeline ()
+      (doom-modeline-set-modeline 'my-modeline 'default))
+    (:hook doom-modeline-mode 'setup-custom-doom-modeline))
+#+end_src
+
+** doom theme
+#+begin_src emacs-lisp
+  (use-package doom-themes
+    :ensure t
+    :config
+    ;; Global settings (defaults)
+    (setq doom-themes-enable-bold t     ; if nil, bold is universally disabled
+          doom-themes-enable-italic t)  ; if nil, italics is universally disabled
+    (load-theme (intern (format "doom-%s" (or (getenv "theme") "laserwave"))) t)
+
+    ;; Enable flashing mode-line on errors
+    (doom-themes-visual-bell-config)
+    ;; Corrects (and improves) org-mode's native fontification.
+    (doom-themes-org-config))
+#+end_src
+
+* core settings
+** autosaves
+Periodically save a copy of open files.
+
+*** autosave every file buffer
+#+begin_src emacs-lisp
+  (setq auto-save-default t)
+#+end_src
+
+*** save every 20 secs or 20 keystrokes
+#+begin_src emacs-lisp
+  (setq auto-save-timeout 20
+        auto-save-interval 20)
+#+end_src
+
+*** keep autosaves in a single place
+#+begin_src emacs-lisp
+  (unless (file-exists-p episteme/autosaves)
+      (make-directory episteme/autosaves))
+
+  (setq auto-save-file-name-transforms
+        `((".*" ,episteme/autosaves t)))
+#+end_src
+
+** backups
+Backups are created everytime a buffer is manually saved.
+
+*** backup every save
+#+begin_src emacs-lisp
+  (use-package backup-each-save
+    :config (:hook after-save backup-each-save))
+#+end_src
+
+*** keep 10 backups
+#+begin_src emacs-lisp
+  (setq kept-new-versions 10)
+#+end_src
+
+*** delete old backups
+#+begin_src emacs-lisp
+  (setq delete-old-versions t)
+#+end_src
+
+*** copy files to avoid various problems
+#+begin_src emacs-lisp
+  (setq backup-by-copying t)
+#+end_src
+
+*** backup files even if version controlled
+#+begin_src emacs-lisp
+  (setq vc-make-backup-files t)
+#+end_src
+
+*** keep backups in a single place
+#+begin_src emacs-lisp
+  (unless (file-exists-p episteme/backups)
+    (make-directory episteme/backups))
+
+  (setq backup-directory-alist
+        `((".*" . ,episteme/backups)))
+
+  (setq make-backup-files t)
+#+end_src
+
+** cursor
+*** box style
+#+begin_src emacs-lisp
+  (setq-default cursor-type 'box)
+#+end_src
+
+*** blinking
+#+begin_src emacs-lisp
+  (blink-cursor-mode 1)
+#+end_src
+
+** disable
+Disable various UI and other features for a more minimal
+experience.
+
+*** menubar
+#+begin_src emacs-lisp
+  (menu-bar-mode -1)
+#+end_src
+
+*** toolbar
+#+begin_src emacs-lisp
+  (tool-bar-mode -1)
+#+end_src
+
+*** scrollbar
+#+begin_src emacs-lisp
+  (scroll-bar-mode -1)
+#+end_src
+
+*** startup message
+#+begin_src emacs-lisp
+  (setq inhibit-startup-message t
+        initial-scratch-message nil)
+#+end_src
+
+*** customizations file
+Disable the customizations file so there's no temptation to use the
+customization interface.
+
+#+begin_src emacs-lisp
+  (setq custom-file (make-temp-file ""))
+#+end_src
+
+** editing
+*** use spaces
+#+begin_src emacs-lisp
+  (setq-default indent-tabs-mode nil)
+#+end_src
+
+*** visual fill-column
+#+begin_src emacs-lisp
+  (use-package visual-fill-column
+    :config
+    (global-visual-fill-column-mode))
+#+end_src
+
+*** wrap lines at 79 characters
+#+begin_src emacs-lisp
+  (setq-default fill-column 79)
+#+end_src
+
+*** autowrap in text-mode
+#+begin_src emacs-lisp
+  (:hook text-mode 'turn-on-auto-fill)
+#+end_src
+
+*** ssh for tramp
+Default method for transferring files with Tramp.
+
+#+begin_src emacs-lisp
+  (setq tramp-default-method "ssh")
+#+end_src
+
 ** minor-modes
+*** whitespace-mode
+Visually display trailing whitespace
+
+#+begin_src emacs-lisp
+  (use-package whitespace
+    :custom
+    (whitespace-style
+     '(face tabs newline trailing tab-mark space-before-tab space-after-tab))
+    :config
+    (global-whitespace-mode 1))
+#+end_src
+
+*** prettify-symbols-mode
+Replace various symbols with nice looking unicode glyphs.
+
+#+begin_src emacs-lisp
+  (global-prettify-symbols-mode 1)
+#+end_src
+
 *** electric-pair-mode
-Matching closed brackets are inserted for any typed open bracket.
-#+BEGIN_SRC emacs-lisp
+Automatically insert matching close-brackets for any open bracket.
+
+#+begin_src emacs-lisp
   (electric-pair-mode 1)
-#+END_SRC
+#+end_src
 
 *** rainbow-delimeters-mode
-#+BEGIN_SRC emacs-lisp
+Color parenthesis based on their depth, using the golden ratio (because why
+not).
+
+#+begin_src emacs-lisp
   (require 'color)
   (defun gen-col-list (length s v &optional hval)
     (cl-flet ( (random-float () (/ (random 10000000000) 10000000000.0))
@@ -121,25 +501,231 @@ Matching closed brackets are inserted for any typed open bracket.
     :init
     (setq rainbow-delimiters-max-face-count 16)
     (set-random-rainbow-colors 0.6 0.7 0.5)
-    (add-hook 'prog-mode-hook 'rainbow-delimiters-mode))
-#+END_SRC
-
-*** show-paren-mode
-#+begin_src emacs-lisp
-  (show-paren-mode 1)
-  (setq show-paren-delay 0)
-  (require 'paren)
-  (set-face-background 'show-paren-match nil)
-  (set-face-background 'show-paren-mismatch nil)
-  (set-face-foreground 'show-paren-match "#ff0")
-  (set-face-foreground 'show-paren-mismatch "#f00")
-  (set-face-attribute 'show-paren-match nil :weight 'extra-bold)
+    (:hook prog-mode 'rainbow-delimiters-mode))
 #+end_src
 
+*** show-paren-mode
+Highlight the matching open or closing bracket.
+
+#+begin_src emacs-lisp
+  (require 'paren)
+  (show-paren-mode 1)
+  (setq show-paren-delay 0)
+  (:after xresources
+    (set-face-foreground 'show-paren-match (theme-color 'green))
+    (set-face-foreground 'show-paren-mismatch "#f00")
+    (set-face-attribute 'show-paren-match nil :weight 'extra-bold)
+    (set-face-attribute 'show-paren-mismatch nil :weight 'extra-bold))
+#+end_src
+
+*** which-key-mode
+Show possible followups after pressing a key prefix.
+
+#+begin_src emacs-lisp
+  (use-package which-key
+    :custom
+    ;; sort single chars alphabetically P p Q q
+    (which-key-sort-order 'which-key-key-order-alpha)
+    (which-key-idle-delay 0.4)
+    :config
+    (which-key-mode))
+#+end_src
+
+*** company-mode
+Show popup autocompletion.
+
+#+begin_src emacs-lisp
+  (use-package company
+    :config
+    (global-company-mode))
+#+end_src
+
+** shorten prompts
+Shorten yes/no prompts to one letter.
+
+#+begin_src emacs-lisp
+  (fset 'yes-or-no-p 'y-or-n-p)
+#+end_src
+
+** zoom
+Adjust font size in buffers or globally.
+
+#+begin_src emacs-lisp
+  (use-package zoom-frm
+    :straight (zoom-frm :type git
+                        :host github
+                        :repo "emacsmirror/zoom-frm")
+    :config
+    (dotimes (i episteme/zoom) (zoom-frm-in)))
+#+end_src
+
+** cache
+This speeds up help:unicode-fonts-setup after first run.
+
+#+begin_src emacs-lisp
+  (use-package persistent-soft)
+#+end_src
+
+** eval depth
+Avoid elision (...) in messages.
+
+#+begin_src emacs-lisp
+  (setq print-level 100
+        print-length 9999
+        eval-expression-print-level 100
+        eval-expression-print-length 9999)
+#+end_src
+
+** debug on error
+Show tracebacks when errors happen.
+
+#+begin_src emacs-lisp
+  (setq debug-on-error t)
+#+end_src
+
+* helpful
+Alternative to the built-in Emacs help that provides much more contextual
+information.
+
+#+begin_src emacs-lisp
+  (use-package helpful
+      :straight (helpful :type git :host github :repo "Wilfred/helpful")
+      :bind (("C-h s" . #'helpful-symbol)
+             ("C-h c" . #'helpful-command)
+             ("C-h f" . #'helpful-function)
+             ("C-h v" . #'helpful-variable)
+             ("C-h k" . #'helpful-key)
+             ("C-h m" . #'helpful-mode)
+             ("C-h C-h" . #'helpful-at-point)))
+#+end_src
+
+** contextual help
+*** toggle-context-help
+#+begin_src emacs-lisp
+  (defun toggle-context-help ()
+    "Turn on or off the context help.
+  Note that if ON and you hide the help buffer then you need to
+  manually reshow it. A double toggle will make it reappear"
+    (interactive)
+    (with-current-buffer (help-buffer)
+      (unless (local-variable-p 'context-help)
+        (set (make-local-variable 'context-help) t))
+      (if (setq context-help (not context-help))
+          (progn
+             (if (not (get-buffer-window (help-buffer)))
+                 (display-buffer (help-buffer)))))
+      (message "Context help %s" (if context-help "ON" "OFF"))))
+#+end_src
+
+*** context-help
+#+begin_src emacs-lisp
+  (defun context-help ()
+    "Display function or variable at point in *Help* buffer if visible.
+  Default behaviour can be turned off by setting the buffer local
+  context-help to false"
+    (interactive)
+    (let ((rgr-symbol (symbol-at-point))) ; symbol-at-point http://www.emacswiki.org/cgi-bin/wiki/thingatpt%2B.el
+      (with-current-buffer (help-buffer)
+       (unless (local-variable-p 'context-help)
+         (set (make-local-variable 'context-help) t))
+       (if (and context-help (get-buffer-window (help-buffer))
+           rgr-symbol)
+         (if (fboundp  rgr-symbol)
+             (describe-function rgr-symbol)
+           (if (boundp  rgr-symbol) (describe-variable rgr-symbol)))))))
+#+end_src
+
+*** advise symbol eldoc
+#+begin_src emacs-lisp
+  (defadvice eldoc-print-current-symbol-info
+    (around eldoc-show-c-tag activate)
+    (cond
+          ((eq major-mode 'emacs-lisp-mode) (context-help) ad-do-it)
+          ((eq major-mode 'lisp-interaction-mode) (context-help) ad-do-it)
+          ((eq major-mode 'apropos-mode) (context-help) ad-do-it)
+          (t ad-do-it)))
+#+end_src
+
+* languages
+** json-mode
+#+begin_src emacs-lisp
+  (use-package json-mode
+    :straight (json-mode :type git
+                         :host github
+                         :repo "kiennq/json-mode"
+                         :branch "feat/jsonc-mode")
+    :config
+    (setf auto-mode-alist (assoc-delete-all "\\(?:\\(?:\\.\\(?:b\\(?:\\(?:abel\\|ower\\)rc\\)\\|json\\(?:ld\\)?\\)\\|composer\\.lock\\)\\'\\)"
+                                            auto-mode-alist))
+    (setf auto-mode-alist (assoc-delete-all "\\.json\\'" auto-mode-alist))
+    (add-to-list 'auto-mode-alist '("\\.json\\'" . jsonc-mode)))
+#+end_src
+
+* helm
+Menu and selection framework for finding files, switching buffers, running
+grep, etc. A number of Episteme features are built ontop of Helm.
+
+#+begin_src emacs-lisp
+  (use-package helm
+    :config
+    (helm-mode 1)
+    (require 'helm-config)
+    (:bind "M-x" helm-M-x)
+    (:bind "C-x C-f" helm-find-files)
+    (:bind "C-x b" helm-mini)
+    (:bind "C-c y" helm-show-kill-ring)
+    (:bind "C-x C-r" helm-recentf))
+#+end_src
+** ace jump
+Quickly jump to any candidate with a short letter combo.
+
+#+begin_src emacs-lisp
+  (use-package ace-jump-helm-line
+    :config
+    (:bind helm "C-;" ace-jump-helm-line))
+#+end_src
+
+** helm-ag
+#+begin_src emacs-lisp
+  (use-package helm-ag)
+#+end_src
+
+** helm-descbinds
+Use (=C-h b= / =kbd-helm-descbinds=) to inspect current bindings with Helm.
+
+#+begin_src emacs-lisp
+  (use-package helm-descbinds
+    :commands helm-descbinds
+    :config
+    (:bind "C-h b" helm-descbinds))
+#+end_src
+
+** auto full frame
+Make Helm always full height.
+
+#+begin_src emacs-lisp
+  (defvar helm-full-frame-threshold 0.75)
+
+  (when window-system
+    (defun helm-full-frame-hook ()
+    (let ((threshold (* helm-full-frame-threshold (x-display-pixel-height))))
+      (setq helm-full-frame (< (frame-height) threshold))))
+
+    (:hook helm-before-initialize 'helm-full-frame-hook))
+#+end_src
+
+* magit
+The best git frontend there is.
+
+#+begin_src emacs-lisp
+  (use-package magit)
+#+end_src
 * org-mode
+A souped up markup with tasking, scheduling and aggregation features.
+
 ** straight.el fixes
-There are some issues with straight.el and org. These the following boilerplate
-fixes all that until [[https://github.com/raxod502/straight.el#installing-org-with-straightel][that is resolved]].
+Fix some issues with straight.el and org until [[https://github.com/raxod502/straight.el#installing-org-with-straightel][that is resolved]].
+
 *** fix-org-git-version
 #+begin_src emacs-lisp
   (defun fix-org-git-version ()
@@ -175,71 +761,94 @@ fixes all that until [[https://github.com/raxod502/straight.el#installing-org-wi
 ** installation
 #+begin_src emacs-lisp
   (use-package org
-    :demand t
-    :mode ("\\.org\\'" . org-mode)
     :config
     ;; these depend on the 'straight.el fixes' above
     (defalias #'org-git-version #'fix-org-git-version)
     (defalias #'org-release #'fix-org-release)
+    (require 'org-habit)
+    (require 'org-indent)
     (require 'org-capture)
-    (require 'org-tempo))
-#+end_src
-
-** security
-#+begin_src emacs-lisp
-  (progn
-    (setq org-confirm-babel-evaluate nil)
-    (setq org-confirm-elisp-link-function nil)
-    (setq org-confirm-shell-link-function nil))
+    (require 'org-tempo)
+    (add-to-list 'org-modules 'org-habit t))
 #+end_src
 
 ** look
-The following sections change how Org-mode documents look.
+*** theme customizations
+#+begin_src emacs-lisp
+  (when window-system
+    (use-package org-beautify-theme
+      :after (org)
+      :config
+      (setq org-fontify-whole-heading-line t)
+      (setq org-fontify-quote-and-verse-blocks t)
+      (setq org-hide-emphasis-markers t)))
+#+end_src
+
+*** pretty symbols
+Add a hook to set the pretty symbols alist.
+
+#+begin_src emacs-lisp
+  (setq episteme/pretty-symbols nil)
+  (:hook org-mode
+    (setq-local prettify-symbols-alist episteme/pretty-symbols))
+#+end_src
 *** indent by header level
 Hide the heading asterisks. Instead indent headings based on depth.
+
 #+begin_src emacs-lisp
-  (with-eval-after-load 'org
-    (add-hook 'org-mode-hook #'org-indent-mode))
+  (:hook org-mode 'org-indent-mode)
 #+end_src
 
 *** pretty heading bullets
 Use nice unicode bullets instead of the default asterisks.
+
 #+begin_src emacs-lisp
   (use-package org-bullets
-    :after (org)
+    :init
+    (:hook org-mode 'org-bullets-mode)
     :config
-    (add-hook 'org-mode-hook 'org-bullets-mode))
+    (setq org-bullets-bullet-list '("◉" "○" "✸" "•")))
 #+end_src
 
 *** pretty priority cookies
 Instead of the default =[#A]= and =[#C]= priority cookies, use little unicode arrows to
 indicate high and low priority. =[#B]=, which is the same as no priority, is shown as
 normal.
+
 #+begin_src emacs-lisp
-  (with-eval-after-load 'org
-    (defun nougat/org-pretty-compose-p (start end match)
-      (if (or (string= match "[#A]") (string= match "[#C]"))
-          ;; prettify asterisks in headings
-          (org-match-line org-outline-regexp-bol)
-        ;; else rely on the default function
-        (funcall #'prettify-symbols-default-compose-p start end match)))
+  (:push episteme/pretty-symbols
+    '("[#A]" . "⇑")
+    '("[#C]" . "⇓"))
+#+end_src
 
-    (global-prettify-symbols-mode)
+#+begin_src emacs-lisp
+  ;; only show priority cookie symbols on headings.
+  (defun nougat/org-pretty-compose-p (start end match)
+    (if (or (string= match "[#A]") (string= match "[#C]"))
+        ;; prettify asterisks in headings
+        (org-match-line org-outline-regexp-bol)
+      ;; else rely on the default function
+      (funcall #'prettify-symbols-default-compose-p start end match)))
 
-    (add-hook
-     'org-mode-hook
-     (lambda ()
-       (setq-local prettify-symbols-compose-predicate #'nougat/org-pretty-compose-p)
-       (setq-local prettify-symbols-alist
-                   (todo-prettify-symbols-alist todo-keywords)))))
+
+  (:hook org-mode (setq-local prettify-symbols-compose-predicate
+                              #'nougat/org-pretty-compose-p))
 #+end_src
 
 *** pretty heading ellipsis
+Show a little arrow for collapsed headings.
+
 #+begin_src emacs-lisp
-  (with-eval-after-load 'org
+  (:after org
     (setq org-ellipsis " ▿"))
 #+end_src
 
+*** prettify source blocks
+#+begin_src emacs-lisp
+  (:push episteme/pretty-symbols
+    '("#+begin_src" . ">>")
+    '("#+end_src" . "·"))
+#+end_src
 *** dynamic tag position
 #+begin_src emacs-lisp
   (defun org-realign-tags ()
@@ -247,125 +856,86 @@ normal.
     (setq org-tags-column (- 0 (window-width)))
     (org-align-tags t))
 
-  (add-hook 'window-configuration-change-hook 'org-realign-tags)
+  ;; (:hook window-configuration-change 'org-realign-tags)
 #+end_src
 
 ** feel
-The following sections change how it feels to use Org-mode.
-*** don't fold blocks on open
-#+begin_src emacs-lisp
-  (with-eval-after-load 'org
-    (setq org-hide-block-startup nil))
-#+end_src
-
-*** auto-fill paragraphs
-#+begin_src emacs-lisp
-  (with-eval-after-load 'org
-    (add-hook 'org-mode-hook 'turn-on-auto-fill))
-#+end_src
-
-*** respect content on heading insert
-If you try to insert a heading in the middle of an entry, don't split it in half, but
-instead insert the new heading after the end of the current entry.
-
-#+begin_src emacs-lisp
-  (with-eval-after-load 'org
-    (setq org-insert-heading-respect-content nil))
-#+end_src
-
-*** ensure one-line between headers
-When you save, this section will ensure that there is a one-line space between each
-heading. This helps with the background color of code-blocks not showing up on folded
-headings.
-#+begin_src emacs-lisp
-  (with-eval-after-load 'org
-    (defun org-mode--ensure-one-blank-line ()
-      (save-excursion
-        (goto-char (point-min))
-        (while (re-search-forward "#\\+[a-z_]+\\s-\\*" nil t)
-          (replace-match "#+end_src
-
-  ,*")
-          (call-interactively 'org-previous-visible-heading)
-          (call-interactively 'org-cycle)
-          (call-interactively 'org-cycle))
-        (org-save-outline-visibility t
-          (org-mode))))
-
-    (add-hook
-     'org-mode-hook
-     (lambda () (add-hook
-                 'before-save-hook
-                 'org-mode--ensure-one-blank-line
-                 nil 'make-it-local))))
-#+end_src
-
-*** initial visibility
+*** show all headings on startup
 #+begin_src emacs-lisp
   (setq org-startup-folded 'content)
 #+end_src
 
-** todo states
+*** don't fold blocks on open
 #+begin_src emacs-lisp
-  (setq todo-keywords
-        ;; normal workflow
-        '((("TODO" "t"
-            :icon "… "
-            :face org-todo-face)
+  (setq org-hide-block-startup nil)
+#+end_src
 
-           ("DOING" "d"
-            :icon "🏃"
-            :face org-doing-face)
+*** auto-fill paragraphs
+#+begin_src emacs-lisp
+  (:hook org-mode 'turn-on-auto-fill)
+#+end_src
 
-           ("DONE" "D"
-            :icon "✓ "
-            :face org-done-face
-            :done-state t))
+*** resepect content on insert
+Don't split existing entries when inserting a new heading.
 
-          ;; auxillary states
-          (("SOON" "s"
-            :icon "❗ "
-            :face org-soon-face)
+#+begin_src emacs-lisp
+  (setq org-insert-heading-respect-content nil)
+#+end_src
 
-           ("SOMEDAY" "S"
-            :icon "🛌"
-            :face org-doing-face))))
-
-
-  ;; parsing
-
+*** use helpful for help links
+#+begin_src emacs-lisp
+  (advice-add 'org-link--open-help :override
+              (lambda (path) (helpful-symbol (intern path))))
+#+end_src
+** todo keywords
+*** boilerplate
+**** make-state-model
+#+begin_src emacs-lisp
   (defun todo-make-state-model (name key props)
     (append (list :name name :key key) props))
-
+#+end_src
+**** parse-state-data
+#+begin_src emacs-lisp
   (defun todo-parse-state-data (state-data)
     (-let* (((name second &rest) state-data)
             ((key props) (if (stringp second)
                              (list second (cddr state-data))
                            (list nil (cdr state-data)))))
       (todo-make-state-model name key props)))
-
+#+end_src
+**** make-sequence-mode
+#+begin_src emacs-lisp
   (defun todo-make-sequence-model (states)
     (mapcar 'todo-parse-state-data states))
-
+#+end_src
+**** parse-sequences-data
+#+begin_src emacs-lisp
   (defun todo-parse-sequences-data (sequences-data)
     (mapcar 'todo-make-sequence-model sequences-data))
-
-
-  ;; org-todo-keywords
-
+#+end_src
+**** todo-keyword-name
+#+begin_src emacs-lisp
   (defun todo-keyword-name (name key)
     (if key (format "%s(%s)" name key) name))
-
+#+end_src
+**** keyword-name-forstate
+#+begin_src emacs-lisp
   (defun todo-keyword-name-for-state (state)
     (todo-keyword-name (plist-get state :name)
                        (plist-get state :key)))
-
+#+end_src
+**** is-done-state
+#+begin_src emacs-lisp
   (defun todo-is-done-state (state)
     (equal t (plist-get state :done-state)))
-
+#+end_src
+**** is-not-done-state
+#+begin_src emacs-lisp
   (defun todo-is-not-done-state (state)
     (equal nil (plist-get state :done-state)))
-
+#+end_src
+**** org-sequence
+#+begin_src emacs-lisp
   (defun todo-org-sequence (states)
     (let ((active (seq-filter 'todo-is-not-done-state states))
           (inactive (seq-filter 'todo-is-done-state states)))
@@ -373,16 +943,15 @@ headings.
               (mapcar 'todo-keyword-name-for-state active)
               '("|")
               (mapcar 'todo-keyword-name-for-state inactive))))
-
+#+end_src
+**** org-todo-keywords
+#+begin_src emacs-lisp
   (defun todo-org-todo-keywords (sequences)
     (mapcar 'todo-org-sequence (todo-parse-sequences-data sequences)))
   ;; (todo-org-todo-keywords todo-keywords)
-
-
-  (with-eval-after-load 'org
-    (setq org-todo-keywords (todo-org-todo-keywords todo-keywords)))
-
-
+#+end_src
+**** org-todo-keyword-faces
+#+begin_src emacs-lisp
   (defun todo-org-todo-keyword-faces (sequences)
     (cl-loop for sequence in (todo-parse-sequences-data sequences)
              append (cl-loop for state in sequence
@@ -390,10 +959,9 @@ headings.
                              for face = (plist-get state :face)
                              collect (cons name face))))
   ;; (todo-org-todo-keyword-faces todo-keywords)
-
-  (with-eval-after-load 'org
-    (setq org-todo-keyword-faces (todo-org-todo-keyword-faces todo-keywords)))
-
+#+end_src
+**** prettify-symbols-alist
+#+begin_src emacs-lisp
   (defun todo-prettify-symbols-alist (sequences)
     (cl-loop for sequence in (todo-parse-sequences-data sequences)
              append (cl-loop for state in sequence
@@ -401,13 +969,15 @@ headings.
                              for icon = (plist-get state :icon)
                              collect (cons name icon))))
   ;; (todo-prettify-symbols-alist todo-keywords)
-
+#+end_src
+**** finalize-agenda-for-state
+#+begin_src emacs-lisp
   (defun todo-finalize-agenda-for-state (state)
     (-let (((&plist :name :icon :face) state))
       (beginning-of-buffer)
       (while (search-forward name nil 1)
         (let* ((line-props (text-properties-at (point)))
-               (line-props (ecl-plist-remove line-props 'face)))
+               (line-props (org-plist-delete line-props 'face)))
           (call-interactively 'set-mark-command)
           (search-backward name)
           (call-interactively 'kill-region)
@@ -420,30 +990,87 @@ headings.
               (add-face-text-property symbol-pos (+ 1 symbol-pos) face))))))
     (beginning-of-buffer)
     (replace-regexp "[[:space:]]+[=]+" ""))
+#+end_src
 
-  (defun todo-finalize-agenda ()
-    (--each (todo-parse-sequences-data todo-keywords)
+*** keywords
+#+begin_src emacs-lisp
+  (setq todo-keywords
+        ;; normal workflow
+        '((("DOING" "d" :icon "🏃" :face org-doing-face)
+           ("TODO" "t" :icon "□ " :face org-todo-face)
+           ("DONE" "D" :icon "✓ " :face org-done-face :done-state t))
+          ;; auxillary states
+          (("SOON" "s" :icon "❗ " :face org-soon-face)
+           ("SOMEDAY" "S" :icon "🛌" :face org-doing-face)))
+        org-todo-keywords (todo-org-todo-keywords todo-keywords)
+        org-todo-keyword-faces (todo-org-todo-keyword-faces todo-keywords))
+
+  (--map (:push episteme/pretty-symbols it)
+         (todo-prettify-symbols-alist todo-keywords))
+#+end_src
+
+*** org agenda finalization
+#+begin_src emacs-lisp
+  (setq episteme/todo-sequences-data (todo-parse-sequences-data todo-keywords))
+  (:hook org-agenda-finalize
+    (--each episteme/todo-sequences-data
       (-each it 'todo-finalize-agenda-for-state)))
+#+end_src
+*** sorting
+#+begin_src emacs-lisp
+  (defun episteme:todo-sort (a b)
+    (let* ((a-state (get-text-property 0 'todo-state a))
+           (b-state (get-text-property 0 'todo-state b))
+           (a-index (-elem-index a-state todo-keyword-order))
+           (b-index (-elem-index b-state todo-keyword-order)))
+      (pcase (- b-index a-index)
+        ((and v (guard (< 0 v))) 1)
+        ((and v (guard (> 0 v))) -1)
+        (default nil))))
 
-  (add-hook 'org-agenda-finalize-hook 'todo-finalize-agenda)
+  (setq org-agenda-cmp-user-defined 'episteme:todo-sort
+        todo-keyword-order '("DOING" "SOON" "TODO" "SOMEDAY" "DONE"))
 #+end_src
 
 ** org-babel
-*** add languages to babel
+*** babel languages
+**** ob-csharp
 #+begin_src emacs-lisp
-  (with-eval-after-load 'org
-    (org-babel-do-load-languages
-     'org-babel-load-languages
-     '((shell . t)
-       (emacs-lisp . t))))
+  (use-package ob-csharp
+    :straight (ob-csharp :type git
+                         :host github
+                         :repo "thomas-villagers/ob-csharp"
+                         :files ("src/ob-csharp.el"))
+    :config
+    (:push org-babel-load-languages '(csharp . t)))
+#+end_src
+**** ob-fsharp
+#+begin_src emacs-lisp
+  (use-package ob-fsharp
+    :straight (ob-fsharp :type git
+                         :host github
+                         :repo "zweifisch/ob-fsharp"
+                         :files ("ob-fsharp.el"))
+    :config
+    (:push org-babel-load-languages '(fsharp . t)))
+#+end_src
+*** enable languages
+#+begin_src emacs-lisp
+  (setq org-babel-load-languages
+        '((shell . t)
+          (emacs-lisp . t)
+          (python . t)
+          (js . t)
+          (csharp . t)
+          (fsharp . t)))
 #+end_src
 
-*** set default header args
+*** default header args
 #+begin_src emacs-lisp
-  (with-eval-after-load 'org
+  (:after org
     (setq org-babel-default-header-args
           '((:session . "none")
-            (:results . "silent")
+            (:results . "replace")
             (:exports . "code")
             (:cache . "no")
             (:noweb . "no")
@@ -451,157 +1078,443 @@ headings.
             (:tangle . "no"))))
 #+end_src
 
-*** disable code evaluation prompts
+*** security
+Disable prompts for evaluating org-mode links.
 #+begin_src emacs-lisp
-  (with-eval-after-load 'org
+  (progn
     (setq org-confirm-babel-evaluate nil)
+    (setq org-confirm-elisp-link-function nil)
     (setq org-confirm-shell-link-function nil)
-    (setq org-confirm-elisp-link-function nil))
-#+END_SRC
+    (setq safe-local-variable-values '((org-confirm-elisp-link-function . nil))))
+#+end_src
+*** install babel handlers
+#+begin_src emacs-lisp
+  (:hook after-init
+    (org-babel-do-load-languages 'org-babel-load-languages
+                                 org-babel-load-languages))
+#+end_src
 
-** org-helm
+** org-fragtog
+Automatically preview LaTex fragments.
+
+#+begin_src emacs-lisp
+  (use-package org-fragtog
+    :config
+    (:hook org-mode 'org-fragtog-mode))
+#+end_src
+
+** helm-org
 #+begin_src emacs-lisp
   (use-package helm-org)
 #+end_src
+** helm-org-rifle
+Quickly search through the current org buffer.
 
-** don't prompt to confirm not prompting to confirm
 #+begin_src emacs-lisp
-(setq safe-local-variable-values '((org-confirm-elisp-link-function . nil)))
+  (use-package helm-org-rifle)
 #+end_src
-
-* org-brain
+** helm-org-walk
+Easily navigate Org files with Helm.
 #+begin_src emacs-lisp
-  (use-package org-brain
-    :straight (org-brain :type git :host github :repo "dustinlacewell/org-brain")
+  (use-package helm-org-walk
+    :straight (helm-org-walk :type git :host github :repo "dustinlacewell/helm-org-walk"))
+#+end_src
+** org-ql
+Query Org files for elements.
+#+begin_src emacs-lisp
+  (use-package org-ql)
+#+end_src
+** org-ls
+Interact with babel codeblocks from elisp.
+#+begin_src emacs-lisp
+  (use-package org-ls
+    :straight (org-ls :type git :host github :repo "dustinlacewell/org-ls"))
+#+end_src
+* other packages
+** embrace
+#+begin_src emacs-lisp
+  (use-package embrace
     :config
-    ;; this unbinds all default org-brain bindings
-    (setcdr org-brain-visualize-mode-map nil)
-    (setq
-     org-brain-path (f-join path-of-this-repo "brain")
-     org-brain-visualize-default-choices 'root
-     org-brain-include-file-entries t
-     org-brain-scan-for-header-entries nil
-     org-brain-file-entries-use-title nil
-     org-brain-show-full-entry t
-     org-brain-show-text t
-     org-id-track-globally t
-     org-brain-vis-current-title-append-functions '(org-brain-entry-tags-string)
-     org-brain-title-max-length 24))
+    (embrace-add-pair (kbd "\;") "`" "`"))
 #+end_src
 
-** Navigation Helpers
+** htmlize
+Allows org codeblocks to be syntax highlighted on html export.
+
 #+begin_src emacs-lisp
-  (defun my/org-brain-visualize-parent ()
-    (interactive)
-    (when (org-brain-parents (org-brain-entry-at-pt)) (org-brain-visualize-parent (org-brain-entry-at-pt))))
-
-  (defun my/org-brain-visualize-child (entry &optional all)
-    (interactive (list (org-brain-entry-at-pt)))
-    (when (org-brain-children entry)
-      (let* ((entries (if all (org-brain-children entry)
-                      (org-brain--linked-property-entries
-                       entry org-brain-children-property-name)))
-           (child (cond
-                   ((equal 1 (length entries)) (car-safe entries))
-                   ((not entries) (error (concat entry " has no children")))
-                   (t (org-brain-choose-entry "Goto child: " entries nil t)))))
-        (org-brain-visualize child))))
-
-  (defun my/next-button-with-category (category)
-    (let ((original-point (point))
-          (first-result (text-property-search-forward 'brain-category category t t)))
-      (when first-result
-            (goto-char (prop-match-beginning first-result)))
-      (when (eq original-point (point))
-        (beginning-of-buffer)
-        (let ((second-result (text-property-search-forward 'brain-category category t t)))
-          (when second-result
-            (goto-char (prop-match-beginning second-result))))
-        (when (eq 0 (point))
-          (goto-char original-point))
-        )
-      ))
-
-  (defun my/previous-button-with-category (category)
-    (let ((result (text-property-search-backwards 'brain-category category nil t)))))
-
-  (defun my/next-brain-child ()
-    (interactive)
-    (my/next-button-with-category 'child))
-
-  (defun my/next-brain-history ()
-    (interactive)
-    (my/next-button-with-category 'history))
-
-  (defun my/avy-brain-jump (category)
-    (avy-jump "\\<." :pred (lambda () (and (eq category (get-text-property (point) 'brain-category))
-                                      (eq (- (point) 1) (button-start (button-at (point))))))
-              :action (lambda (p) (goto-char (+ 1 p)) (push-button))))
-
-  (defun my/avy-brain-jump-history ()
-    (interactive)
-    (my/avy-brain-jump 'history))
-
-  (defun my/avy-brain-jump-child ()
-    (interactive)
-    (my/avy-brain-jump 'child))
-
-  (defun my/avy-brain-jump-parent ()
-    (interactive)
-    (my/avy-brain-jump 'parent))
-
-  (defun my/avy-brain-jump-friend ()
-    (interactive)
-    (my/avy-brain-jump 'friend))
-
-  (defun my/avy-brain-jump-sibling ()
-    (interactive)
-    (my/avy-brain-jump 'sibling))
+  (use-package htmlize)
 #+end_src
 
-* polybrain
+* hydra
+[[https://github.com/abo-abo/hydra][Hydra]] provides customizable interactive command palettes.
+
+** pretty-hydra
+[[https://github.com/jerrypnz/major-mode-hydra.el#pretty-hydra][Pretty-hydra]] provides a macro that makes it easy to get good looking hydras.
+
 #+begin_src emacs-lisp
-  (use-package polybrain
-    :defer nil
-    :straight (polybrain :type git :host github :repo "dustinlacewell/polybrain.el")
-    :bind (:map org-brain-visualize-mode-map
-           ("m" . org-brain-visualize-mind-map)
-           ("<tab>" . backward-button)
-           ("S-<tab>" . forward-button)
-           ("DEL" . org-brain-visualize-back)
-           ("r" . org-brain-open-resource)
-           ("v" . org-brain-visualize)
+  (use-package pretty-hydra
+    :demand t
+    :straight (pretty-hydra :type git :host github
+                            :repo "jerrypnz/major-mode-hydra.el"
+                            :files ("pretty-hydra.el")))
+#+end_src
 
-           ("i" . org-brain-pin)
-           ("T" . org-brain-set-title)
-           ("t" . org-brain-set-tags)
-           ("d" . org-brain-delete-entry)
-           ("R" . org-brain-visualize-add-resource)
-           ("o" . org-brain-goto-current)
-           ("O" . org-brain-goto)
+** major-mode-hydra
+[[https://github.com/jerrypnz/major-mode-hydra.el][Major-mode-hydra]] associates hydras with major-modes.
 
-           ("c" . org-brain-add-child)
-           ("C" . org-brain-remove-child)
+#+begin_src emacs-lisp
+  (use-package major-mode-hydra
+    :straight (major-mode-hydra :type git :host github
+                                :repo "jerrypnz/major-mode-hydra.el"
+                                :files ("major-mode-hydra.el")))
+#+end_src
 
-           ("p" . org-brain-add-parent)
-           ("P" . org-brain-remove-parent)
+** hera
+[[https://github.com/dustinlacewell/hera][Hera]] lets hydras form a stack.
 
-           ("f" . org-brain-add-friendship)
-           ("F" . org-brain-remove-friendship)
+#+begin_src emacs-lisp
+  (use-package hera
+    :demand t
+    :straight (hera :type git :host github :repo "dustinlacewell/hera"))
+#+end_src
 
-           ("e" . org-brain-annotate-edge)
+** :hydra
+Macro for defining Hydras.
 
+*** boilerplate
+**** inject-hint
+#+begin_src emacs-lisp
+  (defun :hydra/inject-hint (symbol hint)
+    (-let* ((name (symbol-name symbol))
+            (hint-symbol (intern (format "%s/hint" name)))
+            (format-form (eval hint-symbol))
+            (string-cdr (nthcdr 1 format-form))
+            (format-string (string-trim (car string-cdr)))
+            (amended-string (format "%s\n\n%s" format-string hint)))
+      (setcar string-cdr amended-string)))
+#+end_src
 
-           ("M-p" . my/avy-brain-jump-parent)
-           ("M-c" . my/avy-brain-jump-child)
-           ("M-s" . my/avy-brain-jump-sibling)
-           ("M-f" . my/avy-brain-jump-friend)
-           ("M-h" . my/avy-brain-jump-history)
+**** make-head-hint
+#+begin_src emacs-lisp
+  (defun :hydra/make-head-hint (head default-color)
+    (-let (((key _ hint . rest) head))
+      (when key
+        (-let* (((&plist :color color) rest)
+                (color (or color default-color))
+                (face (intern (format "hydra-face-%s" color)))
+                (propertized-key (propertize key 'face face)))
+          (format " [%s]: %s" propertized-key hint)))))
+#+end_src
 
-           :map poly-brain-mode-map
-           ("C-x C-s" . polybrain-save)
-           ("<M-SPC>" . polybrain-switch)))
+**** make-hint
+#+begin_src emacs-lisp
+  (defun :hydra/make-hint (heads default-color)
+    (string-join
+     (cl-loop for head in heads
+              for hint = (:hydra/make-head-hint head default-color)
+              collect hint) "\n"))
+#+end_src
 
-  (require 'polybrain)
+**** clear-hint
+#+begin_src emacs-lisp
+  (defun :hydra/clear-hint (head)
+    (-let* (((key form _ . rest) head))
+      `(,key ,form nil ,@rest)))
+#+end_src
+
+**** add-exit-head
+#+begin_src emacs-lisp
+  (defun :hydra/add-exit-head (heads)
+    (let ((exit-head '("SPC" (hera-pop) "to exit" :color blue)))
+      (append heads `(,exit-head))))
+#+end_src
+
+**** add-heads
+#+begin_src emacs-lisp
+    (defun :hydra/add-heads (columns extra-heads)
+      (let* ((cell (nthcdr 1 columns))
+             (heads (car cell))
+             (extra-heads (mapcar ':hydra/clear-hint extra-heads)))
+        (setcar cell (append heads extra-heads))))
+
+#+end_src
+
+*** macro
+#+begin_src emacs-lisp
+    (defmacro :hydra (name body columns &optional extra-heads)
+      (declare (indent defun))
+      (-let* (((&plist :color default-color :major-mode mode) body)
+              (extra-heads (:hydra/add-exit-head extra-heads))
+              (extra-hint (:hydra/make-hint extra-heads default-color))
+              (body (plist-put body :hint nil))
+              (body-name (format "%s/body" (symbol-name name)))
+              (body-symbol (intern body-name))
+              (mode-body-name (major-mode-hydra--body-name-for mode))
+              (mode-support
+               `(when ',mode
+                  (defun ,mode-body-name () (interactive) (,body-symbol)))))
+        (:hydra/add-heads columns extra-heads)
+        (when mode
+          (cl-remf body :major-mode))
+        `(progn
+           (pretty-hydra-define ,name ,body ,columns)
+           (:hydra/inject-hint ',name ,extra-hint)
+           ,mode-support
+           )))
+#+end_src
+
+*** tests
+#+begin_src emacs-lisp
+    ;; (macroexpand-all `(:hydra hydra-test (:color red :major-mode fundamental-mode)
+    ;;    ("First"
+    ;;     (("a" (message "first - a") "msg a" :color blue)
+    ;;      ("b" (message "first - b") "msg b"))
+    ;;     "Second"
+    ;;     (("c" (message "second - c") "msg c" :color blue)
+    ;;      ("d" (message "second - d") "msg d")))))
+
+    ;; (:hydra hydra-test (:color red :major-mode fundamental-mode)
+    ;;    ("First"
+    ;;     (("a" (message "first - a") "msg a" :color blue)
+    ;;      ("b" (message "first - b") "msg b"))
+    ;;     "Second"
+    ;;     (("c" (message "second - c") "msg c" :color blue)
+    ;;      ("d" (message "second - d") "msg d"))))
+
+#+end_src
+
+* default hydra
+** hydra-help
+Many of the Emacs help facilities at your fingertips!
+
+#+begin_src emacs-lisp
+
+  (:hydra episteme-hydra-help (:color blue)
+    ("Describe"
+     (("c" describe-function "function")
+      ("p" describe-package "package")
+      ("m" describe-mode "mode")
+      ("v" describe-variable "variable"))
+     "Keys"
+     (("k" describe-key "key")
+      ("K" describe-key-briefly "brief key")
+      ("w" where-is "where-is")
+      ("b" helm-descbinds "bindings"))
+     "Search"
+     (("a" helm-apropos "apropos")
+      ("d" apropos-documentation "documentation")
+      ("s" info-lookup-symbol "symbol info"))
+     "Docs"
+     (("i" info "info")
+      ("n" helm-man-woman "man")
+      ("h" helm-dash "dash"))
+     "View"
+     (("e" view-echo-area-messages "echo area")
+      ("l" view-lossage "lossage")
+      ("c" describe-coding-system "encoding")
+      ("I" describe-input-method "input method")
+      ("C" describe-char "char at point"))))
+#+end_src
+
+** hydra-mark
+#+begin_src emacs-lisp
+  (defun unpop-to-mark-command ()
+    "Unpop off mark ring. Does nothing if mark ring is empty."
+    (when mark-ring
+      (setq mark-ring (cons (copy-marker (mark-marker)) mark-ring))
+      (set-marker (mark-marker) (car (last mark-ring)) (current-buffer))
+      (when (null (mark t)) (ding))
+      (setq mark-ring (nbutlast mark-ring))
+      (goto-char (marker-position (car (last mark-ring))))))
+
+  (defun push-mark ()
+    (interactive)
+    (set-mark-command nil)
+    (set-mark-command nil))
+
+  (:hydra episteme-hydra-mark (:color pink)
+    ("Mark"
+     (("m" push-mark "mark here")
+      ("p" (lambda () (interactive) (set-mark-command '(4))) "previous")
+      ("n" (lambda () (interactive) (unpop-to-mark-command)) "next")
+      ("c" (lambda () (interactive) (setq mark-ring nil)) "clear"))))
+#+end_src
+
+** hydra-registers
+#+begin_src emacs-lisp
+  (:hydra episteme-hydra-registers (:color pink)
+    ("Point"
+     (("r" point-to-register "save point")
+      ("j" jump-to-register "jump")
+      ("v" view-register "view all"))
+     "Text"
+     (("c" copy-to-register "copy region")
+      ("C" copy-rectangle-to-register "copy rect")
+      ("i" insert-register "insert")
+      ("p" prepend-to-register "prepend")
+      ("a" append-to-register "append"))
+     "Macros"
+     (("m" kmacro-to-register "store")
+      ("e" jump-to-register "execute"))))
+
+#+end_src
+
+** hydra-window
+#+begin_src emacs-lisp
+  (use-package ace-window)
+  (winner-mode 1)
+
+  (:hydra episteme-hydra-window (:color red)
+    ("Jump"
+     (("h" windmove-left "left")
+      ("l" windmove-right "right")
+      ("k" windmove-up "up")
+      ("j" windmove-down "down")
+      ("a" ace-select-window "ace"))
+     "Split"
+     (("q" split-window-right "left")
+      ("r" (progn (split-window-right) (call-interactively 'other-window)) "right")
+      ("e" split-window-below "up")
+      ("w" (progn (split-window-below) (call-interactively 'other-window)) "down"))
+     "Do"
+     (("d" delete-window "delete")
+      ("o" delete-other-windows "delete others")
+      ("u" winner-undo "undo")
+      ("R" winner-redo "redo")
+      ("t" nougat-hydra-toggle-window "toggle"))))
+#+end_src
+
+** hydra-zoom
+#+begin_src emacs-lisp
+  (:hydra episteme-hydra-zoom (:color red)
+    ("Buffer"
+     (("i" text-scale-increase "in")
+      ("o" text-scale-decrease "out"))
+     "Frame"
+     (("I" zoom-frm-in "in")
+      ("O" zoom-frm-out "out")
+      ("r" toggle-zoom-frame "reset" :color blue))))
+#+end_src
+
+** hydra-default
+#+begin_src emacs-lisp
+    (:hydra episteme-hydra-default (:color blue)
+      ("Open"
+       (("o" (helm-org-walk '(4)) "open")
+        ("g" (magit-status) "git"))
+       "Emacs"
+       (("h" (hera-push 'episteme-hydra-help/body) "help")
+        ("m" (hera-push 'episteme-hydra-mark/body) "mark")
+        ("w" (hera-push 'episteme-hydra-window/body) "windows")
+        ("z" (hera-push 'episteme-hydra-zoom/body) "zoom")
+        ("r" (hera-push 'episteme-hydra-registers/body) "registers"))
+       "Misc"
+       ((";" embrace-commander "embrace"))))
+#+end_src
+
+* modal hydras
+** boilerplate
+*** hydra-dwim
+Open hydra for current major mode if one exists, otherwise the default hydra.
+#+begin_src emacs-lisp
+  (defun episteme:hydra-dwim ()
+    (interactive)
+    (let* ((mode major-mode)
+          (orig-mode mode))
+      (catch 'done
+        (while mode
+          (let ((hydra (major-mode-hydra--body-name-for mode)))
+            (when (fboundp hydra)
+              (hera-start hydra)
+              (throw 'done t)))
+          (setq mode (get mode 'derived-mode-parent)))
+        (hera-start 'hydra-default/body))))
+#+end_src
+** hydra-elisp
+#+begin_src emacs-lisp
+  (:hydra episteme-hydra-elisp (:color blue :major-mode emacs-lisp-mode)
+    ("Execute"
+     (("d" eval-defun "defun")
+      ("b" eval-current-buffer "buffer")
+      ("r" eval-region "region"))
+     "Debug"
+     (("D" edebug-defun "defun")
+      ("a" edebug-all-defs "all definitions" :color red)
+      ("A" edebug-all-forms "all forms" :color red)
+      ("x" macrostep-expand "expand macro"))))
+#+end_src
+
+** hydra-org
+*** hydra-org-goto-first-sibling
+#+begin_src emacs-lisp
+  (defun hydra-org-goto-first-sibling () (interactive)
+         (org-backward-heading-same-level 99999999))
+#+end_src
+
+*** hydra-org-goto-last-sibling
+#+begin_src emacs-lisp
+  (defun hydra-org-goto-last-sibling () (interactive)
+         (org-forward-heading-same-level 99999999))
+#+end_src
+
+*** hydra-org-parent-level
+#+begin_src emacs-lisp
+  (defun hydra-org-parent-level ()
+    (interactive)
+    (let ((o-point (point)))
+      (if (save-excursion
+            (beginning-of-line)
+            (looking-at org-heading-regexp))
+          (progn
+            (call-interactively 'outline-up-heading)
+            (org-cycle-internal-local))
+        (progn
+          (call-interactively 'org-previous-visible-heading)
+          (org-cycle-internal-local)))
+      (when (and (/= o-point (point))
+                 org-tidy-p)
+        (call-interactively 'hydra-org-tidy))))
+
+ #+end_src
+
+*** hydra-org-child-level
+#+begin_src emacs-lisp
+  (defun hydra-org-child-level ()
+    (interactive)
+    (org-show-entry)
+    (org-show-children)
+    (when (not (org-goto-first-child))
+      (when (save-excursion
+              (beginning-of-line)
+              (looking-at org-heading-regexp))
+        (next-line))))
+#+end_src
+
+*** hydra-org
+ #+begin_src emacs-lisp
+   (:hydra episteme-hydra-org (:color red :major-mode org-mode)
+     ("Shift"
+      (("K" org-move-subtree-up "up")
+       ("J" org-move-subtree-down "down")
+       ("h" org-promote-subtree "promote")
+       ("l" org-demote-subtree "demote"))
+      "Travel"
+      (("p" org-backward-heading-same-level "backward")
+       ("n" org-forward-heading-same-level "forward")
+       ("j" hydra-org-child-level "to child")
+       ("k" hydra-org-parent-level "to parent")
+       ("a" hydra-org-goto-first-sibling "first sibling")
+       ("e" hydra-org-goto-last-sibling "last sibling"))
+      "Perform"
+      (("t" (org-babel-tangle) "tangle" :color blue)
+       ("e" (org-html-export-to-html) "export" :color blue)
+       ("b" helm-org-in-buffer-headings "browse")
+       ("r" (lambda () (interactive)
+              (helm-org-rifle-current-buffer)
+              (org-cycle)
+              (org-cycle)) "rifle")
+       ("w" helm-org-walk "walk")
+       ("v" avy-org-goto-heading-timer "avy")
+       ("L" org-toggle-link-display "toggle links"))))
 #+end_src
 
