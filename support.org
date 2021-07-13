@@ -824,7 +824,20 @@ Fix some issues with straight.el and org until [[https://github.com/raxod502/str
       :config
       (setq org-fontify-whole-heading-line t)
       (setq org-fontify-quote-and-verse-blocks t)
-      (setq org-hide-emphasis-markers t)))
+      (setq org-hide-emphasis-markers t)
+      (cl-loop for (face . spec) in
+       `((org-document-title .
+          ((t (:inherit org-level-1 :height 2.0 :underline nil :box nil))))
+         (org-level-1 . ((t (:height 1.5 :box nil))))
+         (org-level-2 . ((t (:height 1.25 :box nil))))
+         (org-level-3 . ((t (:box nil))))
+         (org-level-4 . ((t (:box nil))))
+         (org-level-5 . ((t (:box nil))))
+         (org-level-6 . ((t (:box nil))))
+         (org-level-7 . ((t (:box nil))))
+         (org-level-8 . ((t (:box nil))))
+         (org-link . ((t (:underline t)))))
+       do (face-spec-set face spec))))
 #+end_src
 
 *** pretty symbols
