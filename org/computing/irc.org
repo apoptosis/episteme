@@ -87,40 +87,4 @@ Use =/cs set #channel <flag> <args>= to set Control Flags
 | email [email@address]     | Associates an email address with the channel.                                             |
 
 * User Settings
-
 ** Hide joined channels from /whois
-
-* Feedback
-
-** Jinx - Wants policy clarification on "advertising"
-
-2021-06-10 17:46:37	--	Msg:@(Jinx): So I see the "no advertising other networks" bit has been dropped from the topic--but is it still policy?
-2021-06-10 17:48:03	@ldlework	Jinx: https://freenode.net/policies
-2021-06-10 17:50:08	--	Msg:@(Jinx): Would you care to point me to the relevant section? I don't see anything that specifically addresses this concern.
-2021-06-10 17:52:37	--	Msg:@(Jinx): As someone who's been coming here for about 15 years, I'm familiar with the "On-topic"/"Off-topic" policy, but surely recent history has suggested this alone does not clarify the situation sufficiently. It seems like if there was no specific guidance on this before, there should be now. Since #freenode-policy-feedback redirects here, I assume this is where you'd like to hear such feedback. :)
-2021-06-10 17:58:05	@ldlework	Jinx: It is. In my judgement, the first two paragraphs under the Off-topic section is most relevant. That said, I noted your comment.
-2021-06-10 18:00:18	--	Msg:@(Jinx): "It is."? Meaning "no advertisign other networks" is still policy?
-2021-06-10 18:01:22	@ldlework	Jinx: That you're welcome to give feedback in this channel, sorry :)
-2021-06-10 18:01:37	--	Msg:@(Jinx): Ah... thanks for clarifying.
-2021-06-10 18:02:56	--	Msg:@(Jinx): I've read those 2 paragraphs repeatedly, and I'm not seeing how the apply. All I can assume is you are referring to "inappropriate advertising"--which is certainly not specific. If "no advertising other networks" (e.g. in channel topics / "other forms") is still policy, I'd like to suggest it have a more specific section/statement.
-2021-06-10 18:03:06	--	Msg:@(Jinx): s/how the/how they
-2021-06-10 18:03:44	 *	Jinx still can't figure out if it is policy or not :)
-2021-06-10 18:06:07	@taw	Jinx: I think it's open to interpretation. It's factual that some channels have decided to move, and have pointed that out to their users. However, actively messaging people, closing channels, silencing communities in order to make people leave freenode is not okay.
-2021-06-10 18:06:30	@taw	We believe in freedom, and that includes freedom of choice.
-2021-06-10 18:09:35	--	Msg:@(Jinx): I understand that perspective and appreciate you explaining it. I'm not here to litigate (I'm sure you've had enough drama), but I have to admit the stories I've heard have been concerning to say the least. So, I think it'd be in everyone's best interest to explain in more detail in the policies just under what circumstances a channel can "move" or not.
-2021-06-10 18:09:56	--	Msg:@(Jinx): I hope this is something that can be discussed for consensus at the next staff meeting :)
-2021-06-10 18:12:25	@taw	Jinx: absolutely. I agree with you there. There are lot of things we have on our plate, and while we can't make everyone happy, one thing we can do is push forward and power through, and come up with new tools and services we can provide our community.
-2021-06-10 18:12:39	--	Msg:@(Jinx): My personal proposal would be some sort of "transition period" in which the existing owners have 30-days to inform their users of such a move before other "representatives" can claim it.
-2021-06-10 18:13:14	@taw	I need to drop for a bit, but it's an interesting perspective.
-2021-06-10 18:13:18	@taw	ttyl
-2021-06-10 18:13:27	--	Msg:@(Jinx): alright, thank you for your time, taw
-
-*** whois
-#+begin_src text
-  17:59 -- [Jinx] (~Jinx@unaffiliated/jinx): Jinx Dojo
-  17:59 -- [Jinx] #freenode
-  17:59 -- [Jinx] kornbluth.freenode.net (Frankfurt, Germany)
-  17:59 -- [Jinx] is using a secure connection
-  17:59 -- [Jinx] is logged in as Jinx
-  17:59 -- [Jinx] End of /WHOIS list.
-#+end_src
