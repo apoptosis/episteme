@@ -2,6 +2,8 @@
 
 Apoptosis' community knowledge-base built ontop a customized Emacs.
 
+The knowledge-base is comprised of [[./org][organized files]], written in [[https://orgmode.org/][Org-mode.]]
+
 * Installing
 
 You must have the following globally available:
