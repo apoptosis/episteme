@@ -92,6 +92,7 @@ done
 CONFIG_DIR="$HOME/.config/episteme"
 
 emacs -q \
+   --debug-init \
    --chdir $repo \
    --eval "(setq byte-compile-warnings '(cl-functions))" \
    --eval "(require 'org)" \
@@ -99,6 +100,4 @@ emacs -q \
    --eval "(setq user-emacs-directory \"$CONFIG_DIR\")" \
    --eval "(setq user-init-file \"$repo/support.el\")" \
    --load $repo/support.el \
-   --eval "(helm-org-walk '(4))" \
-   --debug-init \
    $@

@@ -245,6 +245,32 @@ e.g. =(:bind org-mode "C-m" (message "Hello world."))=
   (:bind episteme/mode-menu-key episteme:hydra-dwim)
 #+end_src
 
+* dashboard
+#+begin_src emacs-lisp
+  (use-package dashboard
+    :ensure t
+    :config
+    (setq dashboard-banner-logo-title "apoptosis/episteme")
+    (setq dashboard-startup-banner "/home/ldlework/src/apoptosis/episteme/cain.png")
+    (setq dashboard-footer-messages
+          '("Co-edification through tinkering, dialectic and reference!"))
+    ;; (setq dashboard-footer-icon (all-the-icons-octicon "dashboard"
+    ;;                                                    :height 1.1
+    ;;                                                    :v-adjust -0.05
+    ;;                                                    :face 'font-lock-keyword-face))
+    (setq dashboard-center-content t)
+    (setq dashboard-items '((recents . 20)))
+    (dashboard-setup-startup-hook))
+  
+  (defun episteme:dashboard ()
+    "Jump to the dashboard buffer, if doesn't exists create one."
+    (interactive)
+    (switch-to-buffer dashboard-buffer-name)
+    (dashboard-mode)
+    (dashboard-insert-startupify-lists)
+    (dashboard-refresh-buffer))
+#+end_src
+
 * aesthetics
 ** vertical border
 Make the border between windows visible.
@@ -1535,3 +1561,8 @@ Open hydra for current major mode if one exists, otherwise the default hydra.
        ("L" org-toggle-link-display "toggle links"))))
 #+end_src
 
+
+* startup
+#+begin_src emacs-lisp
+  (call-interactively 'episteme:dashboard)
+#+end_src
