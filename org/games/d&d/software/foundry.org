@@ -1,0 +1,76 @@
+#+title: FoundryVTT
+
+* Resources
+** API Docs
+https://foundryvtt.com/api/Settings.html
+** Vance's Examples
+https://github.com/VanceCole/macros/
+
+* Wishlist
+** NPC Generation
+* Cookbook
+** Add a button to some HTML
+#+begin_src js
+  const btn = $(`
+  <li class="classname">
+    <i class="fas fa-question"></i>
+  </li>`);
+  html.append(btn);
+  btn[0].addEventListener('click', evt => {
+      evt.stopPropagation();
+      console.log("Hello world");
+  });
+
+#+end_src
+** Add a button to the scene controls
+#+begin_src typescript
+  Hooks.on('renderSceneControls', (controls, html) => {
+      const searchBtn = $(`
+  <li class="scene-control">
+    <i class="fas fa-question"></i>
+  </li>`);
+      html.append(searchBtn);
+      searchBtn[0].addEventListener('click', evt => {
+          evt.stopPropagation();
+          console.log("Hello world!");
+      });
+  });
+
+#+end_src
+* Hooks
+** Finding hooks
+Set =CONFIG.debug.hooks = true= in console and do stuff.
+** Websocket Protocol
+*** preloadAudio
+*** playAudio
+*** template
+*** pause
+*** manageFiles
+*** shareImage
+*** pullToScene
+*** showEntry
+*** userActivity
+*** modifyDocument
+=type= must be "Setting"
+*** manageCompendium
+*** modifyEmbeddedDocument
+Called on the "parentType"
+**** Types
+- Actor
+- Canvas
+- ChatMessage
+- Combat
+- Dice
+- Folder
+- Item
+- JournalEntry
+- Macro
+- MeasuredTemplate
+- Playlist
+- RollTable
+- Scene
+- User
+**** Actions
+- create
+- update
+- delete

@@ -1,0 +1,38 @@
+#+title: Weechat
+
+* Add new server
+#+begin_src text
+  /server add server-name server.address/port -ssl
+  /set irc.server.server-name.nicks "mynick,mynick2"
+  /set irc.server.server-name.username "username"
+  /set irc.server.server-name.realname "realname"
+#+end_src
+
+* Set Autosort.py rules
+
+Make sure to add custom rules **after** rule 6.
+
+** List rules
+=/autosort rules list=
+
+** Sort prefixed channels to top
+=${if:${buffer.name}!~prefix.*}=
+
+** Sort specific channels to top
+=${if:##foo,##bar!-${channel}}=
+
+** Sort by pound count
+=${if:${channel}=~##.*}=
+
+** Debug sorting
+=/autosort debug=
+
+Each channel produces an array of rule evaluations.
+
+* Save buffers
+=/autojoin --run=
+
+* Hotlist/Notify levels
+https://weechat.org/files/doc/stable/weechat_user.en.html#notify_levels
+** Highlights only
+

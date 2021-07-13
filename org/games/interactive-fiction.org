@@ -1,0 +1,46 @@
+#+title: Interactive Fiction
+
+* Beginner Recommendations
+** Aisle
+https://ifdb.tads.org/viewgame?id=j49crlvd62mhwuzu
+
+One turn game. Hundreds of possible "endings". Replay it to try to piece
+together the story.
+
+** Hunter, In Darkness
+https://ifdb.tads.org/viewgame?id=mh1a6hizgwjdbe7g
+
+A short, excellent introduction to the genre.
+
+** 9:05
+https://ifdb.tads.org/viewgame?id=qzftg3j8nh5f34i2
+
+A short, easy, clever story with a great ending.
+
+** Glass
+https://ifdb.tads.org/viewgame?id=29l04xfgii5roq63
+
+A short, novel twist to a classic fairy-tale.
+
+** Shade
+https://ifdb.tads.org/viewgame?id=hsfc7fnl40k4a30q
+
+A trippy, "one-room" narrative set in an apartment.
+
+** I-0
+https://ifdb.tads.org/viewgame?id=a3ym4ipix7sjsfrf
+
+Stranded on the side of the highway in the blistering heat. What will you do?
+
+** Spider and Web
+https://ifdb.tads.org/viewgame?id=2xyccw3pe0uovfad
+
+An intermediate spy narrative with gadget-based puzzles.
+
+** Suveh Nuh
+https://ifdb.tads.org/viewgame?id=xkai23ry99qdxce3
+
+A magician's servent trapped themselves in a vault. Use magic to get yourself
+free.
+
+

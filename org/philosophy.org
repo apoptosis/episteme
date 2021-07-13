@@ -12,6 +12,384 @@
 #+html_head: <script type="text/javascript" src="https://www.pirilampo.org/styles/readtheorg/js/readtheorg.js"></script>
 #+html_head: <link rel="stylesheet" type="text/css" href="/episteme/extra.css"/>
 
+* Resources
+** Interesting SEP Articles
+Chance versus Randomness https://plato.stanford.edu/entries/chance-randomness/
+Temporal Consciousness https://plato.stanford.edu/entries/consciousness-temporal/
+Seventeenth-Century Theories of Consciousness https://plato.stanford.edu/entries/consciousness-17th/
+Adaptationism https://plato.stanford.edu/entries/adaptationism/
+Computation in Physical Systems https://plato.stanford.edu/entries/computation-physicalsystems/
+Faith https://plato.stanford.edu/entries/faith/
+The Ethics of Belief https://plato.stanford.edu/entries/ethics-belief/
+Ayn Rand https://plato.stanford.edu/entries/ayn-rand/
+Immanuel Kant https://plato.stanford.edu/entries/kant/
+Theory and Bioethics https://plato.stanford.edu/entries/theory-bioethics/
+Immigration https://plato.stanford.edu/entries/immigration/
+Forgiveness https://plato.stanford.edu/entries/forgiveness/
+Political Legitimacy https://plato.stanford.edu/entries/legitimacy/
+Free Logic https://plato.stanford.edu/entries/logic-free/
+Truth Values https://plato.stanford.edu/entries/truth-values/
+Causal Theories of Mental Content https://plato.stanford.edu/entries/content-causal/
+Introspection https://plato.stanford.edu/entries/introspection/
+Omniscience https://plato.stanford.edu/entries/omniscience/
+Theories of Meaning https://plato.stanford.edu/entries/meaning/
+Abilities https://plato.stanford.edu/entries/abilities/
+Desire https://plato.stanford.edu/entries/desire/
+Impossible Worlds https://plato.stanford.edu/entries/impossible-worlds/
+Delusion https://plato.stanford.edu/entries/delusion/
+Information Processing and Thermodynamic Entropy https://plato.stanford.edu/entries/information-entropy/
+The Concept of the Aesthetic https://plato.stanford.edu/entries/aesthetic-concept/
+Attention https://plato.stanford.edu/entries/attention/
+Intention https://plato.stanford.edu/entries/intention/
+Kant's Transcendental Arguments https://plato.stanford.edu/entries/kant-transcendental/
+Underdetermination of Scientific Theory https://plato.stanford.edu/entries/scientific-underdetermination/
+The Distinction Between Innate and Acquired Characteristics https://plato.stanford.edu/entries/innate-acquired/
+Locke's Philosophy of Science https://plato.stanford.edu/entries/locke-philosophy-science/
+Platonism in the Philosophy of Mathematics https://plato.stanford.edu/entries/platonism-mathematics/
+The Disjunctive Theory of Perception https://plato.stanford.edu/entries/perception-disjunctive/
+The Normativity of Meaning and Content https://plato.stanford.edu/entries/meaning-normativity/
+Patriotism https://plato.stanford.edu/entries/patriotism/
+Modularity of Mind https://plato.stanford.edu/entries/modularity-mind/
+The Logic of Action https://plato.stanford.edu/entries/logic-action/
+The History of Utilitarianism https://plato.stanford.edu/entries/utilitarianism-history/
+Reid on Memory and Personal Identity https://plato.stanford.edu/entries/reid-memory-identity/
+Thomas Hobbes https://plato.stanford.edu/entries/hobbes/
+Scientific Revolutions https://plato.stanford.edu/entries/scientific-revolutions/
+Dialogical Logic https://plato.stanford.edu/entries/logic-dialogical/
+The Incommensurability of Scientific Theories https://plato.stanford.edu/entries/incommensurability/
+Material Constitution https://plato.stanford.edu/entries/material-constitution/
+Reasons for Action: Justification, Motivation, Explanation https://plato.stanford.edu/entries/reasons-just-vs-expl/
+Spinoza's Theory of Attributes https://plato.stanford.edu/entries/spinoza-attributes/
+The Ethics of Clinical Research https://plato.stanford.edu/entries/clinical-research/
+Transitional Justice https://plato.stanford.edu/entries/justice-transitional/
+Skolem's Paradox https://plato.stanford.edu/entries/paradox-skolem/
+Theory and Observation in Science https://plato.stanford.edu/entries/science-theory-observation/
+Epictetus https://plato.stanford.edu/entries/epictetus/
+Morality and Evolutionary Biology https://plato.stanford.edu/entries/morality-biology/
+Rene Descartes https://plato.stanford.edu/entries/descartes/
+Combinatory Logic https://plato.stanford.edu/entries/logic-combinatory/
+Causal Decision Theory https://plato.stanford.edu/entries/decision-causal/
+Formal Representations of Belief https://plato.stanford.edu/entries/formal-belief/
+Occasionalism https://plato.stanford.edu/entries/occasionalism/
+Promises https://plato.stanford.edu/entries/promises/
+Constructive Empiricism https://plato.stanford.edu/entries/constructive-empiricism/
+Aristotle https://plato.stanford.edu/entries/aristotle/
+Natural Kinds https://plato.stanford.edu/entries/natural-kinds/
+Names https://plato.stanford.edu/entries/names/
+Kant's Account of Reason https://plato.stanford.edu/entries/kant-reason/
+Pragmatism https://plato.stanford.edu/entries/pragmatism/
+Chaos https://plato.stanford.edu/entries/chaos/
+Self-Reference https://plato.stanford.edu/entries/self-reference/
+Natural Selection https://plato.stanford.edu/entries/natural-selection/
+Kant and Hume on Causality https://plato.stanford.edu/entries/kant-hume-causality/
+Race https://plato.stanford.edu/entries/race/
+Weakness of Will https://plato.stanford.edu/entries/weakness-will/
+Essential vs. Accidental Properties https://plato.stanford.edu/entries/essential-accidental/
+Definitions https://plato.stanford.edu/entries/definitions/
+Empathy https://plato.stanford.edu/entries/empathy/
+Kant and Hume on Morality https://plato.stanford.edu/entries/kant-hume-morality/
+Evolutionary Psychology https://plato.stanford.edu/entries/evolutionary-psychology/
+Value Theory https://plato.stanford.edu/entries/value-theory/
+Certainty https://plato.stanford.edu/entries/certainty/
+Innateness and Language https://plato.stanford.edu/entries/innateness-language/
+Decision-Making Capacity https://plato.stanford.edu/entries/decision-capacity/
+Zeno of Elea https://plato.stanford.edu/entries/zeno-elea/
+The Axiom of Choice https://plato.stanford.edu/entries/axiom-choice/
+Animal Cognition https://plato.stanford.edu/entries/cognition-animal/
+Civic Education https://plato.stanford.edu/entries/civic-education/
+Second-order and Higher-order Logic https://plato.stanford.edu/entries/logic-higher-order/
+A Priori Justification and Knowledge https://plato.stanford.edu/entries/apriori/
+Deontological Ethics https://plato.stanford.edu/entries/ethics-deontological/
+Structural Realism https://plato.stanford.edu/entries/structural-realism/
+Seneca https://plato.stanford.edu/entries/seneca/
+Paradoxes and Contemporary Logic https://plato.stanford.edu/entries/paradoxes-contemporary-logic/
+Dynamic Choice https://plato.stanford.edu/entries/dynamic-choice/
+Facts https://plato.stanford.edu/entries/facts/
+The Logic of Conditionals https://plato.stanford.edu/entries/logic-conditionals/
+Combining Logics https://plato.stanford.edu/entries/logic-combining/
+Convention https://plato.stanford.edu/entries/convention/
+Contractualism https://plato.stanford.edu/entries/contractualism/
+The Value of Knowledge https://plato.stanford.edu/entries/knowledge-value/
+Loyalty https://plato.stanford.edu/entries/loyalty/
+The Unity of Science https://plato.stanford.edu/entries/scientific-unity/
+Moral Anti-Realism https://plato.stanford.edu/entries/moral-anti-realism/
+Incommensurable Values https://plato.stanford.edu/entries/value-incommensurable/
+Speech Acts https://plato.stanford.edu/entries/speech-acts/
+Discourse Representation Theory https://plato.stanford.edu/entries/discourse-representation-theory/
+The Meaning of Life https://plato.stanford.edu/entries/life-meaning/
+Fictionalism https://plato.stanford.edu/entries/fictionalism/
+Psychologism https://plato.stanford.edu/entries/psychologism/
+Monism https://plato.stanford.edu/entries/monism/
+Presocratic Philosophy https://plato.stanford.edu/entries/presocratics/
+Naturalism https://plato.stanford.edu/entries/naturalism/
+Situations in Natural Language Semantics https://plato.stanford.edu/entries/situations-semantics/
+
+Metaethics https://plato.stanford.edu/entries/metaethics/
+Assertion https://plato.stanford.edu/entries/assertion/
+Wisdom https://plato.stanford.edu/entries/wisdom/
+Social Institutions https://plato.stanford.edu/entries/social-institutions/
+Civil Disobedience https://plato.stanford.edu/entries/civil-disobedience/
+Concepts of God https://plato.stanford.edu/entries/concepts-god/
+Pragmatics https://plato.stanford.edu/entries/pragmatics/
+Jacques Derrida https://plato.stanford.edu/entries/derrida/
+The Problem of Induction https://plato.stanford.edu/entries/induction-problem/
+Self-Deception https://plato.stanford.edu/entries/self-deception/
+Citizenship https://plato.stanford.edu/entries/citizenship/
+Population Genetics https://plato.stanford.edu/entries/population-genetics/
+Linear Logic https://plato.stanford.edu/entries/logic-linear/
+Nonexistent Objects https://plato.stanford.edu/entries/nonexistent-objects/
+Belief https://plato.stanford.edu/entries/belief/
+Evidence https://plato.stanford.edu/entries/evidence/
+Democracy https://plato.stanford.edu/entries/democracy/
+Intensional Logic https://plato.stanford.edu/entries/logic-intensional/
+Pacifism https://plato.stanford.edu/entries/pacifism/
+Japanese Zen Buddhist Philosophy https://plato.stanford.edu/entries/japanese-zen/
+Contradiction https://plato.stanford.edu/entries/contradiction/
+Hybrid Logic https://plato.stanford.edu/entries/logic-hybrid/
+Truth https://plato.stanford.edu/entries/truth/
+Moral Naturalism https://plato.stanford.edu/entries/naturalism-moral/
+Logical Truth https://plato.stanford.edu/entries/logical-truth/
+Colonialism https://plato.stanford.edu/entries/colonialism/
+Types and Tokens https://plato.stanford.edu/entries/types-tokens/
+Logic of Belief Revision https://plato.stanford.edu/entries/logic-belief-revision/
+Pythagoreanism https://plato.stanford.edu/entries/pythagoreanism/
+The Limits of Law https://plato.stanford.edu/entries/law-limits/
+Models in Science https://plato.stanford.edu/entries/models-science/
+Trust https://plato.stanford.edu/entries/trust/
+The Repugnant Conclusion https://plato.stanford.edu/entries/repugnant-conclusion/
+Aristotle&rsquo;s Biology https://plato.stanford.edu/entries/aristotle-biology/
+African Sage Philosophy https://plato.stanford.edu/entries/african-sage/
+Coercion https://plato.stanford.edu/entries/coercion/
+Sortals https://plato.stanford.edu/entries/sortals/
+Type Theory https://plato.stanford.edu/entries/type-theory/
+Deontic Logic https://plato.stanford.edu/entries/logic-deontic/
+Torture https://plato.stanford.edu/entries/torture/
+Samuel Ibn Tibbon https://plato.stanford.edu/entries/tibbon/
+Bernard Williams https://plato.stanford.edu/entries/williams-bernard/
+Emotions in the Christian Tradition https://plato.stanford.edu/entries/emotion-Christian-tradition/
+Maimonides https://plato.stanford.edu/entries/maimonides/
+Eternity in Christian Thought https://plato.stanford.edu/entries/eternity/
+Robin George Collingwood https://plato.stanford.edu/entries/collingwood/
+Aristotle on Causality https://plato.stanford.edu/entries/aristotle-causality/
+Political Representation https://plato.stanford.edu/entries/political-representation/
+Axiomatic Theories of Truth https://plato.stanford.edu/entries/truth-axiomatic/
+Personal Identity and Ethics https://plato.stanford.edu/entries/identity-ethics/
+Rights https://plato.stanford.edu/entries/rights/
+Propositions https://plato.stanford.edu/entries/propositions/
+Pleasure https://plato.stanford.edu/entries/pleasure/
+Locke's Political Philosophy https://plato.stanford.edu/entries/locke-political/
+Hermeneutics https://plato.stanford.edu/entries/hermeneutics/
+Concepts https://plato.stanford.edu/entries/concepts/
+Monotheism https://plato.stanford.edu/entries/monotheism/
+Other Minds https://plato.stanford.edu/entries/other-minds/
+Moral Realism https://plato.stanford.edu/entries/moral-realism/
+Postmodernism https://plato.stanford.edu/entries/postmodernism/
+Pain https://plato.stanford.edu/entries/pain/
+Socrates https://plato.stanford.edu/entries/socrates/
+Ancient Atomism https://plato.stanford.edu/entries/atomism-ancient/
+Units and Levels of Selection https://plato.stanford.edu/entries/selection-units/
+Collective Responsibility https://plato.stanford.edu/entries/collective-responsibility/
+Continuity and Infinitesimals https://plato.stanford.edu/entries/continuity/
+Supervenience https://plato.stanford.edu/entries/supervenience/
+Omnipresence https://plato.stanford.edu/entries/omnipresence/
+Justice and Bad Luck https://plato.stanford.edu/entries/justice-bad-luck/
+Logical Constants https://plato.stanford.edu/entries/logical-constants/
+Possible Objects https://plato.stanford.edu/entries/possible-objects/
+Identity Over Time https://plato.stanford.edu/entries/identity-time/
+The Contents of Perception https://plato.stanford.edu/entries/perception-contents/
+Critical Theory https://plato.stanford.edu/entries/critical-theory/
+The Problem of Perception https://plato.stanford.edu/entries/perception-problem/
+Phenomenological Approaches to Self-Consciousness https://plato.stanford.edu/entries/self-consciousness-phenomenological/
+Neutral Monism https://plato.stanford.edu/entries/neutral-monism/
+Defeasible Reasoning https://plato.stanford.edu/entries/reasoning-defeasible/
+Epicurus https://plato.stanford.edu/entries/epicurus/
+Logical Consequence https://plato.stanford.edu/entries/logical-consequence/
+Identity https://plato.stanford.edu/entries/identity/
+Inverted Qualia https://plato.stanford.edu/entries/qualia-inverted/
+Skepticism and Content Externalism https://plato.stanford.edu/entries/skepticism-content-externalism/
+Simplicity https://plato.stanford.edu/entries/simplicity/
+Game Theory and Ethics https://plato.stanford.edu/entries/game-ethics/
+Substance https://plato.stanford.edu/entries/substance/
+Inductive Logic https://plato.stanford.edu/entries/logic-inductive/
+Property and Ownership https://plato.stanford.edu/entries/property/
+Dialectical School https://plato.stanford.edu/entries/dialectical-school/
+Functionalism https://plato.stanford.edu/entries/functionalism/
+Existentialism https://plato.stanford.edu/entries/existentialism/
+Rationalism vs. Empiricism https://plato.stanford.edu/entries/rationalism-empiricism/
+Reism https://plato.stanford.edu/entries/reism/
+Bell's Theorem https://plato.stanford.edu/entries/bell-theorem/
+Cosmological Argument https://plato.stanford.edu/entries/cosmological-argument/
+Foreknowledge and Free Will https://plato.stanford.edu/entries/free-will-foreknowledge/
+Authority https://plato.stanford.edu/entries/authority/
+Computability and Complexity https://plato.stanford.edu/entries/computability/
+Consciousness https://plato.stanford.edu/entries/consciousness/
+Categories https://plato.stanford.edu/entries/categories/
+Schema https://plato.stanford.edu/entries/schema/
+Sense-Data https://plato.stanford.edu/entries/sense-data/
+Suicide https://plato.stanford.edu/entries/suicide/
+Pornography and Censorship https://plato.stanford.edu/entries/pornography-censorship/
+Compatibilism https://plato.stanford.edu/entries/compatibilism/
+Hedonism https://plato.stanford.edu/entries/hedonism/
+Plato https://plato.stanford.edu/entries/plato/
+The Chinese Room Argument https://plato.stanford.edu/entries/chinese-room/
+Atheism and Agnosticism https://plato.stanford.edu/entries/atheism-agnosticism/
+Descriptions https://plato.stanford.edu/entries/descriptions/
+Anaphora https://plato.stanford.edu/entries/anaphora/
+The Frame Problem https://plato.stanford.edu/entries/frame-problem/
+Moral Relativism https://plato.stanford.edu/entries/moral-relativism/
+Boundary https://plato.stanford.edu/entries/boundary/
+Temporal Parts https://plato.stanford.edu/entries/temporal-parts/
+Knowledge by Acquaintance vs. Description https://plato.stanford.edu/entries/knowledge-acquaindescrip/
+Rule Consequentialism https://plato.stanford.edu/entries/consequentialism-rule/
+Francis Bacon https://plato.stanford.edu/entries/francis-bacon/
+Legal Obligation and Authority https://plato.stanford.edu/entries/legal-obligation/
+Plato on Rhetoric and Poetry https://plato.stanford.edu/entries/plato-rhetoric/
+Mental Causation https://plato.stanford.edu/entries/mental-causation/
+Phenomenology https://plato.stanford.edu/entries/phenomenology/
+Arguments for Incompatibilism https://plato.stanford.edu/entries/incompatibilism-arguments/
+Practical Reason https://plato.stanford.edu/entries/practical-reason/
+Moral Reasoning https://plato.stanford.edu/entries/reasoning-moral/
+Zombies https://plato.stanford.edu/entries/zombies/
+Nothingness https://plato.stanford.edu/entries/nothingness/
+Karl Marx https://plato.stanford.edu/entries/marx/
+Dualism https://plato.stanford.edu/entries/dualism/
+Life https://plato.stanford.edu/entries/life/
+Necessary and Sufficient Conditions https://plato.stanford.edu/entries/necessary-sufficient/
+The Analytic/Synthetic Distinction https://plato.stanford.edu/entries/analytic-synthetic/
+Intentionality https://plato.stanford.edu/entries/intentionality/
+Virtue Ethics https://plato.stanford.edu/entries/ethics-virtue/
+States of Affairs https://plato.stanford.edu/entries/states-of-affairs/
+The Moral Status of Animals https://plato.stanford.edu/entries/moral-animal/
+The Computational Theory of Mind https://plato.stanford.edu/entries/computational-mind/
+Bayes' Theorem https://plato.stanford.edu/entries/bayes-theorem/
+Punishment https://plato.stanford.edu/entries/punishment/
+Sovereignty https://plato.stanford.edu/entries/sovereignty/
+The Free Rider Problem https://plato.stanford.edu/entries/free-rider/
+Consequentialism https://plato.stanford.edu/entries/consequentialism/
+Mereology https://plato.stanford.edu/entries/mereology/
+Eliminative Materialism https://plato.stanford.edu/entries/materialism-eliminative/
+Laws of Nature https://plato.stanford.edu/entries/laws-of-nature/
+The Turing Test https://plato.stanford.edu/entries/turing-test/
+Analysis https://plato.stanford.edu/entries/analysis/
+Memory https://plato.stanford.edu/entries/memory/
+Aesthetic Judgment https://plato.stanford.edu/entries/aesthetic-judgment/
+Positive and Negative Liberty https://plato.stanford.edu/entries/liberty-positive-negative/
+Human Rights https://plato.stanford.edu/entries/rights-human/
+Self-Knowledge https://plato.stanford.edu/entries/self-knowledge/
+Transcendentalism https://plato.stanford.edu/entries/transcendentalism/
+Civil Rights https://plato.stanford.edu/entries/civil-rights/
+Emotion https://plato.stanford.edu/entries/emotion/
+Relativism https://plato.stanford.edu/entries/relativism/
+Causal Determinism https://plato.stanford.edu/entries/determinism-causal/
+Nonconceptual Mental Content https://plato.stanford.edu/entries/content-nonconceptual/
+Reference https://plato.stanford.edu/entries/reference/
+Moral Character https://plato.stanford.edu/entries/moral-character/
+Federalism https://plato.stanford.edu/entries/federalism/
+Legal Positivism https://plato.stanford.edu/entries/legal-positivism/
+Change and Inconsistency https://plato.stanford.edu/entries/change/
+Fatalism https://plato.stanford.edu/entries/fatalism/
+Law and Language https://plato.stanford.edu/entries/law-language/
+Freedom of Speech https://plato.stanford.edu/entries/freedom-speech/
+Time https://plato.stanford.edu/entries/time/
+Structuralism in Physics https://plato.stanford.edu/entries/physics-structuralism/
+Narrow Mental Content https://plato.stanford.edu/entries/content-narrow/
+The Pure Theory of Law https://plato.stanford.edu/entries/lawphil-theory/
+Paternalism https://plato.stanford.edu/entries/paternalism/
+Egoism https://plato.stanford.edu/entries/egoism/
+Intrinsic vs. Extrinsic Value https://plato.stanford.edu/entries/value-intrinsic-extrinsic/
+Externalism About Mental Content https://plato.stanford.edu/entries/content-externalism/
+Children&rsquo;s Rights https://plato.stanford.edu/entries/rights-children/
+Equality of Opportunity https://plato.stanford.edu/entries/equal-opportunity/
+Parenthood and Procreation https://plato.stanford.edu/entries/parenthood/
+Civic Humanism https://plato.stanford.edu/entries/humanism-civic/
+Object https://plato.stanford.edu/entries/object/
+Emergent Properties https://plato.stanford.edu/entries/properties-emergent/
+The Natural Law Tradition in Ethics https://plato.stanford.edu/entries/natural-law-ethics/
+Libertarianism https://plato.stanford.edu/entries/libertarianism/
+Qualia: The Knowledge Argument https://plato.stanford.edu/entries/qualia-knowledge/
+Personal Identity https://plato.stanford.edu/entries/identity-personal/
+Egalitarianism https://plato.stanford.edu/entries/egalitarianism/
+Pyrrho https://plato.stanford.edu/entries/pyrrho/
+Identity Politics https://plato.stanford.edu/entries/identity-politics/
+Realism https://plato.stanford.edu/entries/realism/
+Consciousness and Intentionality https://plato.stanford.edu/entries/consciousness-intentionality/
+Moral Skepticism https://plato.stanford.edu/entries/skepticism-moral/
+Scientific Realism https://plato.stanford.edu/entries/scientific-realism/
+Personal Autonomy https://plato.stanford.edu/entries/personal-autonomy/
+The Biological Notion of Self and Non-self https://plato.stanford.edu/entries/biology-self/
+Omnipotence https://plato.stanford.edu/entries/omnipotence/
+Doing vs. Allowing Harm https://plato.stanford.edu/entries/doing-allowing/
+Privacy https://plato.stanford.edu/entries/privacy/
+The Correspondence Theory of Truth https://plato.stanford.edu/entries/truth-correspondence/
+Determinables and Determinates https://plato.stanford.edu/entries/determinate-determinables/
+Events https://plato.stanford.edu/entries/events/
+Relative Identity https://plato.stanford.edu/entries/identity-relative/
+The Definition of Morality https://plato.stanford.edu/entries/morality-definition/
+Moral Dilemmas https://plato.stanford.edu/entries/moral-dilemmas/
+Finitism in Geometry https://plato.stanford.edu/entries/geometry-finitism/
+Process Philosophy https://plato.stanford.edu/entries/process-philosophy/
+Justice as a Virtue https://plato.stanford.edu/entries/justice-virtue/
+Free Will https://plato.stanford.edu/entries/freewill/
+Intrinsic vs. Extrinsic Properties https://plato.stanford.edu/entries/intrinsic-extrinsic/
+Affirmative Action https://plato.stanford.edu/entries/affirmative-action/
+Legal Rights https://plato.stanford.edu/entries/legal-rights/
+Skepticism https://plato.stanford.edu/entries/skepticism/
+Nationalism https://plato.stanford.edu/entries/nationalism/
+Model Theory https://plato.stanford.edu/entries/model-theory/
+First-order Model Theory https://plato.stanford.edu/entries/modeltheory-fo/
+Tarski's Truth Definitions https://plato.stanford.edu/entries/tarski-truth/
+Causation in the Law https://plato.stanford.edu/entries/causation-law/
+Well-Being https://plato.stanford.edu/entries/well-being/
+Communitarianism https://plato.stanford.edu/entries/communitarianism/
+John Locke https://plato.stanford.edu/entries/locke/
+Common Knowledge https://plato.stanford.edu/entries/common-knowledge/
+Comparative Philosophy: Chinese and Western https://plato.stanford.edu/entries/comparphil-chiwes/
+Abstract Objects https://plato.stanford.edu/entries/abstract-objects/
+Automated Reasoning https://plato.stanford.edu/entries/reasoning-automated/
+Panpsychism https://plato.stanford.edu/entries/panpsychism/
+Higher-Order Theories of Consciousness https://plato.stanford.edu/entries/consciousness-higher/
+The Unity of Consciousness https://plato.stanford.edu/entries/consciousness-unity/
+Equality https://plato.stanford.edu/entries/equality/
+Physicalism https://plato.stanford.edu/entries/physicalism/
+The Analysis of Knowledge https://plato.stanford.edu/entries/knowledge-analysis/
+Challenges to Metaphysical Realism https://plato.stanford.edu/entries/realism-sem-challenge/
+Constitutionalism https://plato.stanford.edu/entries/constitutionalism/
+Counterfactual Theories of Causation https://plato.stanford.edu/entries/causation-counterfactual/
+Disjunction https://plato.stanford.edu/entries/disjunction/
+Incompatibilist (Nondeterministic) Theories of Free Will https://plato.stanford.edu/entries/incompatibilism-theories/
+Contractarianism https://plato.stanford.edu/entries/contractarianism/
+Actualism https://plato.stanford.edu/entries/actualism/
+Representational Theories of Consciousness https://plato.stanford.edu/entries/consciousness-representational/
+Mental Representation https://plato.stanford.edu/entries/mental-representation/
+War https://plato.stanford.edu/entries/war/
+The Mind/Brain Identity Theory https://plato.stanford.edu/entries/mind-identity/
+Logical Form https://plato.stanford.edu/entries/logical-form/
+Properties https://plato.stanford.edu/entries/properties/
+Intuitionistic Logic https://plato.stanford.edu/entries/logic-intuitionistic/
+Epiphenomenalism https://plato.stanford.edu/entries/epiphenomenalism/
+The Language of Thought Hypothesis https://plato.stanford.edu/entries/language-thought/
+Pascal's Wager https://plato.stanford.edu/entries/pascal-wager/
+Color https://plato.stanford.edu/entries/color/
+Mental Imagery https://plato.stanford.edu/entries/mental-imagery/
+Structured Propositions https://plato.stanford.edu/entries/propositions-structured/
+Qualia https://plato.stanford.edu/entries/qualia/
+Singular Propositions https://plato.stanford.edu/entries/propositions-singular/
+Probabilistic Causation https://plato.stanford.edu/entries/causation-probabilistic/
+Vagueness https://plato.stanford.edu/entries/vagueness/
+Thought Experiments https://plato.stanford.edu/entries/thought-experiment/
+Causal Processes https://plato.stanford.edu/entries/causation-process/
+Liberalism https://plato.stanford.edu/entries/liberalism/
+Informal Logic https://plato.stanford.edu/entries/logic-informal/
+Logical Constructions https://plato.stanford.edu/entries/logical-construction/
+The Coherence Theory of Truth https://plato.stanford.edu/entries/truth-coherence/
+Existence https://plato.stanford.edu/entries/existence/
+The Identity of Indiscernibles https://plato.stanford.edu/entries/identity-indiscernible/
+Stoicism https://plato.stanford.edu/entries/stoicism/
+The Identity Theory of Truth https://plato.stanford.edu/entries/truth-identity/
+Contemporary Approaches to the Social Contract https://plato.stanford.edu/entries/contractarianism-contemporary/
+Original Position https://plato.stanford.edu/entries/original-position/
+Animal Consciousness https://plato.stanford.edu/entries/consciousness-animal/
+
 * Pre-Socratic
 ** Four elements: Earth, Water, Air and Fire
 ** Sophists ~ 450BC

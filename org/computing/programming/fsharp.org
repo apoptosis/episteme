@@ -1,0 +1,8 @@
+#+title: F#
+
+* Bookmarks
+** TCP Client example
+https://stackoverflow.com/questions/44256724/netcat-snippet-equivalent-in-f-tcpclient
+* Packages
+** Hopac
+https://github.com/Hopac/Hopac

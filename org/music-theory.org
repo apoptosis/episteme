@@ -1,0 +1,84 @@
+#+title: Music Theory
+
+* Intervals
+| Semitones | Name           | Short |
+|-----------+----------------+-------|
+|         0 | Unison         | P1    |
+|         1 | Minor second   | m2    |
+|         2 | Major second   | M2    |
+|         3 | Minor third    | m3    |
+|         4 | Major third    | M3    |
+|         5 | Perfect fourth | P4    |
+|         6 |                |       |
+|         7 | Perfect fifth  | P5    |
+|         8 | Minor sixth    | m6    |
+|         9 | Major sixth    | M6    |
+|        10 | Minor seventh  | m7    |
+|        11 | Major seventh  | M7    |
+|        12 | Perfect octave | P8    |
+* Major Modes
+** Ionian - WWhWWWh
+*C*  C#  *D*  D#  *E*  *F*  F#  *G*  G#  *A*  A#  *B*  *C*
+   Db     Eb        Gb     Ab     Bb
+C______D______E__F______G______A______B__C
+   M2     M2   m2   M2     M2     M2   m2
+C____M3_______E
+C______P4________F
+C________P5_____________G
+C__________M6__________________A
+C____________M7_______________________B
+
+** Dorian - WhWWWhW
+*D*  D#  *E*  *F*  F#  *G*  G#  *A*  A#  *B*  *C*  C#  *D*
+   Eb        Gb     Ab     Bb        Db
+D______E__F______G______A______B__C______D
+   M2   m2   M2     M2     M2   m2   M2
+D____m3___F
+D______P4________G
+D________P5_____________A
+D__________M6__________________B
+D____________m7___________________C
+
+** Phrygian - hWWWhWW
+*E*  *F*  F#  *G*  G#  *A*  A#  *B*  *C*  C#  *D*  D#  *E*
+      Gb     Ab     Bb        Db     Eb
+E__F______G______A______B__C______D______E
+ m2   M2     M2     M2   m2   M2     M2
+E__m3_____G
+E____P4__________A
+E______P5________________B
+E________m6________________C
+E__________m7_____________________D
+
+** Lydian - WWWhWWh
+*F*  F#  *G*  G#  *A*  A#  *B*  *C*  C#  *D*  D#  *E*  *F*
+   Gb     Ab     Bb        Db     Eb
+F______G______A______B__C______D______E__F
+   M2     M2     M2   m2   M2     M2   m2
+F____M3_______A
+F______A4____________B
+F________P5_____________C
+F__________M6__________________D
+F____________M7_______________________E
+
+** Mixolydian - WWhWWhW
+*G*  G#  *A*  A#  *B*  *C*  C#  *D*  D#  *E*  *F*  F#  *G*
+   Ab     Bb        Db     Eb        Gb
+G______A______B__C______D______E__F______G
+   M2     M2   m2   M2     M2   m2   M2
+G____M3_______B
+G______P4________C
+G________P5_____________D
+G__________M6__________________E
+G____________m7___________________F
+
+** Aeolian - WhWWhWW
+*A*  A#  *B*  *C*  C#  *D*  D#  *E*  *F*  F#  *G*  G#  *A*
+   Bb        Db     Eb        Gb     Ab
+A______B__C______D______E__F______G______A
+   M2   m2   M2     M2   m2   M2     M2
+A____m3___C
+A______P4________D
+A________P5_____________E
+A__________m6______________F
+A____________m7___________________G

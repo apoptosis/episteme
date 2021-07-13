@@ -1,0 +1,9 @@
+#+title: Emacs
+
+* Regex Builder
+** use 'string' syntax
+#+begin_src emacs-lisp
+  (setq reb-re-syntax 'string)
+#+end_src
+
+

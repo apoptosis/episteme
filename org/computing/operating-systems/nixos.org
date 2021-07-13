@@ -1,0 +1,85 @@
+#+title: NixOS
+
+* Installation
+** Initial Partition Prep
+There needs to be at least three partitions:
+| Name  | Size           | Filesystem | Flags    |
+|-------+----------------+------------+----------|
+| efi   | 1GiB           | fat32      | esp,boot |
+| swap  | $available_ram | linux-swap |          |
+| nixos | $unused_space  | xfs        |          |
+
+* Nixlang
+** Builtins
+*** readDir PATH
+Read PATH in as a string.
+** Attrsets
+*** nameValuePair NAME VALUE
+Returns an attrset like {name=NAME; value=VALUE;}
+*** mapAttrs FUNC ATTRSET
+Runs FUNC over ATTRSET passing each key and value. FUNC should return new values for
+each key.
+*** mapAttrs' FUNC ATTRSET
+Like =mapAttrs= but FUNC should return an attrset, like those returned from
+=nameValuePair=, for each key-value pair in ATTRSET.
+
+* Home-manager
+** Scraps
+*** Activation Packages
+First import the dag module:
+#+begin_src nix
+  with import <home-manager/modules/lib/dag.nix> { inherit lib; };
+#+end_src
+
+Then add a new entry:
+#+begin_src nix
+  home.activation.ssh-personal = dagEntryAfter ["installPackages"] ''
+    chmod 400 /Users/dustinlacewell/.ssh/personal
+  '';
+#+end_src
+
+* Pills
+** Search for packages
+#+begin_src shell
+ nix-env -qaP '.*emacs.*'
+#+end_src
+
+** Force config merge ordering
+#+begin_src nix
+  systemd.services.znc.preStart = lib.mkBefore "echo 'foo'"
+#+end_src
+
+#+begin_src nix
+  systemd.services.znc.preStart = lib.mkAfter "echo 'foo"
+#+end_src
+
+** Add nixpkgs or nixos fork as channel
+#+begin_src text
+  nix-channel --add https://github.com/LnL7/nixpkgs/archive/foo.tar.gz nixpkgs-foo
+#+end_src
+
+*
+** Nix-shell shebangs
+#+begin_src bash
+  #! /usr/bin/env nix-shell
+  #! nix-shell -i python3 -p python3 python34Packages.pygobject3 libnotify gobjectIntrospection gdk_pixbuf
+#+end_src
+** Install Derivation With nix-env
+#+begin_src sh
+  nix-env -f default.nix -i
+#+end_src
+** Get Hash of Store Path
+#+begin_src sh
+  nix-hash --type sha256 --base32 /nix/store/xxx
+#+end_src
+** Create a simple wrapper script
+** Find Dependants Of Package
+#+begin_src bash
+nix-store --query --roots /nix/store/7dnsvya7hz0srvh4wrkyi6q2w36lgkf9-styx-0.7.1-lib
+#+end_src
+
+also nix-whydepends
+
+* Audio
+** Jack
+https://github.com/NixOS/nixpkgs/pull/93431#issuecomment-680828528

@@ -1,0 +1,5 @@
+#+title: Hex
+
+* Resources
+- http://www.mseymour.ca/hex_book/hexstrat2.html#fig_template_c4
+- http://www.trmph.com/hexwiki/Main_Page.html

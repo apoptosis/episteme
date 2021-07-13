@@ -1,0 +1,7 @@
+#+title: Striaght.el
+
+* Install a package from github
+#+begin_src elisp
+  (use-package package-name
+    :straight (package-name :type git :host github :repo "user/package-name"))
+#+end_src

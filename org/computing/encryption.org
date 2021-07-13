@@ -1,0 +1,36 @@
+
+#+title:Encryption
+
+* Encrypt message using typical keypair
+** First, convert the public key to pem format:
+#+begin_src bash
+  ssh-keygen -f ~/.ssh/id_rsa.pub -e -m PKCS8 > ~/.ssh/id_rsa.pem.pub
+#+end_src
+
+** Private -> Public
+First encrypt and base64 encode with private key:
+
+#+header: :var INPUT="Hello World!"
+#+begin_src bash :results output :exports none
+  $ echo "$INPUT" | openssl rsautl -sign -inkey ~/.ssh/id_rsa -in - -out - | base64
+#+end_src
+
+Then base64 decode and decrypt with public key (in PEM format):
+
+#+begin_src bash
+  cat msg.enc | base64 -d | openssl rsautl -verify -pubin -inkey ~/.ssh/id_rsa.pem.pub -in -
+#+end_src
+
+** Public -> Private
+First encrypt and base64 encode with public key:
+
+#+begin_src bash
+  openssl rsautl -encrypt -inkey ~/.ssh/id_rsa.pem.pub -pubin -in msg.txt -out msg.enc
+#+end_src
+
+Then base64 decode and decrypt with private key:
+
+#+begin_src bash
+  openssl rsautl -decrypt -inkey ~/.ssh/id_rsa -in msg.enc -out msg.txt
+#+end_src
+

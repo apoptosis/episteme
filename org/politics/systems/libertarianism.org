@@ -1,0 +1,235 @@
+#+title: Libertarianism
+#+description: Political knowledge-base of the ##apoptosis community on Freenode
+#+language: en
+#+startup: overview indent align
+#+babel: :cache no
+#+options: ^:nil num:nil tags:nil
+#+html_head: <link rel="stylesheet" type="text/css" href="https://www.pirilampo.org/styles/readtheorg/css/htmlize.css"/>
+#+html_head: <link rel="stylesheet" type="text/css" href="https://www.pirilampo.org/styles/readtheorg/css/readtheorg.css"/>
+#+html_head: <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+#+html_head: <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+#+html_head: <script type="text/javascript" src="https://www.pirilampo.org/styles/lib/js/jquery.stickytableheaders.js"></script>
+#+html_head: <script type="text/javascript" src="https://www.pirilampo.org/styles/readtheorg/js/readtheorg.js"></script>
+#+html_head: <link rel="stylesheet" type="text/css" href="/episteme/extra.css"/>
+
+* Definition
+Libertarianism is an ethical system that uses the [[Non-Aggression Principle]] to
+resolve [[Conflict]] by discovering who aggressed
+
+* Resources
+** TEAC
+*** Title
+The Ethics of Anarcho-Capitalism
+*** Author
+Kristopher Borer
+
+** HA
+*** Title
+Human Action
+*** Author
+Ludwig Von Mises
+
+** EoL
+*** Title
+The Ethics of Liberty
+*** Author
+Murray N. Rothbard
+
+** SCHIFF
+*** Title
+How an Economy Grows and why it Crashes
+*** Author
+Peter D. Schiff
+
+** TEaEoPP
+*** Title
+The Economics and Ethics of Private Property
+*** Author
+Hans-Herman Hoppe
+
+** LGaC
+*** Title
+Liberty Games and Contracts
+*** Author
+Jan Narveson
+
+** AotS
+*** Title
+Anatomy of the State
+*** Author
+Murray N. Rothbard
+
+* Related
+** Freedom
+*** Definition
+Freedom is the degree to which one may manipulate the [[Capital]] around them
+*** Resources
+[[TEAC]]
+[[EoL]]
+
+** Capital
+*** Definition
+Capital is the valued means through which one utilises their [[Liberty]]
+
+** Action
+*** Definition
+Action is purposeful behaviour
+*** Resources
+[[HA]]
+
+** Actor
+*** Definition
+An actor is one who engages in [[Action]]
+*** Resources
+[[HA]]
+
+** Interaction
+*** Definition
+Interaction is the mutual engagement of [[Ethical]] [[[[Actor]]][Actors]]
+*** Notes
+Trying to do internal links with custom titles
+ - LiquidZulu
+
+** Interference
+*** Definition
+A interferes with B if aINA is contradictory to bINB
+*** Notes
+I couldn't get emacs to accept UTF-8, ill leave that up to the linux people.
+ - LiquidZulu
+
+** Compatibility
+*** Definition
+Compatibility of A and B => A does not interfere with B and B does not interfere with A
+
+** Praxeology
+*** Definition
+Praxeology is the study of [[Action]]
+*** Resources
+[[HA]]
+
+** Cooperation
+*** Definition
+Cooperation is when people interact and their [[Action]]s are compatible
+
+** Conflict
+*** Definition
+Conflict is when people interact but their [[Action]]s are not compatible
+
+** Liberty
+*** Definition
+Liberty is the absence of [[Conflict]]
+*** Resources
+[[TEAC]]
+[[EoL]]
+
+** Aggression
+*** Definition
+Aggression is any [[Action]] that causes [[Conflict]]
+
+** Society
+*** Definition
+A Society is a group of individuals involved in persistent, ond consistent, interaction, with widely understood [[Social Norm]]s, likely within a given geographical region
+
+** Free Market
+*** Definition
+A free market is a [[Society]] without [[Conflict]]
+*** Resources
+[[TEAC]]
+[[SCHIFF]]
+
+** Ethics
+*** Definition
+Ethics prescibes how to solve [[Conflict]]
+*** Resources
+[[TEAC]]
+[[EoL]]
+
+** Morality
+*** Definition
+Morality defines whether an [[Action]] is good or bad, through some system of logic
+*** Notes
+I am /very/ early in my studies on Morality so I dont know what texts are good. 
+ - LiquidZulu
+
+** Non-Aggression Principle
+*** Definition
+The Non-Aggression Principle, or NAP, is an axiom that defines how to prevent [[Conflict]]
+*** Resources
+[[TEAC]]
+[[EoL]]
+
+** The Homestead Principle
+*** Definition
+The Homestead principle states that one may come into possession of an unowned resource through original appropriation --- essentially making ethical use of it.
+*** Resources
+[[EoL]]
+[[TEaEoPP]]
+
+** Property
+*** Definition
+Property is anything that has been acquired through the [[Homestead principle]] or voluntary trade
+*** Resources
+[[TEAC]]
+[[EoL]]
+[[TEaEoPP]]
+
+** Ownership
+*** Definition
+Ownership is having [[Ethical]] control over how [[Property]] is used
+*** Resources
+[[TEAC]]
+
+** Private Property System
+*** Definition
+The Private Property System is a tool for applying the [[Non-Aggression Principle]], where all [[Property]] is adhered to absolutely
+*** Resources
+[[TEAC]]
+[[EoL]]
+[[TEaEoPP]]
+
+** Justice
+*** Definition
+Justice is the process by which we correct an [[Aggression]]
+*** Resources
+[[LGaC]]
+[[EoL]]
+
+** Social Norm
+*** Definition
+A social norm is a convention for [[Action]]
+*** Resources
+[[TEAC]]
+[[EoL]]
+
+** Capitalism
+*** Definition
+Capitalism is an economic system that assigns [[Ownership]] based on the [[Private Property System]]
+*** Resources
+[[TEC]]
+
+** Anarcho-Capitalism
+*** Definition
+Anarcho-Capitalism is uncompromising [[Libertarianism]]
+*** Resources
+[[TEAC]]
+
+** State
+*** Definition
+A state is any organisation that [[Society]] exempts from the [[Non-Aggression Principle]]
+*** Resources
+[[AotS]]
+[[TEAC]]
+
+** Government
+*** Definition
+Government is the [[State]] that maintains a monopoly on violence over the area in question
+*** Resources
+[[AotS]]
+[[TEAC]]
+
+** Anarchy
+*** Definition
+Anarchy is the absence of [[Government]]
+*** Resources
+[[TEAC]]
+[[EoL]]

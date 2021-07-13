@@ -1,0 +1,10 @@
+#+title: Baduk
+
+* Proverbs
+** *Don't* push from behind
+** If *white* or *black* has 4 corners, black should resign
+** *Extend* when your opponent *crosscuts*
+* Resources
+** zbaduk - https://www.zbaduk.com/tools
+Free AI review
+

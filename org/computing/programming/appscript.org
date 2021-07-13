@@ -1,0 +1,17 @@
+#+title: AppScript
+Google's AppScript is actually pretty cool.
+
+* Charting
+** react-google-charts
+https://react-google-charts.com/data-sources/from-google-spreadsheet
+* Sheet ORMs
+** gs-spreadsheet-manager
+https://github.com/jsoma/gs-spreadsheet-manager
+** Tamotsu
+https://github.com/itmammoth/Tamotsu
+** objdb
+https://googlescripts.harryonline.net/objdb
+** sheetfu
+https://github.com/socialpoint-labs/sheetfu-apps-script/issues
+** goodel
+https://github.com/7imon7ays/Goodel/

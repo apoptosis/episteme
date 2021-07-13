@@ -1,0 +1,6 @@
+#+title: AWS
+
+* Storage
+** Resize EBS without Reboot
+https://www.elastic.co/blog/autoresize-ebs-root-volume-on-aws-amis
+https://tech.mybuilder.com/how-to-expand-a-linux-aws-ebs-root-partition-volume-without-rebooting/

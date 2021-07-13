@@ -1,0 +1,21 @@
+#+title: Git
+
+* Clients
+** grv
+https://github.com/rgburke/grv
+
+* Sparse Checkout
+Invalid paths getting you down?
+
+#+begin_src sh
+  export GITURL=
+  export BRANCHNAME=
+  export REPONAME=
+
+  git clone $GITURL --depth 1 --branch $BRANCHNAME --no-checkout $REPONAME
+  cd $REPONAME
+  git sparse-checkout init
+  git sparse-checkout set "/*"
+  git sparse-checkout add "\!/unwanted"
+  git read-tree -mu HEAD
+#+end_src

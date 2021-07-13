@@ -1,0 +1,38 @@
+#+title: Minecraft
+
+* Server Administration
+** Mods
+*** Luck Perms
+
+*** EssentialsX
+
+*** Vault
+https://github.com/MilkBowl/Vault/
+https://github.com/MilkBowl/VaultAPI
+
+*** CoreProtect
+https://www.spigotmc.org/resources/coreprotect.8631/
+Perms http://minerealm.com/community/viewtopic.php?f=32&t=6782
+Commands http://minerealm.com/community/viewtopic.php?f=32&t=6781
+API https://www.minerealm.com/community/viewtopic.php?f=32&t=16687
+Guides http://dev.bukkit.org/bukkit-plugins/coreprotect/pages/guides-resources/
+
+*** WorldGuard
+https://worldguard.enginehub.org/en/latest/
+*** WorldEdit
+https://worldedit.enginehub.org/en/latest/
+*** CraftBook
+https://craftbook.enginehub.org/en/5.0.0/install/#
+*** Cleanroom Generator
+https://dev.bukkit.org/projects/cleanroomgenerator
+*** EpicWorldGenerator
+https://www.spigotmc.org/resources/epicworldgenerator-1-15-1-16-4-%E2%9D%97%EF%B8%8Fsale-%E2%9D%97%EF%B8%8F-20-off.8067/
+** Schematics
+*** Spawns
+https://www.planetminecraft.com/project/easy-green-spawn/
+https://www.planetminecraft.com/project/medeival-spawn-with-schematic/
+*** Cities
+https://www.planetminecraft.com/project/kargeth-medieval-city-world-preject/
+
+* Links
+** https://unix.stackexchange.com/questions/453998/systemd-connect-to-stdin-stdout-after-service-has-started

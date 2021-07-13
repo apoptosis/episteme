@@ -1,0 +1,40 @@
+* Package managers
+** NPM
+*** Find global root
+node root -g
+** Yarn
+
+*** Workspaces
+#+begin_src js
+  {
+      "private": true,
+      "workspaces": ["projects/*"],
+  }
+#+end_src
+
+**** Lerna
+Install lerna into workspace root:
+
+#+begin_src bash
+  yarn add -D -W lerna
+#+end_src
+
+Initialize lerna:
+
+#+begin_src bash
+  npx lerna init
+#+end_src
+
+Run command in all workspaces:
+
+#+begin_src bash
+  npx lerna run $CMD
+#+end_src
+
+Install dependency into package:
+
+#+begin_src bash
+  lerna add a --scope=b --scope=c --scope=d  
+#+end_src
+** PNPM
+

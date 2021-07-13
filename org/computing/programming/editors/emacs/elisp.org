@@ -1,0 +1,22 @@
+#+title: Elisp
+* Macros
+** Expanding macros
+Use [[https://github.com/joddie/macrostep][macrostep]] to interactively expand macros step by step.
+
+Main command: help:macrostep-expand
+** Use defun indent on macro
+#+begin_src elisp
+  (defmacro foo (bar &rest body)
+    (declare (indent defun))
+    nil)
+
+  (foo bar
+    (baz 1)
+    (boz 2))
+#+end_src
+
+* Keyword Arguments
+Use =&key= in the parameter list, name syms follow.
+
+With =cl-defun=, default args can be specified like =(name default)=.
+

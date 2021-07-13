@@ -1,0 +1,453 @@
+#+title: Monorepos
+#+property: header-args :results output raw silent
+#+property: header-args:sh :results output raw silent
+#+property: header-args:python :results raw value silent
+#+startup: hideblocks
+
+* NX
+** Guides
+*** Creating a new NX monorepo
+:properties:
+:header-args:sh: :session *nx-session*
+:end:
+This section will assist in setting up a new monorepo with [[https://nx.dev/][NX]].
+
+Use =C-c C-c= to execute codeblocks and links.
+
+**** Prerequisites
+Ensure that you have [[https://nodejs.org/en/][NodeJS]].
+
+Then install [[https://pnpm.io/][pnpm]] and [[https://nx.dev/][NX]] globally:
+#+begin_src sh
+  npm install -g pnpm nx
+#+end_src
+
+**** Start Here
+Specify where your monorepo will live with the next two sections.
+***** Where do you keep your projects?
+#+name: nx-project-root
+/home/ldlework/ext/freenode
+***** What's the name of the new monorepo?
+#+NAME: nx-monorepo-name
+dnsbot3
+
+**** Create new monorepo
+Create a new monorepo if it doesn't exist.
+
+#+begin_src sh :var ROOT=nx-project-root NAME=nx-monorepo-name
+  cd $ROOT
+  if [ ! -d $NAME ]
+  then
+      export PRESET="--preset empty"
+      export PM="--package-manager pnpm"
+      export CLI="--cli nx"
+      export CLOUD="--nx-cloud false"
+      pnpx -y create-nx-workspace@latest $NAME $PM $PRESET $CLI $CLOUD > /tmp/nx-workspace.log
+  fi
+  cd $NAME
+#+end_src
+
+**** Install Node support
+[[https://pnpm.io/][pnpm]] is a new very fast node package manager that solves a lot of long standing
+issues.
+
+#+begin_src sh
+  pnpm install -D @nrwl/node
+#+end_src
+
+**** Install development dependencies
+#+begin_src sh :var ROOT=(s-trim (org-ls-resolve 'nx-project-root)) NAME=(s-trim (org-ls-resolve 'nx-monorepo-name))
+  cd "$ROOT/$NAME"
+  pnpm install -D @types/node type-fest ts-node typescript prettier eslint
+  pnpm install -D eslint-config-prettier eslint-config-react-app eslint-plugin-cypress
+  pnpm install -D eslint-plugin-flowtype eslint-plugin-import eslint-plugin-import-newlines
+  pnpm install -D eslint-plugin-json eslint-plugin-json-format eslint-plugin-jsx-a11y
+  pnpm install -D eslint-plugin-react eslint-plugin-react-hooks eslint-plugin-simple-import-sort
+  pnpm install -D eslint-plugin-unused-imports typescript-eslint @typescript-eslint/eslint-plugin
+  pnpm install -D @typescript-eslint/parser
+#+end_src
+**** Configure settings
+- [[elisp:(nx-copy ".vscode/extensions.json" 'extensions)][Configure extensions.json]]
+  #+name: extensions
+  #+begin_src json
+{
+  "recommendations": [
+    "nrwl.angular-console",
+    "firsttris.vscode-jest-runner",
+    "dozerg.tsimportsorter",
+    "editorconfig.editorconfig",
+    "ryuta46.multi-command",
+    "streetsidesoftware.code-spell-checker",
+    "dbaeumer.vscode-eslint",
+    "esbenp.prettier-vscode"
+  ]
+}
+#+end_src
+
+- [[elisp:(nx-copy ".vscode/settings.json" 'settings)][Configure settings.json]]
+  #+name: settings
+  #+begin_src jsonc
+  {
+      // use workspace typescript
+      "typescript.tsdk": "./node_modules/typescript/lib",
+
+      // default linters
+      "[javascript]": {
+          "editor.defaultFormatter": "dbaeumer.vscode-eslint"
+      },
+      "[typescriptreact]": {
+          "editor.defaultFormatter": "dbaeumer.vscode-eslint"
+      },
+      "[javascriptreact]": {
+          "editor.defaultFormatter": "dbaeumer.vscode-eslint"
+      },
+      "[typescript]": {
+          "editor.defaultFormatter": "dbaeumer.vscode-eslint"
+      },
+      "[json]": {
+          "editor.defaultFormatter": "esbenp.prettier-vscode"
+      },
+      "[jsonc]": {
+          "editor.defaultFormatter": "esbenp.prettier-vscode"
+      },
+
+      // disable vscode format on save
+      "editor.formatOnSave": false,
+
+      // eslint
+      "eslint.format.enable": true,
+      "eslint.lintTask.enable": true,
+      "editor.codeActionsOnSave": {
+          "source.addMissingImports": true,
+          "editor.action.formatDocument": true,
+          "source.fixAll": true
+      },
+      "eslint.validate": [
+          "javascript",
+          "javascriptreact",
+          "typescript",
+          "typescriptreact"
+      ],
+
+      // import grouping and sorting
+      "tsImportSorter.configuration.autoFormat": "off",
+      "tsImportSorter.configuration.groupRules": [
+          "^react(-dom)?$",
+          {},
+          "^[@]",
+          "^[.]"
+      ],
+
+      // format command
+      "multiCommand.commands": [
+          {
+              "command": "multiCommand.formatAndfix",
+              "sequence": ["editor.action.formatDocument"]
+          }
+      ],
+
+      // local dictionary
+      "cSpell.words": [
+          "Boid",
+          "domview",
+          "useanimationframe",
+          "useengine",
+          "useentity",
+          "usefacet",
+          "usequery",
+          "usestatefulref",
+          "usesystem",
+          "usetimer"
+      ]
+  }
+#+end_src
+
+- [[elisp:(nx-copy ".editorconfig" 'editorconfig)][Configure .editorconfig]]
+  #+name: editorconfig
+  #+begin_src text
+  # Editor configuration, see http://editorconfig.org
+  root = true
+
+  [*]
+  charset = utf-8
+  indent_style = space
+  indent_size = 4
+  insert_final_newline = true
+  trim_trailing_whitespace = true
+
+  [*.md]
+  max_line_length = off
+  trim_trailing_whitespace = false
+#+end_src
+
+- [[elisp:(nx-copy ".prettierrc" 'prettier)][Configure .prettierrc]]
+  #+name: prettier
+  #+begin_src json
+    {
+      "arrowParens": "avoid",
+      "semi": false
+    }
+#+end_src
+
+- [[elisp:(nx-copy ".eslintrc.json" 'eslint)][Configure .eslintrc.json]]
+  #+name: eslint
+  #+begin_src json
+    {
+        "root": true,
+        "env": {
+            "es6": true
+        },
+        "plugins": ["@typescript-eslint"],
+        "extends": [
+            "eslint:recommended",
+            "plugin:@typescript-eslint/eslint-recommended",
+            "plugin:@typescript-eslint/recommended"
+        ],
+        "rules": {
+            "indent": ["error", 4]
+        },
+        "overrides": [
+            {
+                "files": ["*.ts", "*.tsx"],
+                "plugins": ["@typescript-eslint"],
+                "parser": "@typescript-eslint/parser",
+                "rules": {
+                    "@typescript-eslint/explicit-module-boundary-types": "off",
+                    "@typescript-eslint/no-non-null-assertion": "off",
+                    "semi": ["error", "never"]
+                }
+            },
+            {
+                "files": ["*.ts", "*.tsx"],
+                "plugins": [
+                    "simple-import-sort",
+                    "unused-imports",
+                    "import",
+                    "import-newlines"
+                ],
+                "rules": {
+                    "indent": "off",
+                    "no-unused-vars": "off",
+                    "unused-imports/no-unused-imports": "error",
+                    "unused-imports/no-unused-vars": [
+                        "warn",
+                        {
+                            "vars": "all",
+                            "varsIgnorePattern": "^_",
+                            "args": "after-used",
+                            "argsIgnorePattern": "^_"
+                        }
+                    ],
+                    "@typescript-eslint/indent": ["error", 4],
+                    "import/first": "error",
+                    "import/newline-after-import": ["error", { "count": 2 }],
+                    "import/no-duplicates": "error",
+                    "import/no-absolute-path": "error",
+                    "no-multiple-empty-lines": ["warn", { "max": 2 }],
+                    "padded-blocks": ["error", "never"],
+
+                    "import-newlines/enforce": [
+                        "error",
+                        {
+                            "items": 2,
+                            "max-len": 100,
+                            "semi": false
+                        }
+                    ],
+
+                    "object-curly-newline": [
+                        "error",
+                        {
+                            "ObjectExpression": { "multiline": true },
+                            "ObjectPattern": { "multiline": true }
+                        }
+                    ],
+
+                    "simple-import-sort/imports": [
+                        "error",
+                        {
+                            "groups": [
+                                // Node.js builtins. You could also generate this regex if you use a `.js` config.
+                                // For example: `^(${require("module").builtinModules.join("|")})(/|$)`
+                                [
+                                    "^(assert|buffer|child_process|cluster|console|constants|crypto|dgram|dns|domain|events|fs|http|https|module|net|os|path|punycode|querystring|readline|repl|stream|string_decoder|sys|timers|tls|tty|url|util|vm|zlib|freelist|v8|process|async_hooks|http2|perf_hooks)(/.*|$)"
+                                ],
+                                // Packages. `react` related packages come first.
+                                // Internal packages.
+                                ["^react"],
+                                ["^[a-zA-Z]*"],
+                                ["^@(?!react-ecs)(.*|$)"],
+                                ["^@react-ecs/(.*|$)"],
+                                // Side effect imports.
+                                ["^\\u0000"],
+                                // Parent imports. Put `..` last.
+                                ["^\\.\\.(?!/?$)", "^\\.\\./?$"],
+                                // Other relative imports. Put same-folder imports and `.` last.
+                                ["^\\./(?=.*/)(?!/?$)", "^\\.(?!/?$)", "^\\./?$"],
+                                // Style imports.
+                                ["^.+\\.s?css$"]
+                            ]
+                        }
+                    ],
+
+                    "simple-import-sort/exports": "error",
+
+                    "comma-dangle": [
+                        "error",
+                        {
+                            "arrays": "always-multiline",
+                            "objects": "always-multiline",
+                            "imports": "always-multiline",
+                            "exports": "always-multiline",
+                            "functions": "never"
+                        }
+                    ]
+                }
+            }
+        ]
+    }
+#+end_src
+
+**** Add a node app
+Create a new "backend" node application project.
+
+#+begin_src sh :var NAME=(get "Node app name: ")
+nx generate @nrwl/node:application $NAME
+#+end_src
+
+**** Add a node library
+Create a new "backend" node library project.
+
+#+begin_src sh :var NAME=(get "Node library name: ")
+  nx generate @nrwl/node:library $NAME --buildable
+#+end_src
+
+**** utils
+#+name: nx-path
+#+begin_src python :var FILE="" :var NAME=nx-monorepo-name :var PATH=nx-project-root :return
+return f"{PATH.strip()}/{NAME.strip()}/{FILE.strip()}"
+#+end_src
+
+#+name: nx-lib
+#+begin_src elisp
+  (defun nx-copy (file text)
+    (let ((text (org-ls-resolve text)))
+      (with-temp-file (org-ls-call "nx-path" :FILE file)
+        (erase-buffer)
+        (insert text))))
+
+  (defun nx-open (file)
+    (let ((file (org-ls-call "nx-path" :FILE file)))
+      (find-file file)))
+#+end_src
+
+* Rush
+** Guides
+*** Creating a new Rush monorepo
+
+This section will assist in setting up a new monorepo with [[https://rushjs.io/][Rush]] and [[https://rushstack.io/pages/heft/overview/][Heft]].
+
+Use =C-c C-c= to execute codeblocks and links.
+
+**** Prerequisites
+Ensure that you have [[https://nodejs.org/en/][NodeJS]].
+
+Then install [[https://pnpm.io/][pnpm]], [[https://rushjs.io/][Rush]] and [[https://rushstack.io/pages/heft/overview/][Heft]] globally:
+#+begin_src sh
+  npm install -g pnpm @microsoft/rush @rushstack/heft
+#+end_src
+
+**** Start Here
+Specify where your monorepo will live with the next two sections.
+***** Where do you keep your projects?
+#+name: rush-project-root
+/home/ldlework/src
+***** What's the name of the new monorepo?
+#+NAME: rush-monorepo-name
+rush-monorepo-test
+
+**** Create new monorepo
+Create a new monorepo if it doesn't exist.
+
+#+begin_src sh :var ROOT=rush-project-root NAME=rush-monorepo-name :results output raw
+  cd $ROOT
+  if [ ! -d $NAME ]
+  then
+    mkdir $NAME
+    cd $NAME
+    rush init
+  fi
+#+end_src
+
+**** Enable PNPM support
+[[elisp:(rush-open "rush.json")][Open rush.json]] and uncomment =pnpmVersion=.
+
+**** Adding a new project
+Each project goes into a "category" folder. For example:
+
+- =libs/corelib/=
+- =apps/cli=
+
+You must then add these projects to =rush.json=:
+
+#+begin_src json
+  "projects": [
+      {
+          "packageName": "corelib",
+          "projectFolder": "libs/corelib"
+      },
+      {
+          "packageName": "cli",
+          "projectFolder": "apps/cli"
+      }
+  ]
+#+end_src
+**** Troubleshooting
+***** Resetting the Rush state
+#+begin_src sh
+  rush update --purge
+#+end_src
+***** Check dependency homogeny
+#+begin_src sh
+  rush check
+#+end_src
+**** utils
+#+name: rush-path
+#+begin_src python :var FILE="" :var NAME=rush-monorepo-name :var PATH=rush-project-root :return
+return f"{PATH.strip()}/{NAME.strip()}/{FILE.strip()}"
+#+end_src
+
+#+name: rush-lib
+#+begin_src elisp
+  (defun rush-copy (file text)
+    (let ((text (org-ls-resolve text)))
+      (with-temp-file (org-ls-call "rush-path" :FILE file)
+        (erase-buffer)
+        (insert text))))
+
+  (defun rush-open (file)
+    (let ((file (org-ls-call "rush-path" :FILE file)))
+      (find-file file)))
+#+end_src
+
+* utils
+#+name: lib
+#+begin_src elisp
+  (defun org-babel-execute:jsonc (body params)
+    "Execute a block of json with org-babel."
+    body)
+
+  (defun org-babel-execute:text (body params)
+    "Execute a block of text with org-babel."
+    body)
+
+  (defun get (prompt)
+    (read-string prompt))
+#+end_src
+
+# Local Variables:
+# eval: (org-ls-call "lib")
+# eval: (org-ls-call "nx-lib")
+# eval: (org-ls-call "rush-lib")
+# eval: (progn (org-shifttab)(org-shifttab))
+# End:

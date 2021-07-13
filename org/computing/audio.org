@@ -1,0 +1,7 @@
+#+title: Audio
+
+* Conversions
+** m4a => mp3
+#+begin_src sh
+ffmpeg -v 5 -y -i church-bells.m4a -acodec libmp3lame -ac 2 -ab 192k church-bells.mp3
+#+end_src

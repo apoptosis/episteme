@@ -1,0 +1,40 @@
+#+title: NestJS
+* Core Concepts
+** Controllers
+Responsible for defining routes that handle incoming requests.
+** Routes
+Methods on Controllers that handle incoming requests.
+** Provider
+Basically any class annotated with =@injectable= such as services which are made
+available to Controllers and Routes.
+** Module
+A class annotated with =@Module= where Controllers, Providers, and other module
+Imports and Exports are associated.
+*** Exports
+What Providers are made available by importing this module
+*** Imports
+Modules that contain providers used by this module.
+** Middleware
+Functions called before Routes are executed, with access to the request and
+response objects.
+** Pipes
+Operate on Route parameters for validation or transformation.
+
+- Need to be @injectable
+- Need to implement =PipeTransform= interface
+** Guards
+Determine whether a given request will be handled by the Route.
+
+- Need to be =@injectable=
+- Need to implement =CanActivate= interface.
+* Config
+https://github.com/nestjsx/nestjs-config
+* GraphQL
+** Auto-annotate DTO classes
+https://docs.nestjs.com/graphql/cli-plugin
+** Dataloader
+https://codersera.com/blog/nestjs-typeorm-graphql-dataloader-tutorial-with-typescript/
+* DTO/Entity Conversion
+https://github.com/fabioformosa/metamorphosis-nestjs
+* Errors
+https://github.com/nestjsx/nestjs-flub

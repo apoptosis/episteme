@@ -1,0 +1,63 @@
+#+title: Windows
+
+* TODO Windows USB
+* TODO Ubuntu USB
+* TODO Workstation Stuff
+** TODO Reverse Alt / Ctrl
+  - Go to this website: http://sharpkeys.codeplex.com/
+  - Download the application (hit the purple button)
+  - open “sharpkeys35.msi”
+  - Install it
+  - Open “SharpKeys” (link on Desktop)
+  - Hit the “Add” button
+  - On left: “Special: Left Alt”; On right: “Special: Left Ctrl”
+  - Hit OK
+  - Hit “Add” again
+  - On left: “Special: Left Ctrl”; On right: “Special: Left Alt”
+  - Hit OK
+  - Hit “Write to Registry”
+  - Restart Computer
+  - DONE
+** TODO Service Manager
+  https://nssm.cc/
+** TODO Syncthing
+  - Logos: B7ZZIWR-SMT4CJN-YM5WKWR-VFHZLLG-XDZPJ5E-QWPDZSH-PG7VHOD-BIABVQP
+  - Wharf: NOZ3N4H-Z7CPBFO-EBUXB6E-JWVABYI-N2HCUB4-BD7OCAL-TNYMYUW-LGC5HQR
+** TODO Chrome
+  - AdGuard AdBlocker
+  - LastPass
+  - Picture-in-Picture
+  - uBlock Origin
+** TODO NVidia Drivers
+** TODO Emacs
+* TODO Utils
+  - 7-Zip
+  - Doxygen
+  - OBS
+  - ScpToolkit
+  - Virtual Desktop Streamer
+  - VLC
+  - WinDirStat
+  - SideQuest
+  - VCV Rack
+* TODO Entertainment Stuff
+** TODO Discord
+** TODO Spotify
+** TODO Steam
+** TODO Oculus
+* TODO Development Stuff
+** TODO Blender
+** TODO Git-for-Windows
+** TODO Rider
+** TODO Unity Hub
+** TODO Visual Studio
+** TODO DnSpy
+* Install Log
+- Format drives
+- [[https://dlcdnets.asus.com/pub/ASUS/misc/wireless/WIFI_Win10_V7352670.zip][Wireless driver]]
+- [[https://www.microsoft.com/en-us/download/details.aspx?id=17657][Windows Resource Kit]] - use remapkey.exe
+- Chrome
+  - LastPass
+- Chocolatey
+  - Spotify
+  - Discord
