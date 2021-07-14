@@ -582,6 +582,7 @@ Shorten yes/no prompts to one letter.
   (fset 'yes-or-no-p 'y-or-n-p)
 #+end_src
 
+** visual
 ** zoom
 Adjust font size in buffers or globally.
 
@@ -1455,6 +1456,18 @@ Many of the Emacs help facilities at your fingertips!
       ("r" toggle-zoom-frame "reset" :color blue))))
 #+end_src
 
+** hydra-dev
+#+begin_src emacs-lisp
+  (:hydra episteme-hydra-dev (:color blue)
+    ("Open"
+     (("s" (find-file (concat episteme/repo "/support.org")) "support.org")
+      ("d" (find-file (concat episteme/org "/episteme/developer-docs.org")) "docs"))
+     "Git"
+     (("g" (magit-status) "magit")
+      ("p" (magit-pull) "pull")
+      ("R" (magit-reset-hard)))))
+#+end_src
+
 ** hydra-default
 #+begin_src emacs-lisp
   (:hydra episteme-hydra-default (:color blue)
@@ -1469,7 +1482,8 @@ Many of the Emacs help facilities at your fingertips!
       ("z" (hera-push 'episteme-hydra-zoom/body) "zoom")
       ("r" (hera-push 'episteme-hydra-registers/body) "registers"))
      "Misc"
-     ((";" embrace-commander "embrace"))))
+     (("!" (hera-push 'episteme-hydra-dev/body) "devtools")
+      (";" embrace-commander "embrace"))))
 #+end_src
 
 * mode menus
@@ -1954,7 +1968,6 @@ Open hydra for current major mode if one exists, otherwise the default hydra.
        ("v" avy-org-goto-heading-timer "avy")
        ("L" org-toggle-link-display "toggle links"))))
 #+end_src
-
 
 * startup
 #+begin_src emacs-lisp
