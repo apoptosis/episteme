@@ -1486,6 +1486,383 @@ Open hydra for current major mode if one exists, otherwise the default hydra.
           (setq mode (get mode 'derived-mode-parent)))
         (hera-start 'hydra-default/body))))
 #+end_src
+** hydra-text
+#+begin_src emacs-lisp
+  (defun wtf ()
+    (interactive)
+    (table-save-horizontal nil))
+
+  (defun table-cell-p ()
+    (table--at-cell-p (point)))
+
+  (defun table-settle-row ()
+    (interactive)
+    (if (bobp)
+        (progn
+          (forward-char)
+          (next-line))
+      (if (eq 1 (line-number-at-pos))
+          (if (eq ?- (char-after))
+              (next-line)
+            (progn
+              (backward-char)
+              (next-line)))
+        (when (eolp)
+          (backward-char))
+        (while (not (table-cell-p))
+          (call-interactively 'previous-line)))))
+
+  (defun table-settle-column ()
+    (interactive)
+    (if (eq 0 (current-column))
+        (forward-char)
+      (while (not (table-cell-p))
+        (backward-char))))
+
+  (defun table-settle ()
+    (interactive)
+    (pcase (char-after)
+      ((pred (lambda (it) (eq ?- it))) (table-settle-row))
+      ((pred (lambda (it) (eq ?| it))) (table-settle-column))
+      ((pred (lambda (it) (eq ?+ it))) (progn
+                                         (forward-char)
+                                         (table-settle-row)))))
+
+  (defun table-row-cells ()
+    (table--cell-list-to-coord-list
+     (table--horizontal-cell-list t nil 'top)))
+
+  (defun table-column-cells ()
+    (table--cell-list-to-coord-list
+     (table--vertical-cell-list t nil 'left)))
+
+  (defun table-vertical-index (y cells)
+    (--find-index
+     (-let* (((tl . br) it)
+             ((tlx . tly) tl)
+             ((brx . bry) br))
+       (and (>= y tly)
+            (<= y bry)))
+     cells))
+
+  (defun table-horizontal-index (x cells)
+    (--find-index
+     (-let* (((tl . br) it)
+             ((tlx . tly) tl)
+             ((brx . bry) br))
+       (and (>= x tlx)
+            (<= x brx)))
+     cells))
+
+  (defun table-get-coordinate ()
+    (-let* ((row-cells (table-row-cells))
+            (col-cells (table-column-cells))
+            ((x . y) (table--get-coordinate))
+            (row-index (table-vertical-index y col-cells))
+            (col-index (table-horizontal-index x row-cells)))
+      (cons col-index row-index)))
+
+  (defun table-first-row-p ()
+    (-let* ((cells (table-column-cells))
+            ((x . y) (table--get-coordinate))
+            (index (table-vertical-index y cells)))
+      (eq 0 index)))
+
+  (defun table-last-row-p ()
+    (-let* ((cells (table-column-cells))
+            ((x . y) (table--get-coordinate))
+            (index (table-vertical-index y cells)))
+      (eq index (- (length cells) 1))))
+
+  (defun table-first-column-p ()
+    (-let* ((cells (table-row-cells))
+            ((x . y) (table--get-coordinate))
+            (index (table-horizontal-index x cells)))
+      (eq 0 index)))
+
+  (defun table-last-column-p ()
+    (-let* ((cells (table-row-cells))
+            ((x . y) (table--get-coordinate))
+            (index (table-horizontal-index x cells)))
+      (eq index (- (length cells) 1))))
+
+  (defmacro table-save-vertical (&rest body)
+    `(when (table-cell-p)
+       (-let* ((cells (table-column-cells))
+               ((ox . oy) (table--get-coordinate))
+               (index (table-vertical-index oy cells)))
+         ,@body
+         (table-settle)
+         (-let* ((newcells (table-column-cells))
+                 (clean-index (max 0 (min (- (length newcells) 1) index)))
+                 ((tl . br) (nth clean-index newcells)))
+           (table--goto-coordinate tl)
+           (table-settle)))))
+
+  (defmacro table-save-horizontal (&rest body)
+    `(when (table-cell-p)
+       (-let* ((cells (table-row-cells))
+               ((ox . oy) (table--get-coordinate))
+               (index (table-horizontal-index ox cells)))
+         ,@body
+         (table-settle)
+         (-let* ((newcells (table-row-cells))
+                 (clean-index (max 0 (min (- (length newcells) 1) index)))
+                 ((tl . br) (nth clean-index newcells)))
+           (table--goto-coordinate tl)
+           (table-settle)))))
+
+  ;;
+  ;; Motion
+  ;; 
+
+  (defun table-goto-first-row ()
+    (interactive)
+    (when (table-cell-p)
+      (-let* ((coord-list
+               (table--cell-list-to-coord-list
+                (table--vertical-cell-list t nil 'left)))
+              ((ful . fbr) (car coord-list))
+              ((lul . lbr) (-last-item coord-list)))
+        (table--goto-coordinate ful))))
+
+  (defun table-go-up ()
+    (interactive)
+    (when (not (table-first-row-p))
+      (-let* ((cells
+               (table--cell-list-to-coord-list
+                (table--vertical-cell-list t nil 'left)))
+              ((ox . oy) (table--get-coordinate))
+              (current-index (table-vertical-index oy cells))
+              (target-index (- current-index 1))
+              ((tl . br) (nth target-index cells)))
+        (table--goto-coordinate tl))))
+
+  (defun table-go-down ()
+    (interactive)
+    (when (not (table-last-row-p))
+      (-let* ((cells
+               (table--cell-list-to-coord-list
+                (table--vertical-cell-list t nil 'left)))
+              ((ox . oy) (table--get-coordinate))
+              (current-index (table-vertical-index oy cells))
+              (target-index (+ current-index 1))
+              ((tl . br) (nth target-index cells)))
+        (table--goto-coordinate tl))))
+
+  (defun table-go-left ()
+    (interactive)
+    (when (not (table-first-column-p))
+      (-let* ((cells
+               (table--cell-list-to-coord-list
+                (table--horizontal-cell-list t nil 'left)))
+              ((ox . oy) (table--get-coordinate))
+              (current-index (table-horizontal-index ox cells))
+              (target-index (- current-index 1))
+              ((tl . br) (nth target-index cells)))
+        (table--goto-coordinate tl))))
+
+  (defun table-go-right ()
+    (interactive)
+    (when (not (table-last-column-p))
+      (-let* ((cells
+               (table--cell-list-to-coord-list
+                (table--horizontal-cell-list t nil 'top)))
+              ((ox . oy) (table--get-coordinate))
+              (current-index (table-horizontal-index ox cells))
+              (target-index (+ current-index 1))
+              ((tl . br) (nth target-index cells)))
+        (table--goto-coordinate tl))))
+
+  (cl-defun table-mark-row (&key extend-top
+                                 extend-left
+                                 extend-right
+                                 extend-bottom)
+    (interactive)
+    (when (table-cell-p)
+      (-let* ((cells (table-row-cells))
+              ((ftl . fbr) (-first-item cells))
+              ((ltl . lbr) (-last-item cells)))
+        (table--goto-coordinate ftl)
+        (when extend-top
+          (previous-line))
+        (when extend-left
+          (backward-char))
+        (rectangle-mark-mode 1)
+        (table--goto-coordinate lbr)
+        (when extend-right
+          (forward-char))
+        (when extend-bottom
+          (next-line)))))
+
+  (cl-defun table-mark-column (&key
+                                 extend-top
+                                 extend-left
+                                 extend-right
+                                 extend-bottom)
+    (interactive)
+    (when (table-cell-p)
+      (-let* ((cells (table-column-cells))
+              ((ftl . fbr) (-first-item cells))
+              ((ltl . lbr) (-last-item cells)))
+        (table--goto-coordinate ftl)
+        (when extend-top
+          (previous-line))
+        (when extend-left
+          (backward-char))
+        (rectangle-mark-mode 1)
+        (table--goto-coordinate lbr)
+        (when extend-right
+          (forward-char))
+        (when extend-bottom
+          (next-line)))))
+
+
+  (cl-defun table-mark-row-for-kill ()
+    (when (table-cell-p)
+      (-let* ((cells (table-row-cells))
+              ((ftl . fbr) (-first-item cells))
+              ((ltl . lbr) (-last-item cells)))
+        (table--goto-coordinate ftl)
+        (previous-line)
+        (backward-char)
+        (set-mark (point))
+        (table--goto-coordinate lbr)
+        (end-of-line)
+        (forward-char))))
+
+  (cl-defun table-mark-column-for-kill ()
+    (when (table-cell-p)
+      (-let* ((cells (table-column-cells))
+              ((ftl . fbr) (-first-item cells))
+              ((ltl . lbr) (-last-item cells)))
+        (table--goto-coordinate ftl)
+        (previous-line)
+        (backward-char)
+        (rectangle-mark-mode 1)
+        (table--goto-coordinate lbr)
+        (rectangle-next-line))))
+
+  (defun table-kill-row ()
+    (interactive)
+    (when (table-cell-p)
+      (table-save-vertical
+       (table-save-horizontal
+        (table-mark-row-for-kill)
+        (call-interactively 'kill-region)))))
+
+  (defun table-kill-column ()
+    (interactive)
+    (table-save-horizontal
+     (table-save-vertical
+      (table-mark-column-for-kill)
+      (call-interactively 'kill-region))))
+
+
+  (defun table-row-up ()
+    (interactive)
+    (when (and (table-cell-p) (not (table-first-row-p)))
+      (let ((last-p (table-last-row-p)))
+        (table-save-vertical
+         (table-save-horizontal
+          (table-kill-row)
+          (unless last-p
+            (search-backward-regexp "^\\+"))
+          (search-backward-regexp "^\\+")
+          (beginning-of-line)
+          (call-interactively 'yank)))
+        (when (not (table-first-row-p))
+          (call-interactively 'table-go-up)))))
+
+
+  ;; (defun table-row-down ()
+  ;;   (interactive)
+  ;;   (when (and (table-cell-p) (not (table-last-row-p)))
+  ;;     (table-save-vertical
+  ;;      (table-save-horizontal
+  ;;       (table-kill-row)
+  ;;       (search-forward-regexp "^\\+")
+  ;;       (beginning-of-line)
+  ;;       (call-interactively 'yank)))
+  ;;     (when (not (table-last-row-p))
+  ;;       (call-interactively 'table-go-down))))
+
+  (defun table-row-down ()
+    (interactive)
+    (when (and (table-cell-p) (not (table-last-row-p)))
+      (table-save-vertical
+       (table-save-horizontal
+        (table-kill-row)
+        (search-forward-regexp "^\\+")
+        (beginning-of-line)
+        (call-interactively 'yank)))
+      (when (not (table-last-row-p))
+        (call-interactively 'table-go-down))))
+
+  (defun table-column-left ()
+    (interactive)
+    (when (and (table-cell-p) (not (table-first-column-p)))
+      (let ((last-p (table-last-column-p)))
+        (table-save-vertical
+         (table-save-horizontal
+          (table-kill-column)
+          (unless last-p
+            (table-go-left))
+          (table-goto-first-row)
+          (previous-line)
+          (backward-char)
+          (call-interactively 'yank)))
+        (table-go-left))))
+
+  (defun table-column-right ()
+    (interactive)
+    (when (and (table-cell-p) (not (table-last-column-p)))
+      (table-save-horizontal
+       (table-save-vertical
+        (table-kill-column)
+        (if (table-last-column-p)
+            (progn
+              (end-of-line)
+              (while (< 1 (line-number-at-pos))
+                (previous-line)))
+          (table-go-right)
+          (table-goto-first-row)
+          (previous-line))
+        (backward-char)
+        (call-interactively 'yank)))
+      (unless (table-last-column-p)
+        (table-go-right))))
+
+
+
+  (:hydra episteme-hydra-text (:color red :major-mode text-mode)
+    ("Move"
+     (("j" table-go-down "go down")
+      ("k" table-go-up "go up")
+      ("h" table-go-left "go left")
+      ("l" table-go-right "go right"))
+     "Table size"
+     (("<" table-narrow-cell "narrow cell")
+      (">" table-widen-cell "widen cell")
+      ("{" table-shorten-cell "shorten cell")
+      ("}" table-heighten-cell "heighten cell"))
+     "Table justify"
+     (("c" table-justify-cell "justify cell")
+      ("C" table-justify-column "justify column")
+      ("r" table-justfy-row "justify row"))
+     "Table insert"
+     (("i" table-insert-row "insert row")
+      ("I" table-insert-column "insert column"))
+     "Table delete"
+     (("d" table-kill-row "delete row")
+      ("D" table-kill-column "delete column"))
+     "Table move"
+     (("J" table-row-down "row down")
+      ("K" table-row-up "row up")
+      ("H" table-column-left "column left")
+      ("L" table-column-right "column right"))))
+#+end_src
+
 ** hydra-elisp
 #+begin_src emacs-lisp
   (:hydra episteme-hydra-elisp (:color blue :major-mode emacs-lisp-mode)
