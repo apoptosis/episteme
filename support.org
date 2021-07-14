@@ -1465,18 +1465,19 @@ Many of the Emacs help facilities at your fingertips!
 
 ** hydra-default
 #+begin_src emacs-lisp
-    (:hydra episteme-hydra-default (:color blue)
-      ("Open"
-       (("o" (helm-org-walk '(4)) "open")
-        ("g" (magit-status) "git"))
-       "Emacs"
-       (("h" (hera-push 'episteme-hydra-help/body) "help")
-        ("m" (hera-push 'episteme-hydra-mark/body) "mark")
-        ("w" (hera-push 'episteme-hydra-window/body) "windows")
-        ("z" (hera-push 'episteme-hydra-zoom/body) "zoom")
-        ("r" (hera-push 'episteme-hydra-registers/body) "registers"))
-       "Misc"
-       ((";" embrace-commander "embrace"))))
+  (:hydra episteme-hydra-default (:color blue)
+    ("Open"
+     (("o" (helm-org-walk '(4)) "open")
+      ("g" (magit-status) "git")
+      ("R" (find-file (concat episteme/repo "/README.org")) "README"))
+     "Emacs"
+     (("h" (hera-push 'episteme-hydra-help/body) "help")
+      ("m" (hera-push 'episteme-hydra-mark/body) "mark")
+      ("w" (hera-push 'episteme-hydra-window/body) "windows")
+      ("z" (hera-push 'episteme-hydra-zoom/body) "zoom")
+      ("r" (hera-push 'episteme-hydra-registers/body) "registers"))
+     "Misc"
+     ((";" embrace-commander "embrace"))))
 #+end_src
 
 * mode menus
