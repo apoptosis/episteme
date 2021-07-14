@@ -690,6 +690,17 @@ information.
 #+end_src
 
 * languages
+** lispy-mode
+#+begin_src emacs-lisp
+  (use-package lispy
+    :init
+    (:hook emacs-lisp-mode (lispy-mode 1))
+    (:hook lisp-interaction-mode (lispy-mode 1))
+    :config
+    (:bind lispy-mode ":" self-insert-command)
+    (:bind lispy-mode "[" lispy-open-square)
+    (:bind lispy-mode "]" lispy-close-square))
+#+end_src
 ** json-mode
 #+begin_src emacs-lisp
   (use-package json-mode
