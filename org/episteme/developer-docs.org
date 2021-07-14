@@ -1,0 +1,107 @@
+#+title: Developer Docs
+#+description: Episteme implementation details
+
+
+* Packages
+
+Some major packages are:
+
+- [[https://github.com/raxod502/straight.el][straight.el]] for package management
+- [[https://emacs-helm.github.io/helm/][helm.el]] for completion framework
+- [[https://magit.vc/][magit.el]] for git integration
+- [[https://github.com/abo-abo/hydra][hydra.el]] for menus
+- [[https://orgmode.org/][org.el]] for documents
+
+A number of support packages are also used:
+
+- [[https://github.com/emacs-dashboard/emacs-dashboard][dashboard.el]] for the dashboard
+- [[https://github.com/seagle0128/doom-modeline][doom-modeline.el]] for the modeline
+- [[https://github.com/hlissner/emacs-doom-themes][doom-themes.el]] for theming
+- [[https://github.com/Wilfred/helpful][helpful.el]] for improved help buffers
+- [[https://github.com/abo-abo/lispy][lispy.el]] for improved elisp support
+- [[https://github.com/jerrypnz/major-mode-hydra.el/blob/master/pretty-hydra.el][pretty-hydra.el]] for improved menu UX
+- [[https://github.com/jerrypnz/major-mode-hydra.el][major-mode-hydra.el]] for mode-specific menus
+- [[https://github.com/dustinlacewell/hera][hera.el]] for nestable menus
+- [[https://github.com/dustinlacewell/helm-org-walk][helm-org-walk.el]] for tree-based navigation
+- [[https://github.com/dustinlacewell/org-ls][org-ls.el]] for improved babel codeblock support
+
+
+** Utility Libraries
+A number of utility libraries are made available in =support.org=.
+
+These libraries can help keep the lisp style modern and clean. Take a look over
+them and try to use them where applicable.
+
+- [[https://www.gnu.org/software/emacs/manual/html_mono/cl.html][cl-lib]] emulates a number of common-lisp facilties (like EIEIO)
+- [[https://github.com/rejeep/f.el][f.el]] for working with files
+- [[https://github.com/magnars/dash.el][dash.el]] for working with lists
+- [[https://github.com/Wilfred/ht.el][ht.el]] for working with hash tables
+- [[https://github.com/magnars/s.el][s.el]] for working with strings
+- [[https://github.com/plexus/a.el][a.el]] for working with association lists
+- [[https://github.com/rolandwalker/anaphora][anaphora.el]] for anaphora support
+
+
+* Architecture
+There are three major pieces to Episteme:
+
+- The =episteme= cli
+- The =support.org= file
+- The knowledge-base in =org/=
+- The config directory at =$HOME/.config/episteme=
+
+Episteme's boot process is something like:
+
+1. cli commandline-arguments
+2. runs emacs
+3. compiles =support.org= to =support.el=
+4. loads =support.el=
+   - calculate global =episteme/*= variables
+   - load user configuration
+   - install straight.el support (package manager)
+   - install and configure a number of packages
+   - open the dashboard
+
+** The Repo
+The user must have the Episteme git repo cloned somewhere on their machine. The
+repo contains the current knowledge-base, =support.org= and the =episteme= cli.
+
+The repository is the mechanism to push/receive updates.
+
+The =episteme= cli option =-repo= option will set the =$repo= environment-variable
+that controls =support.org=.
+
+** The Config directory
+The config directory contains:
+- installed emacs packages
+- the user's =config.el=
+
+By default it is located at =$HOME/.config/episteme/=
+
+The =episteme= cli option =-config= will set the =$config= environment-variable that
+controls =support.org=.
+
+** Environment Variables
+
+Two primary environment variables are of interest:
+
+- =$repo= where the git checkout of episteme is located
+- =$config= where the emacs and user configuration is located
+
+Other variables will be computed from these two.
+
+** Emacs Variables
+
+The following variables are used throughout =support.org=
+
+These may be set from =config.el=
+
+- =episteme/repo= the location of the Episteme git repo
+- =episteme/home= the episteme config directory
+- =episteme/config= the absolute path to user's =config.el=
+- =episteme/org= the location of the knowledge-base files
+- =episteme/autosaves= where autosaves should be stored
+- =episteme/backsups= where backups should be stored
+- =episteme/main-menu-key= key to open the main menu
+- =episteme/mode-menu-key= key to open the mode menu
+- =episteme/zoom= the default zoom level
+
