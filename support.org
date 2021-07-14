@@ -42,10 +42,9 @@ That said this configuration ought to work out of the box.
   (setq episteme/zoom 1)
   ")))
 
-  (let ((config (concat episteme/home "/config.el")))
-    (when (file-exists-p config)
-      (message "Loading config from: %s" config)
-      (load-file config)))
+  (when (file-exists-p episteme/config)
+      (message "Loading config from: %s" episteme/config)
+      (load-file episteme/config))
 
   (setq org-directory episteme/org)
   (setq user-emacs-directory episteme/home)
