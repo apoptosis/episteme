@@ -445,13 +445,6 @@ customization interface.
   (setq-default indent-tabs-mode nil)
 #+end_src
 
-*** visual fill-column
-#+begin_src emacs-lisp
-  (use-package visual-fill-column
-    :config
-    (global-visual-fill-column-mode))
-#+end_src
-
 *** wrap lines at 79 characters
 #+begin_src emacs-lisp
   (setq-default fill-column 79)
