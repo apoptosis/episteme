@@ -32,6 +32,9 @@ if [[ " $@[@] " =~ "-themes" ]]; then
     exit 0
 fi
 
+export HOME="${USERPROFILE:-$HOME}"
+export HOME="${HOME//\\//}"
+
 themeFlag=""
 export theme="laserwave"
 
@@ -89,7 +92,13 @@ for arg do
   set -- "$@" "$arg"
 done
 
-CONFIG_DIR="$HOME/.config/episteme"
+export repo=`echo $repo | sed -e 's/\/c/c:/'`
+export repo=${repo//\\//}
+export config=${config//\\//}
+    
+echo "Repo directory: $repo"
+echo "Config directory: $config"
+
 
 emacs -q \
    --debug-init \
@@ -97,7 +106,7 @@ emacs -q \
    --eval "(setq byte-compile-warnings '(cl-functions))" \
    --eval "(require 'org)" \
    --eval "(org-babel-tangle-file \"$repo/support.org\")" \
-   --eval "(setq user-emacs-directory \"$CONFIG_DIR\")" \
+   --eval "(setq user-emacs-directory \"$config\")" \
    --eval "(setq user-init-file \"$repo/support.el\")" \
    --load $repo/support.el \
    $@
