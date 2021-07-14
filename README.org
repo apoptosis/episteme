@@ -55,7 +55,7 @@ machine. Then install it:
   nix-env -i -f epi.nix
 #+end_src
 
-** TODO Windows
+** Windows
 
 The following will be installed via [[https://chocolatey.org/][Chocolatey]]:
 
@@ -110,7 +110,14 @@ Then type the following:
   ./episteme
 #+end_src
 
+*** Installing fonts
 
+Once Episteme is running some fonts might be missing.
+
+Use =M-x all-the-icons-install-fonts= and pick a location to download the fonts.
+
+Afterwards, open each downloaded font file, and install it. Restart Episteme
+and the fonts should be working.
 * Running Episteme
 
 Use the =-h= flag to explore the =episteme= cli:
