@@ -57,7 +57,59 @@ machine. Then install it:
 
 ** TODO Windows
 
-???
+The following will be installed via [[https://chocolatey.org/][Chocolatey]]:
+
+- Emacs
+- Git
+- Github for Windows
+- Sharpkeys (optional)
+
+*** Installing Chocolatey
+
+Chocolatey is a system for installing software on Windows.
+
+Follow these instructions:
+
+1. Type "powershell" into Start Menu
+2. Open PowerShell _as Administrator_.
+3. In PowerShell terminal, type (followed by enter):
+   =Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))=
+4. In PowerShell terminal, type (followed by enter):
+   =choco -?=
+
+If the last command succeeded you're ready to move on.
+
+*** Installing Dependencies
+
+Use =choco= command to install the necessary software:
+
+#+begin_src sh
+  choco install git github emacs sharpkeys
+#+end_src
+
+*** Installing Episteme
+
+Open =GitHub for Windows= using the Start Menu.
+
+Follow the prompts, and use "offline account".
+
+Clone a repository, and use the following URL:
+
+https://github.com/apoptosis/episteme.git
+
+This will put Episteme at =%USERPROFILE%\Documents\GitHub\episteme=
+
+*** Running Episteme
+
+Open =Git-Bash= using the Start Menu.
+
+Then type the following:
+
+#+begin_src sh
+  cd $USERPROFILE/Documents/GitHub/episteme
+  ./episteme
+#+end_src
+
 
 * Running Episteme
 
