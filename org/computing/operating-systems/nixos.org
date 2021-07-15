@@ -88,6 +88,8 @@ nix-store --query --roots /nix/store/7dnsvya7hz0srvh4wrkyi6q2w36lgkf9-styx-0.7.1
 #+end_src
 
 also nix-whydepends
+** Using PatchELF on Electron Apps
+https://qiita.com/kimagure/items/6e0fd0aad389c1f274c6
 
 * Audio
 ** Jack
