@@ -1470,6 +1470,14 @@ Many of the Emacs help facilities at your fingertips!
 
 ** hydra-default
 #+begin_src emacs-lisp
+  (defun episteme:cleanup ()
+    (interactive)
+
+    (mapc 'kill-buffer (--filter (not (buffer-modified-p it)) (buffer-list)))
+    (delete-other-windows)
+    (episteme:dashboard)
+    (helm-mini))
+
   (defun episteme:find-file-all ()
     (interactive)
     (let ((file-name (completing-read "file: "
@@ -1479,8 +1487,9 @@ Many of the Emacs help facilities at your fingertips!
   (:hydra episteme-hydra-default (:color blue)
     ("Open"
      (("o" (helm-org-walk '(4)) "open")
-      ("a" (episteme:find-file-all) "all files")
-      ("g" (magit-status) "git")
+      ("a" (episteme:find-file-all) "all files"))
+     "Bookmarks"
+     (("U" (find-file (concat episteme/org "/episteme/user-guide.org")) "User guide")
       ("R" (find-file (concat episteme/repo "/README.org")) "README"))
      "Emacs"
      (("h" (hera-push 'episteme-hydra-help/body) "help")
@@ -1489,7 +1498,8 @@ Many of the Emacs help facilities at your fingertips!
       ("z" (hera-push 'episteme-hydra-zoom/body) "zoom")
       ("r" (hera-push 'episteme-hydra-registers/body) "registers"))
      "Misc"
-     (("." (hera-push 'episteme-hydra-dev/body) "devtools")
+     (("!" (episteme:cleanup) "cleanup windows/buffers")
+      ("." (hera-push 'episteme-hydra-dev/body) "devtools")
       (";" embrace-commander "embrace"))))
 #+end_src
 
