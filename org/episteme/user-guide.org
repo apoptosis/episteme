@@ -222,3 +222,21 @@ Here are a few useful keybinds for editing files:
 | =M-w= | copy marked region   |
 | =C-k= | cut to end of line   |
 | =C-y= | paste last cut       |
+
+* Navigating the Knowledge-base
+
+To open a knowledge-base document:
+
+- open the main menu
+- press =o= to begin
+
+You will be presented with a list of files/folders in the root of the
+knowledge-base. You can:
+
+- use =C-n= / =C-p= (or the arrow keys) to navigate between items
+- use =<enter>= to navigate further into the currently selected item
+- use =C-<enter>= to visit the currently selected item
+- use =M-<backspace>= to go backwards
+
+Press =C-g= to cancel.
+
