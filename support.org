@@ -1489,7 +1489,7 @@ Many of the Emacs help facilities at your fingertips!
       ("z" (hera-push 'episteme-hydra-zoom/body) "zoom")
       ("r" (hera-push 'episteme-hydra-registers/body) "registers"))
      "Misc"
-     (("!" (hera-push 'episteme-hydra-dev/body) "devtools")
+     (("." (hera-push 'episteme-hydra-dev/body) "devtools")
       (";" embrace-commander "embrace"))))
 #+end_src
 
