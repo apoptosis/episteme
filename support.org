@@ -1473,6 +1473,7 @@ Many of the Emacs help facilities at your fingertips!
   (:hydra episteme-hydra-default (:color blue)
     ("Open"
      (("o" (helm-org-walk '(4)) "open")
+      ("a" (completing-read "file: " (directory-files-recursively episteme/org "\.org$")) "all files")
       ("g" (magit-status) "git")
       ("R" (find-file (concat episteme/repo "/README.org")) "README"))
      "Emacs"
