@@ -1,0 +1,224 @@
+#+title: User Guide
+#+description: How to use Episteme
+
+You got Episteme installed! Congrats.
+
+This document will help you get the most out of it.
+
+* Overview
+
+Episteme is a knowledge-base system. It consists of:
+
+- an editor
+- documents making up the knowledge-base
+- a system for pushing/pulling updates
+
+The basic workflow is something like:
+
+- pull down updates
+- use the editor to search and navigate documents in the knowledge-base
+- make edits to existing documents
+- create new documents, move them around, etc
+- push up any updates you made
+
+** Foreknowledge
+
+There are some things that will be helpful to know about to have a good time
+with Episteme. If you're unfamiliar with any of these things, you can reach out
+for help.
+
+*** Managing files on your computer
+
+Episteme keeps files in a couple places. You should be able to navigate around
+your hard-drive and open/delete files, etc.
+
+*** Using the terminal
+
+Occasionally you may need to use the terminal to run some commands. It'll be
+helpful if you know how to open the terminal on your computer, change
+directories, run commands, etc.
+
+*** Using Git
+
+Git is a [[https://en.wikipedia.org/wiki/Version_control][version control system]]. It basically allows multiple to work on a
+bunch of documents in parallel, and to reliably merge their changes together
+into a cohesive whole.
+
+Episteme uses Git to pull and push changes.
+
+** Important Paths
+
+There are two important paths used by Episteme on your machine:
+
+- the git directory: where you downloaded Episteme
+- the config directory: where Episteme stores data / where your =config.el= lives
+
+
+*** The Repo Directory
+
+This is where you downloaded Episteme. It contains:
+
+- the knowledge documents
+- the editor
+
+This is where updates are pushed and pulled from. Do you know where you
+downloaded Episteme?
+
+
+*** The Config Directory
+
+This is where Episteme keeps its data (not knowledge docs though).
+
+It is also where you put your =config.el= if you have customizations.
+
+This is usually located at:
+
+- =~/.config/episteme/= on linux
+- =%USERPROFILE%\.config\episteme\= on windows
+
+  =%USERPROFILE%= typically points to =C:\Users\YourUser\=
+
+
+* Menus
+
+Episteme has a number of menus to make things easier.
+
+- main menu: bound to =C-c x= by default
+- mode menu: bound to =C-c m= by default
+
+Some menu items will lead to other menus. Spacebar will return you previous
+menus, or close the last one.
+
+*** The Main Menu
+
+The Main Menu is your launch-pad.
+
+By default, it is bound to =C-c x=
+
+The Main Menu has a number of items when opened but the three most important
+ones are:
+
+- =o=: open - navigate the knowledge-base and open a document
+- =g=: git  - push and pull updates
+- =h=: help - get help on a variety of topics
+
+The Main Menu can be closed with the spacebar.
+
+*** The Mode Menus
+
+When you open a file, based on its extension, Emacs displays that file in a
+buffer with a particular mode. Knowledge documents are in =org-mode=, text files
+are in =text-mode=, and so on.
+
+For some modes, you can open a "mode-specific menu" that can assist with doing
+things related to that file type.
+
+By default, it is bound to =C-c m=
+
+* Mastering the Basics
+
+Episteme is built ontop of Emacs, and it can be a little foreign if you've
+never used it before. This section will give you the tools needed to
+confidently navigate and edit using Episteme.
+
+** The Interface
+
+The Episteme interface is made up of a few parts:
+
+*The Frame*:
+The primary "window" on your computer containing Episteme.
+
+*Windows*:
+The frame may be split into any number of sections called "windows".
+
+*Buffers*:
+Every window displays a buffer. Buffers are just containers for text. Sometimes
+a buffer is displaying a file, sometimes it's used for on-screen interface
+elements. Everything you see is text in some buffer.
+
+*Modes*:
+Every buffer is in a "mode". A mode is simply "the way a buffer behaves". When
+you hit the =f= key, does it insert "f" or does it activate some behavior? That
+depends on the mode!
+
+*Keybinds*:
+When you press a key, what the key does, depends on what it is bound
+to. Keybinds are usually denoted like: =C-x g= which means "Holding control, hit
+x. Then hit g."
+
+Here are some examples:
+| C-x     | Holding control, hit x              |
+| C-x C-x | Holding control, hit x twice        |
+| C-x g   | Holding control, hit x. Then hit g. |
+| M-x     | Holding alt, hit x                  |
+| <f12>   | Hit F12                             |
+| C-<f12> | Holding control, hit F12            |
+
+*Minibuffer*:
+At the bottom of each window is a status line. This is the minibuffer where
+useful information will sometimes appear.
+
+*Menus*:
+Menus are small popups that offer a number of items bound to keys. Pressing one
+of the keys will invoke the item. Menu items will sometimes do something,
+sometimes they will open additional menus.
+
+** Something went wrong!
+
+If you ever get stuck in some weird situation, you can try to hit =C-g= a few
+times. =C-g= is the "cancel whatever is going on" key.
+
+If there are too many windows, you can hit =C-x 1= to get back to a single
+window.
+
+** Exiting
+
+To quit Episteme hit =C-x C-v=
+
+This may ask you if you want to save unsaved buffers, etc.
+
+** Editing Files
+
+Here are a few useful keybinds for editing files:
+
+*Files*:
+| =C-x C-f= | open a file  |
+| =C-x C-s= | save a file  |
+| =C-x k=   | close a file |
+
+*Buffers*:
+| =C-x b= | switch buffers |
+| =C-x k= | close a buffer |
+
+*Windows*:
+| =C-x 1= | close other windows |
+| =C-x 2= | split horizontally  |
+| =C-x 3= | split vertically    |
+| =C-x 0= | close window        |
+
+*Movement*:
+| =C-p= | cursor up   |
+| =C-n= | cursor down |
+
+| =C-f= | left one char |
+| =M-f= | left one word |
+
+| =C-b= | right one char |
+| =M-b= | right one word |
+
+| =C-a= | beginning of line |
+| =C-e= | end of line       |
+
+*Deletion*:
+| =<backspace>=   | delete backward one char  |
+| =M-<backspace>= | delete backward one word  |
+
+| =C-d= | delete forward one char |
+| =M-d= | delete forward one word |
+
+*Manipulation*:
+| =C-m= | set mark (highlight) |
+| =C-w= | cut marked region    |
+| =M-w= | copy marked region   |
+| =C-k= | cut to end of line   |
+| =C-y= | paste last cut       |
