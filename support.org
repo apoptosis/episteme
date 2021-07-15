@@ -1470,10 +1470,16 @@ Many of the Emacs help facilities at your fingertips!
 
 ** hydra-default
 #+begin_src emacs-lisp
+  (defun episteme:find-file-all ()
+    (interactive)
+    (let ((file-name (completing-read "file: "
+                                      (directory-files-recursively episteme/org "\.org$"))))
+      (find-file file-name)))
+
   (:hydra episteme-hydra-default (:color blue)
     ("Open"
      (("o" (helm-org-walk '(4)) "open")
-      ("a" (completing-read "file: " (directory-files-recursively episteme/org "\.org$")) "all files")
+      ("a" (episteme:find-file-all) "all files")
       ("g" (magit-status) "git")
       ("R" (find-file (concat episteme/repo "/README.org")) "README"))
      "Emacs"
