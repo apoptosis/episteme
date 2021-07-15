@@ -8,6 +8,15 @@ There needs to be at least three partitions:
 | efi   | 1GiB           | fat32      | esp,boot |
 | swap  | $available_ram | linux-swap |          |
 | nixos | $unused_space  | xfs        |          |
+* Nixpkgs
+** Checking channels
+#+begin_src shell :dir /sudo::
+  nix-channel --list
+#+end_src
+
+#+RESULTS:
+| home-manager | https://github.com/rycee/home-manager/archive/release-20.03.tar.gz |
+| nixos        | https://nixos.org/channels/nixos-unstable                          |
 
 * Nixlang
 ** Builtins
