@@ -53,7 +53,6 @@ There are two important paths used by Episteme on your machine:
 - the git directory: where you downloaded Episteme
 - the config directory: where Episteme stores data / where your =config.el= lives
 
-
 *** The Repo Directory
 
 This is where you downloaded Episteme. It contains:
@@ -63,7 +62,6 @@ This is where you downloaded Episteme. It contains:
 
 This is where updates are pushed and pulled from. Do you know where you
 downloaded Episteme?
-
 
 *** The Config Directory
 
