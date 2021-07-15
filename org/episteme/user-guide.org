@@ -203,6 +203,7 @@ The Main Menu has a number of items when opened but the three most important
 ones are:
 
 - =o=: open - navigate the knowledge-base and open a document
+- =a=: all files - select a file from a list of all documents
 - =g=: git  - push and pull updates
 - =h=: help - get help on a variety of topics
 
@@ -235,4 +236,8 @@ knowledge-base. You can:
 - use =M-<backspace>= to go backwards
 
 Press =C-g= to cancel.
+
+*** Listing all files
+
+To select a document from a list of all files use the =a= main menu item.
 
