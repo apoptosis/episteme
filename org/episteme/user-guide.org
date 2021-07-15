@@ -78,8 +78,6 @@ This is usually located at:
 
   =%USERPROFILE%= typically points to =C:\Users\YourUser\=
 
-
-
 * Mastering the Basics
 
 Episteme is built ontop of Emacs, and it can be a little foreign if you've
