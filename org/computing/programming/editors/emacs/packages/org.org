@@ -1,6 +1,9 @@
 #+title: Org-mode
 
 * Babel
+
+** Run as sudo
+Use =#+begin_src shell :dir /sudo::=
 ** Get value or named block
 with =#+name: extensions=
 #+begin_src elisp
