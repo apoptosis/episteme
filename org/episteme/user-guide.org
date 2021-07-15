@@ -79,41 +79,6 @@ This is usually located at:
   =%USERPROFILE%= typically points to =C:\Users\YourUser\=
 
 
-* Menus
-
-Episteme has a number of menus to make things easier.
-
-- main menu: bound to =C-c x= by default
-- mode menu: bound to =C-c m= by default
-
-Some menu items will lead to other menus. Spacebar will return you previous
-menus, or close the last one.
-
-*** The Main Menu
-
-The Main Menu is your launch-pad.
-
-By default, it is bound to =C-c x=
-
-The Main Menu has a number of items when opened but the three most important
-ones are:
-
-- =o=: open - navigate the knowledge-base and open a document
-- =g=: git  - push and pull updates
-- =h=: help - get help on a variety of topics
-
-The Main Menu can be closed with the spacebar.
-
-*** The Mode Menus
-
-When you open a file, based on its extension, Emacs displays that file in a
-buffer with a particular mode. Knowledge documents are in =org-mode=, text files
-are in =text-mode=, and so on.
-
-For some modes, you can open a "mode-specific menu" that can assist with doing
-things related to that file type.
-
-By default, it is bound to =C-c m=
 
 * Mastering the Basics
 
@@ -223,7 +188,42 @@ Here are a few useful keybinds for editing files:
 | =C-k= | cut to end of line   |
 | =C-y= | paste last cut       |
 
-* Navigating the Knowledge-base
+** Menus
+Episteme has a number of menus to make things easier.
+
+- main menu: bound to =C-c x= by default
+- mode menu: bound to =C-c m= by default
+
+Some menu items will lead to other menus. Spacebar will return you previous
+menus, or close the last one.
+
+*** The Main Menu
+
+The Main Menu is your launch-pad.
+
+By default, it is bound to =C-c x=
+
+The Main Menu has a number of items when opened but the three most important
+ones are:
+
+- =o=: open - navigate the knowledge-base and open a document
+- =g=: git  - push and pull updates
+- =h=: help - get help on a variety of topics
+
+The Main Menu can be closed with the spacebar.
+
+*** The Mode Menus
+
+When you open a file, based on its extension, Emacs displays that file in a
+buffer with a particular mode. Knowledge documents are in =org-mode=, text files
+are in =text-mode=, and so on.
+
+For some modes, you can open a "mode-specific menu" that can assist with doing
+things related to that file type.
+
+By default, it is bound to =C-c m=
+
+** Navigating the Knowledge-base
 
 To open a knowledge-base document:
 
