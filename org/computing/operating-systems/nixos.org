@@ -33,6 +33,14 @@ Like =mapAttrs= but FUNC should return an attrset, like those returned from
 =nameValuePair=, for each key-value pair in ATTRSET.
 
 * Home-manager
+** Installation
+
+Add the channel
+#+begin_src sh
+  sudo nix-channel --add https://github.com/nix-community/home-manager/archive/master.tar.gz home-manager
+  sudo nix-channel --update
+#+end_src
+
 ** Scraps
 *** Activation Packages
 First import the dag module:
