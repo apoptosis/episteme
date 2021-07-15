@@ -40,7 +40,6 @@ them and try to use them where applicable.
 - [[https://github.com/plexus/a.el][a.el]] for working with association lists
 - [[https://github.com/rolandwalker/anaphora][anaphora.el]] for anaphora support
 
-
 * Architecture
 There are three major pieces to Episteme:
 
@@ -91,7 +90,7 @@ Other variables will be computed from these two.
 
 ** Emacs Variables
 
-The following variables are used throughout =support.org=
+The [[file:~/src/apoptosis/episteme/support.org::*globals][following variables]] are used throughout =support.org=
 
 These may be set from =config.el=
 
@@ -104,4 +103,58 @@ These may be set from =config.el=
 - =episteme/main-menu-key= key to open the main menu
 - =episteme/mode-menu-key= key to open the mode menu
 - =episteme/zoom= the default zoom level
+
+
+** Helper Macros
+
+A number of [[file:~/src/apoptosis/episteme/support.org::*helpers][helper macros]] are used throughout =support.org=.
+
+* Hydra Menus
+
+[[file:~/src/apoptosis/episteme/support.org::*main menu][All of the menus]] in Episteme are provided by [[https://github.com/abo-abo/hydra][hydra.el]]
+
+A number of support libraries are used to enhance them:
+
+- [[https://github.com/dustinlacewell/hera][hera.el]] allows menus to be stacked/nested
+- [[https://github.com/jerrypnz/major-mode-hydra.el/blob/master/pretty-hydra.el][pretty-hydra.el]] produces better looking hydras
+- [[https://github.com/jerrypnz/major-mode-hydra.el][major-mode-hydra.el]] associates hydras with major-modes
+
+** Creating Menus
+
+Menus are created with the [[file:~/src/apoptosis/episteme/support.org::*:hydra][:hydra]] macro.
+
+Here's the menu for managing zoom as an example:
+
+#+begin_src emacs-lisp
+  (:hydra episteme-hydra-zoom (:color red)
+    ("Buffer"
+     (("i" text-scale-increase "in")
+      ("o" text-scale-decrease "out"))
+     "Frame"
+     (("I" zoom-frm-in "in")
+      ("O" zoom-frm-out "out")
+      ("r" toggle-zoom-frame "reset" :color blue))))
+#+end_src
+
+This will create a function =(episteme-hydra-zoom/body)= which will open the
+menu.
+
+** Pushing Menus
+
+You can direct the user from one menu to another by using =(hera-push
+'hydra-name)=
+
+This is how [[file:~/src/apoptosis/episteme/support.org::*hydra-default][the default menu]] works.
+
+** Mode Menus
+
+Mode menus are created by passing the =:major-mode mode-name= parameter to
+=:hydra=
+
+Check [[file:~/src/apoptosis/episteme/support.org::*mode menus][the existing mode menus]] for an example.
+
+
+
+
+
 
