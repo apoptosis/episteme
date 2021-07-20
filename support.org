@@ -250,7 +250,7 @@ e.g. =(:bind org-mode "C-m" (message "Hello world."))=
     :ensure t
     :config
     (setq dashboard-banner-logo-title "apoptosis/episteme")
-    (setq dashboard-startup-banner "/home/ldlework/src/apoptosis/episteme/cain.png")
+    (setq dashboard-startup-banner (concat episteme/repo "/cain.png"))
     (setq dashboard-footer-messages
           '("Co-edification through tinkering, dialectic and reference!"))
     ;; (setq dashboard-footer-icon (all-the-icons-octicon "dashboard"
