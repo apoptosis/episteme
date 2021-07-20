@@ -1,8 +1,6 @@
 #+title: User Guide
 #+description: How to use Episteme
 
-* HI MICKEY!!!
-
 You got Episteme installed! Congrats.
 
 This document will help you get the most out of it.
