@@ -5,6 +5,12 @@ You got Episteme installed! Congrats.
 
 This document will help you get the most out of it.
 
+Keys that start with =C-= mean "hold control".
+
+Keys that start with =M-= mean "hold alt".
+
+Use =C-n= and =C-p= to get around. =Tab= will un/fold headings.
+
 * Overview
 
 Episteme is a knowledge-base system. It consists of:
@@ -128,6 +134,8 @@ sometimes they will open additional menus.
 
 If you ever get stuck in some weird situation, you can try to hit =C-g= a few
 times. =C-g= is the "cancel whatever is going on" key.
+
+If =C-g= doesn't work, you're probably in a "Debugger" window. Just hit =q=
 
 If there are too many windows, you can hit =C-x 1= to get back to a single
 window.
