@@ -64,7 +64,6 @@ The following will be installed via [[https://chocolatey.org/][Chocolatey]]:
 - Github for Windows
 - Sharpkeys (optional)
 
-
 *** Installing Chocolatey
 
 Chocolatey is a system for installing software on Windows.
