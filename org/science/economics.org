@@ -102,6 +102,20 @@ This is the axiom that man acts [[Purposeful Behaviour][purposefully]]. This axi
 Meaningfully denying this axiom is difficult, denial of the axioms empirical validity involves a purposeful act on the sceptics part. It therefore confronts them with the uncomfortable choice of either ceding the issue or proclaiming that their own disagreement is purposeless.
 
 Yet this axiom is neither empty nor arbitrary (see: [[A Priori]]), it is axiomatic in the sense that it distinguishes an /[[Axiom][axiom]]/ from a /[[Postulate][postulate]]/. It is epistemologically distinct from the [[A Priori][a priori]] assumptions employed in the hypothetical-deductive procedures of orthodox, neoclassical economics.[fn:3]
+* Classical School
+** What it Gets Right
+The Classical School of Economics agrees with [[Austrian School][austrianism]] in a few key areas:
++ The Classical School is correct that prices are not random, they are formed by immutable laws --- I cannot just choose to sell a pear at an arbitrarily high sum.
++ The Classical School is correct that prices are used by business to calculate profits and losses, and thus there is this idea of prices being cummunicative of some information.
++ The Classical School is correct that profits encourage business to increase supply and losses drive the reduction of supply.
++ The Classical School is also correct that in the long run, cetirus paribus, you would expect profits and losses to tend to 0, this is a process that austrians call equilibration.
+
+** What it Gets Wrong
+The big flaw of Classical economics was that it sees goods only in terms of classes of goods, i.e. is 'steel' more important than 'diamonds,' are 'diamonds' more important than 'water,' etc. But it fails to acknowledge that humans do not think in these terms, people think about, "should I buy 1 gallon of milk," or "shall I buy 3 gallons of water," etc. These are /marginal/ units.
+
+This failure to understand how consumers value goods leads to the famous diamond-water paradox, solved by Menger's [[Marginal Utility][theory of marginal utility]]. The Classical school is unable to resolve this paradox, because they split value into two parts, exchange value, and use value, and they said economics is concerned only with exchange value which they define as the costs incurred by the businessman in production, known as the "Cost of Production Theory of Value."
+
+But this theory fails to account for the paradox -- even when ignoring the use value, which they peg as massively high for water due to their lack of a theory of falling marginal utility -- as diamonds can often be vastly cheaper to produce than they sell for. The Classical economists then say that expensive, one of a kind, diamonds have a monopoly value, which begs the question of how that could occur if exchange value is determined by the costs of production --- much like the Marxian "socially necessary" clause in the LTV it seems like an attempt to sneak subjective value past the gates. Moreover this theory fails to account for why any business should ever lose money, as they would simply raise prices to account for costs.
 
 * References
 + George A. Selgin, "Praxeology and Understanding: An Analysis of the Controversy in Austrian Economics, /Ludwig von Mises Institute/, p. 14
