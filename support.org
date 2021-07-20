@@ -443,7 +443,10 @@ customization interface.
 #+begin_src emacs-lisp
   (setq-default indent-tabs-mode nil)
 #+end_src
-
+*** global visual line wrap
+#+begin_src emacs-lisp
+  (global-visual-line-mode 1)
+#+end_src
 *** wrap lines at 79 characters
 #+begin_src emacs-lisp
   (setq-default fill-column 79)
@@ -451,7 +454,7 @@ customization interface.
 
 *** autowrap in text-mode
 #+begin_src emacs-lisp
-  (:hook text-mode 'turn-on-auto-fill)
+  ;; (:hook text-mode 'turn-on-auto-fill)
 #+end_src
 
 *** ssh for tramp
@@ -1489,7 +1492,8 @@ Many of the Emacs help facilities at your fingertips!
      (("o" (helm-org-walk '(4)) "open")
       ("a" (episteme:find-file-all) "all files"))
      "Bookmarks"
-     (("U" (find-file (concat episteme/org "/episteme/user-guide.org")) "User guide")
+     (("C" (find-file (concat episteme/org "/episteme/cheatsheet.org")) "Cheatsheet")
+      ("U" (find-file (concat episteme/org "/episteme/user-guide.org")) "User guide")
       ("R" (find-file (concat episteme/repo "/README.org")) "README"))
      "Emacs"
      (("h" (hera-push 'episteme-hydra-help/body) "help")
