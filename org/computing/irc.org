@@ -1,30 +1,33 @@
 #+title: IRC
 
-* Help
-** Didn't get confirm email
-/alias add help-email /msg * $1: Try /ns resend
-** Channel transfer
-/alias add help-founder /msg * $1: /join #chanhelp
-** Namespace rule
-/alias add help-pound /msg * $1: The #/## namespace rule is no longer policy.
-
-* Moderation
-** Service aliases
-/alias add os /quote os $*
-/alias add cs /msg chanserv $*
-/alias add ns /msg nickserv $*
-** Akill
-/alias add akill /quote os akill add +3d $*
-
-** Hostmasks
+* Hostmasks
 Format: =nick!user@host=
   - *nick*: user selected nickname
   - *user*: ident reported username / ~ prefixed nick (if no ident)
   - *host*: ip or reverse dns name
-** User Control
-*** Kicking
+
+
+* Inspircd
+** Help
+*** Didn't get confirm email
+/alias add help-email /msg * $1: Try /ns resend
+*** Channel transfer
+/alias add help-founder /msg * $1: /join #chanhelp
+*** Namespace rule
+/alias add help-pound /msg * $1: The #/## namespace rule is no longer policy.
+
+** Moderation
+*** Service aliases
+/alias add os /quote os $*
+/alias add cs /msg chanserv $*
+/alias add ns /msg nickserv $*
+*** Akill
+/alias add akill /quote os akill add +3d $*
+
+*** User Control
+**** Kicking
 =/kick <channel> <nick> <reason>=
-*** Auto-kick
+**** Auto-kick
 If the =!P= token is specified, the AKICK will never expire (permanent). If the
 =!T= token is specified, expire time must follow, in minutes, hours ("h"), days
 ("d") or weeks ("w").
@@ -33,36 +36,172 @@ If the =!P= token is specified, the AKICK will never expire (permanent). If the
 /msg chanserv AKICK #foo ADD *!*foo@bar.com !T 5d
 /msg chanserv AKICK #foo DEL bar
 /msg chanserv AKICK #foo LIST
-*** Banning
+**** Banning
 =/ban <channel> <nick/mask>=
-*** K-line
+**** K-line
 
-** User Permissions
-*** Operators
+*** User Permissions
+**** Operators
 
-** Channel Modes
+*** Channel Modes
 set a mode with:
     =/mode #channel +/-attribute [data]=
 
-| flag        | description                                                                          |
-|-------------+--------------------------------------------------------------------------------------|
-| +n          | Disallows external messages.                                                         |
-| +t          | Only op/hops can set the topic.                                                      |
-| +p          | Sets the channel as invisible in /list.                                              |
-| +s          | Sets the channel as invisible in /list and /whois.                                   |
-| +i          | Sets the channel as closed unless the person was invited.                            |
-| +k [pass]   | Sets a password for the channel which users must enter to join.                      |
-| +l [number] | Sets a limit on the number of users who are allowed in the channel at the same time. |
-| +m          | Prevents users who are not opped/hopped/voiced from talking.                         |
-| +R          | Sets the channel so only registered nicks are allowed in.                            |
-| +M          | Sets the channel so only registered nicks are allowed to talk.                       |
-| +S          | Strips formatting from messages, rendering them as plaintext.                        |
-| +c          | Blocks messages containing color codes.                                              |
-| +i          | A user must be invited to join the channel.                                          |
-| +N          | No nick changes permitted in the channel.                                            |
 
-** ChanServ
++------------------------+-----------------------------------------------------+
+|        Binding         |                     Description                     |
++------------------------+-----------------------------------------------------+
+|      e <hostmask>      | Excepts <hostmask> from bans (requires the          |
+|                        |banexception module).                                |
++------------------------+-----------------------------------------------------+
+|      h <nickname>      | Gives halfop status to <nickname> (requires the     |
+|                        |customprefix module).                                |
++------------------------+-----------------------------------------------------+
+|      v <nickname>      | Gives voice to <nickname>, allowing them to speak   |
+|                        |while the channel is +m.                             |
++------------------------+-----------------------------------------------------+
+|      a <nickname>      | Gives protected status to <nickname>, preventing    |
+|                        |them from being kicked (+q only, requires the        |
+|                        |customprefix module).                                |
++------------------------+-----------------------------------------------------+
+|      o <nickname>      | Gives op status to <nickname>.                      |
++------------------------+-----------------------------------------------------+
+|      b <hostmask>      | Bans <hostmask> from the channel.                   |
++------------------------+-----------------------------------------------------+
+|      q <nickname>      | Gives owner status to <nickname>, preventing them   |
+|                        |from being kicked (Services or +q only, requires the |
+|                        |customprefix module).                                |
++------------------------+-----------------------------------------------------+
+|      I <hostmask>      | Excepts <hostmask> from +i, allowing matching users |
+|                        |to join while the channel is invite-only (requires   |
+|                        |the inviteexception module).                         |
++------------------------+-----------------------------------------------------+
+|           c            | Blocks messages that contain formatting codes       |
+|                        |(requires the blockcolor module).                    |
++------------------------+-----------------------------------------------------+
+|           d            | Blocks messages to a channel from new users until   |
+|                        |they have been in the channel for seconds (requires  |
+|                        |the delaymsg module).                                |
++------------------------+-----------------------------------------------------+
+|   f [*]<lines>:<sec>   | Kicks on text flood equal to or above the specified |
+|                        |rate. With *, the user is banned (requires the       |
+|                        |messageflood module).                                |
++------------------------+-----------------------------------------------------+
+|        g <mask>        | Blocks messages matching the given glob mask        |
+|                        |(requires the chanfilter module).                    |
++------------------------+-----------------------------------------------------+
+|           i            | Makes the channel invite-only. Users can only join  |
+|                        |if an operator uses /INVITE to invite them.          |
++------------------------+-----------------------------------------------------+
+|    j <joins>:<sec>     | Limits joins to the specified rate (requires the    |
+|                        |joinflood module).                                   |
++------------------------+-----------------------------------------------------+
+|        k <key>         | Set the channel key (password) to <key>.            |
++------------------------+-----------------------------------------------------+
+|       l <limit>        | Set the maximum allowed users to <limit>.           |
++------------------------+-----------------------------------------------------+
+|           m            | Enable moderation. Only users with +v, +h, or +o can|
+|                        |speak.                                               |
++------------------------+-----------------------------------------------------+
+|           n            | Blocks users who are not members of the channel from|
+|                        |messaging it.                                        |
++------------------------+-----------------------------------------------------+
+|           p            | Make channel private, hiding it in users' whoises   |
+|                        |and replacing it with * in /LIST.                    |
++------------------------+-----------------------------------------------------+
+|           r            | Marks the channel as registered with Services       |
+|                        |(requires the services account module).              |
++------------------------+-----------------------------------------------------+
+|           s            | Make channel secret, hiding it in users' whoises and|
+|                        |/LIST.                                               |
++------------------------+-----------------------------------------------------+
+|           t            | Prevents users without +h or +o from changing the   |
+|                        |topic.                                               |
++------------------------+-----------------------------------------------------+
+|           u            | Makes the channel an auditorium; normal users only  |
+|                        |see themselves or themselves and the operators, while|
+|                        |operators see all the users (requires the auditorium |
+|                        |module).                                             |
++------------------------+-----------------------------------------------------+
+|   w <flag>:<banmask>   |   Adds basic channel access controls of <flag> to   |
+|                        |                <banmask>, via the +w                |
+|                        |      listmode. For example, +w o:R:Brain will       |
+|                        |             op anyone identified to the             |
+|                        |                 account 'Brain' on                  |
+|                        |         join. (requires the autoop module)          |
++------------------------+-----------------------------------------------------+
+|           z            | Blocks non-TLS (SSL) clients from joining the       |
+|                        |channel (requires the sslmodes module).              |
++------------------------+-----------------------------------------------------+
+|           A            | Allows anyone to invite users to the channel        |
+|                        |(normally only chanops can invite, requires the      |
+|                        |allowinvite module).                                 |
++------------------------+-----------------------------------------------------+
+|           B            | Blocks messages with too many capital letters, as   |
+|                        |determined by the network configuration (requires the|
+|                        |blockcaps module).                                   |
++------------------------+-----------------------------------------------------+
+|           C            | Blocks any CTCPs to the channel (requires the noctcp|
+|                        |module).                                             |
++------------------------+-----------------------------------------------------+
+|           D            | Delays join messages from users until they message  |
+|                        |the channel (requires the delayjoin module).         |
++------------------------+-----------------------------------------------------+
+|   F <changes>:<sec>    | Blocks nick changes when they equal or exceed the   |
+|                        |specified rate (requires the nickflood module).      |
++------------------------+-----------------------------------------------------+
+|           G            | Censors messages to the channel based on the network|
+|                        |configuration (requires the censor module).          |
++------------------------+-----------------------------------------------------+
+|   H <num>:<duration>   | Displays the last <num> lines of chat to joining    |
+|                        |users. <duration> is the maximum time to keep lines  |
+|                        |in the history buffer (requires the chanhistory      |
+|                        |module).                                             |
++------------------------+-----------------------------------------------------+
+|      J <seconds>       | Prevents rejoin after kick for the specified number |
+|                        |of seconds. This prevents auto-rejoin (requires the  |
+|                        |kicknorejoin module).                                |
++------------------------+-----------------------------------------------------+
+|           K            | Blocks /KNOCK on the channel (requires the knock    |
+|                        |module).                                             |
++------------------------+-----------------------------------------------------+
+|      L <channel>       | If the channel reaches its limit set by +l, redirect|
+|                        |users to <channel> (requires the redirect module).   |
+|                        |                                                     |
++------------------------+-----------------------------------------------------+
+|           M            | Blocks unregistered users from speaking (requires   |
+|                        |the services account module).                        |
++------------------------+-----------------------------------------------------+
+|           N            | Prevents users on the channel from changing nick    |
+|                        |(requires the nonicks module).                       |
++------------------------+-----------------------------------------------------+
+|           O            |Channel is server operators only (can only be set by |
+|                        |  server operators, requires the operchans module).  |
++------------------------+-----------------------------------------------------+
+|           P            | Makes the channel permanent; Bans, invites, the     |
+|                        |topic, modes, and such will not be lost when it      |
+|                        |empties (can only be set by server operators,        |
+|                        |requires the permchannels module).                   |
++------------------------+-----------------------------------------------------+
+|           Q            | Only U-lined servers and their users can kick       |
+|                        |(requires the nokicks module).                       |
++------------------------+-----------------------------------------------------+
+|           R            | Blocks unregistered users from joining (requires the|
+|                        |services account module).                            |
++------------------------+-----------------------------------------------------+
+|           S            | Strips formatting codes from messages to the channel|
+|                        |(requires the stripcolor module).                    |
++------------------------+-----------------------------------------------------+
+|           T            |Blocks /NOTICEs to the channel from users who are not|
+|                        |                         at                          |
+|                        |    least halfop (requires the nonotice module).     |
++------------------------+-----------------------------------------------------+
+|   X <type>:<status>    | Makes users of <status> or higher exempt to the     |
+|                        |specified restriction <type>. For example: flood:h   |
+|                        |(requires the exemptchanops module).                 |
++------------------------+-----------------------------------------------------+
 
+*** ChanServ
 All ChanServ commands begin with =/cs= or =/chanserv= or =/msg ChanServ=. Depending
 on your client and network, =/cs= or =/chanserv= may not work. I will use the
 shorthand in these examples.
@@ -73,7 +212,7 @@ shorthand in these examples.
 | /cs register #channel password description | Registers the current channel to you with ChanServ and sets its password and description. |
 | /cs drop #channel [dropcode]               | Un-registers the current channel to you with ChanServ.                                    |
 
-** Control Flags
+*** Control Flags
 Use =/cs set #channel <flag> <args>= to set Control Flags
 | mlock modes               | Locks the channel's modes. Just + unlocks all.                                            |
 | secureops [on:off]        | Keeps everyone except aops, sops, and the founder from becoming ops.                      |
@@ -86,5 +225,5 @@ Use =/cs set #channel <flag> <args>= to set Control Flags
 | url [address]             | Associates a URL with the channel.                                                        |
 | email [email@address]     | Associates an email address with the channel.                                             |
 
-* User Settings
-** Hide joined channels from /whois
+** User Settings
+*** Hide joined channels from /whois
