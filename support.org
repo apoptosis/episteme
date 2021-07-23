@@ -1505,10 +1505,11 @@ Many of the Emacs help facilities at your fingertips!
     (episteme:dashboard)
     (helm-mini))
 
-  (defun episteme:find-file-all ()
+  (defun episteme:find-file-all (&optional path)
     (interactive)
     (let ((file-name (completing-read "file: "
-                                      (directory-files-recursively episteme/org "\.org$"))))
+                                      (directory-files-recursively
+                                       (or path episteme/org) "\.org$"))))
       (find-file file-name)))
 
   (:hydra episteme-hydra-default (:color blue)
@@ -1518,7 +1519,8 @@ Many of the Emacs help facilities at your fingertips!
       ("j" (org-journal-new-entry '(4)) "journal")
       ("J" (org-journal-new-entry nil) "new journal entry"))
      "Bookmarks"
-     (("C" (find-file (concat episteme/org "/episteme/cheatsheet.org")) "Cheatsheet")
+     (("D" (episteme:find-file-all (concat episteme/org "/episteme")) "Docs")
+      ("C" (find-file (concat episteme/org "/episteme/cheatsheet.org")) "Cheatsheet")
       ("U" (find-file (concat episteme/org "/episteme/user-guide.org")) "User guide")
       ("R" (find-file (concat episteme/repo "/README.org")) "README"))
      "Emacs"
