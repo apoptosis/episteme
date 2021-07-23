@@ -25,7 +25,7 @@ A number of support packages are also used:
 - [[https://github.com/dustinlacewell/helm-org-walk][helm-org-walk.el]] for tree-based navigation
 - [[https://github.com/dustinlacewell/org-ls][org-ls.el]] for improved babel codeblock support
 - [[https://github.com/bastibe/org-journal][org-journal.el]] for journaling support
-
+- [[https://github.com/joostkremers/visual-fill-column][visual-fill-column.el]] for visual text wrap
 
 ** Utility Libraries
 A number of utility libraries are made available in =support.org=.

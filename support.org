@@ -26,6 +26,7 @@ That said this configuration ought to work out of the box.
   (setq episteme/main-menu-key "C-c x")
   (setq episteme/mode-menu-key "C-c m")
   (setq episteme/zoom 1)
+  (setq episteme/fill-width 120)
 
   (unless (file-exists-p episteme/home)
     (make-directory episteme/home))
@@ -272,6 +273,13 @@ e.g. =(:bind org-mode "C-m" (message "Hello world."))=
 #+end_src
 
 * aesthetics
+** visual fill mode
+#+begin_src emacs-lisp
+  (use-package visual-fill-column
+    :config
+    (setq fill-column episteme/fill-width)
+    (setq global-visual-fill-column-mode 1))
+#+end_src
 ** vertical border
 Make the border between windows visible.
 
