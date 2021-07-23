@@ -1,0 +1,9 @@
+* TODO Implement Embark
+Embark can let us customize how links are opened.
+
+https://github.com/org-roam/org-roam/issues/1479#issuecomment-844283079
+
+* TODO Better document journal-mode
+- [ ] Searching the journal
+- [ ] todo carry-over
+- [ ] capture templates
