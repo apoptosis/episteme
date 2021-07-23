@@ -22,6 +22,7 @@ That said this configuration ought to work out of the box.
   (setq episteme/autosaves (concat episteme/home "/autosaves"))
   (setq episteme/backups (concat episteme/home "/backups"))
 
+  (setq episteme/journal (concat episteme/home "/journal"))
   (setq episteme/main-menu-key "C-c x")
   (setq episteme/mode-menu-key "C-c m")
   (setq episteme/zoom 1)
@@ -1197,7 +1198,7 @@ Interact with babel codeblocks from elisp.
 #+begin_src emacs-lisp
   (use-package org-journal
     :config
-    (setq org-journal-dir (concat episteme/home "/journal"))
+    (setq org-journal-dir episteme/journal)
     (setq org-journal-file-type 'weekly))
 #+end_src
 

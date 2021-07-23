@@ -24,6 +24,7 @@ A number of support packages are also used:
 - [[https://github.com/dustinlacewell/hera][hera.el]] for nestable menus
 - [[https://github.com/dustinlacewell/helm-org-walk][helm-org-walk.el]] for tree-based navigation
 - [[https://github.com/dustinlacewell/org-ls][org-ls.el]] for improved babel codeblock support
+- [[https://github.com/bastibe/org-journal][org-journal.el]] for journaling support
 
 
 ** Utility Libraries
@@ -96,6 +97,7 @@ These may be set from =config.el=
 
 - =episteme/repo= the location of the Episteme git repo
 - =episteme/home= the episteme config directory
+- =episteme/journal= where the user's journal is stored
 - =episteme/config= the absolute path to user's =config.el=
 - =episteme/org= the location of the knowledge-base files
 - =episteme/autosaves= where autosaves should be stored
