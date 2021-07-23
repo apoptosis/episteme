@@ -934,11 +934,6 @@ Show a little arrow for collapsed headings.
   (setq org-hide-block-startup nil)
 #+end_src
 
-*** auto-fill paragraphs
-#+begin_src emacs-lisp
-  (:hook org-mode 'turn-on-auto-fill)
-#+end_src
-
 *** resepect content on insert
 Don't split existing entries when inserting a new heading.
 
