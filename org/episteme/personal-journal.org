@@ -1,0 +1,11 @@
+#+title: Personal Journal
+
+Episteme provides a private =personal journal= for you to utilize.
+
+You can open it using the =main menu=:
+
+- =j= to open the journal for the current day
+- =J= to add a new entry for the day
+
+The journal is organized under =episteme/journal= (=~/.config/episteme/journal= by default) with a file-per-week, entry-per-day.
+
