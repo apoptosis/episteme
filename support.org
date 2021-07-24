@@ -1230,6 +1230,7 @@ Backlink support
     (org-roam-setup)
     ;; If using org-roam-protocol
     (require 'org-roam-protocol)
+    (setq org-roam-v2-ack t)
     (:hook org-mode
       (add-hook 'before-save-hook 'episteme:ensure-org-id nil t)))
 #+end_src
