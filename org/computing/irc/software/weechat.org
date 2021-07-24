@@ -3,7 +3,16 @@
 :END:
 #+title: Weechat
 
-* Add new server
+* Aliases
+** Service Shorthands
+#+begin_src text
+/alias add os /quote os $*
+/alias add cs /msg chanserv $*
+/alias add ns /msg nickserv $*
+#+end_src
+** Operator Stuff
+* How-tos
+** Add new server
 #+begin_src text
   /server add server-name server.address/port -ssl
   /set irc.server.server-name.nicks "mynick,mynick2"
@@ -11,31 +20,46 @@
   /set irc.server.server-name.realname "realname"
 #+end_src
 
-* Set Autosort.py rules
+** Set Hotlist/Notify levels
+https://weechat.org/files/doc/stable/weechat_user.en.html#notify_levels
+* Operator Stuff
+** Aliases
+#+begin_src text
+  /alias add akill /quote os akill add +3d $*
+#+end_src
 
-Make sure to add custom rules **after** rule 6.
+* Plugins
+** autojoin.py
+*** Save buffers
+#+begin_src text
+  /autojoin --run
+#+end_src
 
-** List rules
-=/autosort rules list=
+** autosort.py
+*** List rules
+#+begin_src text
+  /autosort rules list=
+#+end_src
 
-** Sort prefixed channels to top
-=${if:${buffer.name}!~prefix.*}=
+*** Sort prefixed channels to top
+#+begin_src text
+  ${if:${buffer.name}!~prefix.*}
+#+end_src
 
-** Sort specific channels to top
-=${if:##foo,##bar!-${channel}}=
+*** Sort specific channels to top
+#+begin_src text
+  ${if:##foo,##bar!-${channel}}
+#+end_src
 
-** Sort by pound count
-=${if:${channel}=~##.*}=
+*** Sort by pound count
+#+begin_src text
+  ${if:${channel}=~##.*}
+#+end_src
 
-** Debug sorting
-=/autosort debug=
+*** Debug sorting
+#+begin_src text
+  /autosort debug
+#+end_src
 
 Each channel produces an array of rule evaluations.
-
-* Save buffers
-=/autojoin --run=
-
-* Hotlist/Notify levels
-https://weechat.org/files/doc/stable/weechat_user.en.html#notify_levels
-** Highlights only
 
