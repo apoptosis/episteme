@@ -1,3 +1,6 @@
+:PROPERTIES:
+:ID:       afe901d5-2ee5-45c8-b85a-365fdd4950f5
+:END:
 #+title:Epi Cheatsheet
 
 *Escape Hatches*

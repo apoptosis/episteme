@@ -1,3 +1,6 @@
+:PROPERTIES:
+:ID:       86a3241c-4807-4a6b-bab4-3643a91f84f0
+:END:
 #+title: AppScript
 Google's AppScript is actually pretty cool.
 

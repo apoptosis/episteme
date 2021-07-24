@@ -1,3 +1,6 @@
+:PROPERTIES:
+:ID:       de291144-e21e-4a9f-9616-0795fc3c68f2
+:END:
 #+title: Elisp
 * Macros
 ** Expanding macros

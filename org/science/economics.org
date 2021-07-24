@@ -1,3 +1,6 @@
+:PROPERTIES:
+:ID:       0f9f5fb0-8fab-40ba-9026-c74020698d29
+:END:
 #+TITLE:Economics
 
 * Austrian School

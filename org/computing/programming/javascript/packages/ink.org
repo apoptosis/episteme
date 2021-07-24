@@ -1,4 +1,8 @@
+:PROPERTIES:
+:ID:       293a7a58-4b7c-4436-9935-5eb9fd9ab6de
+:END:
 #+title: Ink
+
 A react renderer for the terminal.
 * Install overflow version
 "ink": "npm:@gnd/ink@^3.1.2",

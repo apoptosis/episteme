@@ -1,3 +1,6 @@
+:PROPERTIES:
+:ID:       f38d650a-b23c-4488-9518-d3a17d1761e4
+:END:
 #+title: Tetris
 
 * Theory

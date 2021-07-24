@@ -1,3 +1,6 @@
+:PROPERTIES:
+:ID:       169c321f-15f7-4a27-b66a-d2a8db88baa6
+:END:
 #+title: VSCode
 
 * extensions.json

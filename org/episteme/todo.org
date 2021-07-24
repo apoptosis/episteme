@@ -2,6 +2,7 @@
 :ID:       9f220bd3-1379-4ce6-9393-8a34c516d8ef
 :END:
 
+#+title: things to improve
 * TODO Automate font installation on Windows
 Fonts should go into =C:/Windows/Font=
 - look into registry changes that might be needed?

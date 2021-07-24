@@ -1,3 +1,6 @@
+:PROPERTIES:
+:ID:       88bccd1e-9d5e-45ee-965a-d0b46b116089
+:END:
 #+title: Minecraft
 
 * Server Administration

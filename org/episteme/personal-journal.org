@@ -1,3 +1,6 @@
+:PROPERTIES:
+:ID:       77e765c6-989e-46da-82df-d9d40f35e212
+:END:
 #+title: Personal Journal
 
 Episteme provides a private =personal journal= for you to utilize.

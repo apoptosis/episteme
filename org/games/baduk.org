@@ -1,3 +1,6 @@
+:PROPERTIES:
+:ID:       72453d0a-244c-4ec3-9ecd-c7d6deef0a63
+:END:
 #+title: Baduk
 
 * Proverbs

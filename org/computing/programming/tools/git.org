@@ -1,3 +1,6 @@
+:PROPERTIES:
+:ID:       926beae9-ee3a-4288-aabf-8a06952074f5
+:END:
 #+title: Git
 
 * Clients

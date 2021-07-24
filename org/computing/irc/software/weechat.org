@@ -1,3 +1,6 @@
+:PROPERTIES:
+:ID:       99332f19-8eee-45ca-87ce-6398dba2c1e6
+:END:
 #+title: Weechat
 
 * Add new server

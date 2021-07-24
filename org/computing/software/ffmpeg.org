@@ -1,3 +1,6 @@
+:PROPERTIES:
+:ID:       96d113f1-c597-476b-af41-7975ba66af53
+:END:
 #+title: ffmpeg
 
 * Make GIFs

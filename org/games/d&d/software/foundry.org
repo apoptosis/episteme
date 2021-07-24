@@ -1,3 +1,6 @@
+:PROPERTIES:
+:ID:       ace1c3de-9059-4e76-905f-3d7e57d32ad4
+:END:
 #+title: FoundryVTT
 
 * Resources

@@ -1,3 +1,6 @@
+:PROPERTIES:
+:ID:       6291ba73-d172-4aaf-9775-f24a26ca3f19
+:END:
 #+title: Eslint
 
 * Standard setup

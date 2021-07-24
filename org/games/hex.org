@@ -1,3 +1,6 @@
+:PROPERTIES:
+:ID:       264c079d-ddbe-4b23-b1d7-ee4d9e93949e
+:END:
 #+title: Hex
 
 * Resources

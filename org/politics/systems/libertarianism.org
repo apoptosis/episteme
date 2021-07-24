@@ -1,3 +1,6 @@
+:PROPERTIES:
+:ID:       d1c578c0-e69f-4c5d-89a5-d113469cfbcd
+:END:
 #+title: Libertarianism
 #+description: Political knowledge-base of the ##apoptosis community on Freenode
 #+language: en
@@ -13,8 +16,7 @@
 #+html_head: <link rel="stylesheet" type="text/css" href="/episteme/extra.css"/>
 
 * Definition
-Libertarianism is an ethical system that uses the [[Non-Aggression Principle]] to
-resolve [[Conflict]] by discovering who aggressed
+Libertarianism is an ethical system that uses the [[Non-Aggression Principle]] to resolve [[Conflict]] by discovering who aggressed
 
 * Resources
 ** TEAC

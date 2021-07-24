@@ -1,3 +1,6 @@
+:PROPERTIES:
+:ID:       08bcf53e-8dc7-4732-82ff-cec5ed896412
+:END:
 #+title: media
 #+description: Linux knowledge-base of the ##apoptosis community on Freenode
 #+language: en

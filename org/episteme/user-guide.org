@@ -1,3 +1,6 @@
+:PROPERTIES:
+:ID:       2d3cb53c-6272-4665-b34d-021d70ead532
+:END:
 #+title: User Guide
 #+description: How to use Episteme
 
@@ -29,26 +32,19 @@ The basic workflow is something like:
 
 ** Foreknowledge
 
-There are some things that will be helpful to know about to have a good time
-with Episteme. If you're unfamiliar with any of these things, you can reach out
-for help.
+There are some things that will be helpful to know about to have a good time with Episteme. If you're unfamiliar with any of these things, you can reach out for help.
 
 *** Managing files on your computer
 
-Episteme keeps files in a couple places. You should be able to navigate around
-your hard-drive and open/delete files, etc.
+Episteme keeps files in a couple places. You should be able to navigate around your hard-drive and open/delete files, etc.
 
 *** Using the terminal
 
-Occasionally you may need to use the terminal to run some commands. It'll be
-helpful if you know how to open the terminal on your computer, change
-directories, run commands, etc.
+Occasionally you may need to use the terminal to run some commands. It'll be helpful if you know how to open the terminal on your computer, change directories, run commands, etc.
 
 *** Using Git
 
-Git is a [[https://en.wikipedia.org/wiki/Version_control][version control system]]. It basically allows multiple to work on a
-bunch of documents in parallel, and to reliably merge their changes together
-into a cohesive whole.
+Git is a [[https://en.wikipedia.org/wiki/Version_control][version control system]]. It basically allows multiple to work on a bunch of documents in parallel, and to reliably merge their changes together into a cohesive whole.
 
 Episteme uses Git to pull and push changes.
 
@@ -66,8 +62,7 @@ This is where you downloaded Episteme. It contains:
 - the knowledge documents
 - the editor
 
-This is where updates are pushed and pulled from. Do you know where you
-downloaded Episteme?
+This is where updates are pushed and pulled from. Do you know where you downloaded Episteme?
 
 *** The Config Directory
 
@@ -84,9 +79,7 @@ This is usually located at:
 
 * Mastering the Basics
 
-Episteme is built ontop of Emacs, and it can be a little foreign if you've
-never used it before. This section will give you the tools needed to
-confidently navigate and edit using Episteme.
+Episteme is built ontop of Emacs, and it can be a little foreign if you've never used it before. This section will give you the tools needed to confidently navigate and edit using Episteme.
 
 ** The Interface
 
@@ -98,20 +91,11 @@ The primary "window" on your computer containing Episteme.
 *Windows*:
 The frame may be split into any number of sections called "windows".
 
-*Buffers*:
-Every window displays a buffer. Buffers are just containers for text. Sometimes
-a buffer is displaying a file, sometimes it's used for on-screen interface
-elements. Everything you see is text in some buffer.
+*Buffers*: Every window displays a buffer. Buffers are just containers for text. Sometimes a buffer is displaying a file, sometimes it's used for on-screen interface elements. Everything you see is text in some buffer.
 
-*Modes*:
-Every buffer is in a "mode". A mode is simply "the way a buffer behaves". When
-you hit the =f= key, does it insert "f" or does it activate some behavior? That
-depends on the mode!
+*Modes*: Every buffer is in a "mode". A mode is simply "the way a buffer behaves". When you hit the =f= key, does it insert "f" or does it activate some behavior? That depends on the mode!
 
-*Keybinds*:
-When you press a key, what the key does, depends on what it is bound
-to. Keybinds are usually denoted like: =C-x g= which means "Holding control, hit
-x. Then hit g."
+*Keybinds*: When you press a key, what the key does, depends on what it is bound to. Keybinds are usually denoted like: =C-x g= which means "Holding control, hit x. Then hit g."
 
 Here are some examples:
 | C-x     | Holding control, hit x              |
@@ -121,24 +105,17 @@ Here are some examples:
 | <f12>   | Hit F12                             |
 | C-<f12> | Holding control, hit F12            |
 
-*Minibuffer*:
-At the bottom of each window is a status line. This is the minibuffer where
-useful information will sometimes appear.
+*Minibuffer*: At the bottom of each window is a status line. This is the minibuffer where useful information will sometimes appear.
 
-*Menus*:
-Menus are small popups that offer a number of items bound to keys. Pressing one
-of the keys will invoke the item. Menu items will sometimes do something,
-sometimes they will open additional menus.
+*Menus*: Menus are small popups that offer a number of items bound to keys. Pressing one of the keys will invoke the item. Menu items will sometimes do something, sometimes they will open additional menus.
 
 ** Something went wrong!
 
-If you ever get stuck in some weird situation, you can try to hit =C-g= a few
-times. =C-g= is the "cancel whatever is going on" key.
+If you ever get stuck in some weird situation, you can try to hit =C-g= a few times. =C-g= is the "cancel whatever is going on" key.
 
 If =C-g= doesn't work, you're probably in a "Debugger" window. Just hit =q=
 
-If there are too many windows, you can hit =C-x 1= to get back to a single
-window.
+If there are too many windows, you can hit =C-x 1= to get back to a single window.
 
 ** Exiting
 
@@ -198,8 +175,7 @@ Episteme has a number of menus to make things easier.
 - main menu: bound to =C-c x= by default
 - mode menu: bound to =C-c m= by default
 
-Some menu items will lead to other menus. Spacebar will return you previous
-menus, or close the last one.
+Some menu items will lead to other menus. Spacebar will return you previous menus, or close the last one.
 
 *** The Main Menu
 
@@ -207,8 +183,7 @@ The Main Menu is your launch-pad.
 
 By default, it is bound to =C-c x=
 
-The Main Menu has a number of items when opened but the three most important
-ones are:
+The Main Menu has a number of items when opened but the three most important ones are:
 
 - =o=: open - navigate the knowledge-base and open a document
 - =a=: all files - select a file from a list of all documents
@@ -219,12 +194,9 @@ The Main Menu can be closed with the spacebar.
 
 *** The Mode Menus
 
-When you open a file, based on its extension, Emacs displays that file in a
-buffer with a particular mode. Knowledge documents are in =org-mode=, text files
-are in =text-mode=, and so on.
+When you open a file, based on its extension, Emacs displays that file in a buffer with a particular mode. Knowledge documents are in =org-mode=, text files are in =text-mode=, and so on.
 
-For some modes, you can open a "mode-specific menu" that can assist with doing
-things related to that file type.
+For some modes, you can open a "mode-specific menu" that can assist with doing things related to that file type.
 
 By default, it is bound to =C-c m=
 
@@ -235,8 +207,7 @@ To open a knowledge-base document:
 - open the main menu
 - press =o= to begin
 
-You will be presented with a list of files/folders in the root of the
-knowledge-base. You can:
+You will be presented with a list of files/folders in the root of the knowledge-base. You can:
 
 - use =C-n= / =C-p= (or the arrow keys) to navigate between items
 - use =<enter>= to navigate further into the currently selected item

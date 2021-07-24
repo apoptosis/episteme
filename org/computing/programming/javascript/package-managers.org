@@ -1,3 +1,7 @@
+:PROPERTIES:
+:ID:       ed7cc1c8-4d2d-42f9-b717-660d307ccd9c
+:END:
+
 * Package managers
 ** NPM
 *** Find global root

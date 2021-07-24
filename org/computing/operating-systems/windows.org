@@ -1,3 +1,6 @@
+:PROPERTIES:
+:ID:       0abddbac-facd-4a3d-adf0-bf9b978d5a37
+:END:
 #+title: Windows
 
 * TODO Windows USB

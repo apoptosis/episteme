@@ -1,3 +1,6 @@
+:PROPERTIES:
+:ID:       714cfd7b-e826-4918-a4b0-a75ed2f0c2ac
+:END:
 #+title: Dotnet
 
 * Blazor

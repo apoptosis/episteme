@@ -1,4 +1,8 @@
+:PROPERTIES:
+:ID:       14199d37-76bb-415b-a748-c75f3c862b42
+:END:
 #+title: ReactJS
+
 * SSG
 https://blog.logrocket.com/static-site-generation-with-react-from-scratch/
 

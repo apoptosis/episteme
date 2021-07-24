@@ -1,3 +1,6 @@
+:PROPERTIES:
+:ID:       77e34b0f-e565-414f-a91e-df5db7fa34a0
+:END:
 #+title: Javascript
 * Playgrounds
 https://tsplay.dev/N5EooN

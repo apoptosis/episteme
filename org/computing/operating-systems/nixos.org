@@ -1,3 +1,6 @@
+:PROPERTIES:
+:ID:       7be4c876-4b75-465c-a734-1445188eab96
+:END:
 #+title: NixOS
 
 * Installation

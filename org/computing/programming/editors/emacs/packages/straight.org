@@ -1,3 +1,6 @@
+:PROPERTIES:
+:ID:       264b4644-640d-48f3-ac9c-0e990d863682
+:END:
 #+title: Striaght.el
 
 * Install a package from github

@@ -1,3 +1,6 @@
+:PROPERTIES:
+:ID:       ab2ae59f-2a6c-4d2f-8bd7-f6a1e1a21627
+:END:
 #+title: Music Theory
 
 * Intervals

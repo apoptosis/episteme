@@ -1,3 +1,6 @@
+:PROPERTIES:
+:ID:       ff1f279b-496a-49c5-991e-9c995dcf975b
+:END:
 #+title: AWS
 
 * Storage

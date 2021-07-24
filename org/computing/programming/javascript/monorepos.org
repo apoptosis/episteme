@@ -1,3 +1,6 @@
+:PROPERTIES:
+:ID:       f9c21c9d-ddf7-409f-87d3-4b4df4960fb5
+:END:
 #+title: Monorepos
 #+property: header-args :results output raw silent
 #+property: header-args:sh :results output raw silent
@@ -341,6 +344,9 @@ return f"{PATH.strip()}/{NAME.strip()}/{FILE.strip()}"
       (find-file file)))
 #+end_src
 
+#+RESULTS: nx-lib
+: nx-open
+
 * Rush
 ** Guides
 *** Creating a new Rush monorepo
@@ -430,6 +436,9 @@ return f"{PATH.strip()}/{NAME.strip()}/{FILE.strip()}"
       (find-file file)))
 #+end_src
 
+#+RESULTS: rush-lib
+: rush-open
+
 * utils
 #+name: lib
 #+begin_src elisp
@@ -444,6 +453,9 @@ return f"{PATH.strip()}/{NAME.strip()}/{FILE.strip()}"
   (defun get (prompt)
     (read-string prompt))
 #+end_src
+
+#+RESULTS: lib
+: get
 
 # Local Variables:
 # eval: (org-ls-call "lib")
