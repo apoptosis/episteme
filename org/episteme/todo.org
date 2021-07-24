@@ -5,8 +5,12 @@
 * TODO Automate font installation on Windows
 Fonts should go into =C:/Windows/Font=
 - look into registry changes that might be needed?
+
 * TODO Investigate .config permission issue
 During windows install, .config creation fails
+- [ ] Fix it
+- [ ] Remove the workaround from README.org
+
 * TODO Implement Embark
 Embark can let us customize how links are opened.
 
