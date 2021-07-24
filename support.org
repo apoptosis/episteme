@@ -1532,6 +1532,7 @@ Many of the Emacs help facilities at your fingertips!
   (:hydra episteme-hydra-default (:color blue)
     ("Open"
      (("o" (helm-org-walk '(4)) "open")
+      ("s" (helm-org-rifle-directories episteme/org) "search")
       ("a" (episteme:find-file-all) "all files")
       ("j" (org-journal-new-entry '(4)) "journal")
       ("J" (org-journal-new-entry nil) "new journal entry"))
@@ -2026,7 +2027,6 @@ Open hydra for current major mode if one exists, otherwise the default hydra.
       (("t" (org-babel-tangle) "tangle" :color blue)
        ("e" (org-html-export-to-html) "export" :color blue)
        ("b" helm-org-in-buffer-headings "browse")
-       ("o" (helm-org-rifle-directories episteme/org) "episteme org")
        ("r" (lambda () (interactive)
               (helm-org-rifle-current-buffer)
               (org-cycle)
