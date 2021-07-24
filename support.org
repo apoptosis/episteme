@@ -932,6 +932,14 @@ Show a little arrow for collapsed headings.
 #+end_src
 
 ** feel
+*** enable org-speed-keys
+
+Navigate org-headings using n, p or set your own shortcuts.
+
+#+begin_src emacs-lisp
+(setq org-use-speed-commands t)
+#+end_src
+
 *** show all headings on startup
 #+begin_src emacs-lisp
   (setq org-startup-folded 'content)
@@ -2026,6 +2034,7 @@ Open hydra for current major mode if one exists, otherwise the default hydra.
       (("t" (org-babel-tangle) "tangle" :color blue)
        ("e" (org-html-export-to-html) "export" :color blue)
        ("b" helm-org-in-buffer-headings "browse")
+       ("o" (helm-org-rifle-directories episteme/org) "episteme org")
        ("r" (lambda () (interactive)
               (helm-org-rifle-current-buffer)
               (org-cycle)
