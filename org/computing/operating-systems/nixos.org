@@ -58,7 +58,7 @@ Then add a new entry:
   '';
 #+end_src
 
-* Pills
+* How-tos
 ** Search for packages
 #+begin_src shell
  nix-env -qaP '.*emacs.*'

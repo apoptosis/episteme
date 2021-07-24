@@ -1,8 +1,7 @@
 :PROPERTIES:
 :ID:       e6c80820-74cf-4ff8-b10e-62728efa19e1
 :END:
-
-#+title:Encryption
+#+title:OpenSSH
 
 * Encrypt message using typical keypair
 ** First, convert the public key to pem format:

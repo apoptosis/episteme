@@ -1,8 +1,0 @@
-:PROPERTIES:
-:ID:       1aaef91f-4ba1-4ccc-bdac-814d93dc8665
-:END:
-#+title: IPFS
-
-* Apps
-** https://peergos.org/
-** https://killcord.io/

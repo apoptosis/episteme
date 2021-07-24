@@ -4,7 +4,7 @@
 #+title: Git
 
 * Clients
-** grv
+** Github Repository Viewer (GRV)
 https://github.com/rgburke/grv
 
 * Sparse Checkout

@@ -1,0 +1,43 @@
+:PROPERTIES:
+:ID:       a48cb17d-67a1-4584-9002-a0b38070e851
+:END:
+#+title: Books
+
+* Surreal
+** The Divine Farce - Michael S. A. Graziano
+:PROPERTIES:
+:markedby: ldlework
+:END:
+https://www.amazon.com/Divine-Farce-LeapLit-Michael-Graziano/dp/1935248049
+** Love Song for Monkey - Michael Graziano
+:PROPERTIES:
+:markedby: ldlework
+:END:
+https://www.amazon.com/Love-Song-Monkey-Michael-Graziano/dp/0981514804
+* Apocalyptic / Dystopian
+** A Canticle For Leibowitz - Walter M. Miller Jr.
+:PROPERTIES:
+:markedby: ldlework
+:END:
+https://www.amazon.com/Canticle-Leibowitz-Walter-Miller-Jr/dp/0060892994
+* Science Fiction
+** Seveneves - Neal Stephenson
+:PROPERTIES:
+:markedby: ldlework
+:END:
+https://www.amazon.com/Seveneves-Neal-Stephenson/dp/0062334514
+** Ready Player One - Ernest Cline
+:PROPERTIES:
+:markedby: ldlework
+:END:
+https://www.amazon.com/Ready-Player-One-Ernest-Cline/dp/0307887448
+** The Dark Side of Nowhere Paperback - Neal Shusterman
+:PROPERTIES:
+:markedby: ldlework
+:END:
+https://www.amazon.com/Dark-Side-Nowhere-Neal-Shusterman/dp/1442422815
+** Zero History - William Gibson
+:PROPERTIES:
+:markedby: ldlework
+:END:
+https://www.amazon.com/Zero-History-William-Gibson/dp/0399156828

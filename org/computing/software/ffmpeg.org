@@ -1,11 +1,10 @@
 :PROPERTIES:
-:ID:       96d113f1-c597-476b-af41-7975ba66af53
+:ID:       85f9b0fc-49cb-4783-a3d0-d68bf148a6ec
 :END:
 #+title: ffmpeg
 
-* Make GIFs
-Depenendencies: xrectsel ffmpeg ffcast
-#+begin_src shell
-  ffcast -w % ffmpeg -f x11grab -show_region 1 -framerate 20 -video_size %s -i %D+%c -codec:v huffyuv -vf crop="iw-mod(iw\\,2):ih-mod(ih\\,2)" out2.gif
+* Conversions
+** m4a => mp3
+#+begin_src sh
+ffmpeg -v 5 -y -i church-bells.m4a -acodec libmp3lame -ac 2 -ab 192k church-bells.mp3
 #+end_src
-

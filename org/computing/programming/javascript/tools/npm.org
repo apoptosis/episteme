@@ -1,0 +1,7 @@
+:PROPERTIES:
+:ID:       30c11235-e4c9-44ae-a54f-191e67ace7ff
+:END:
+#+title: NPM
+* How-tos
+** Find global root
+=node root -g=

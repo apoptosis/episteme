@@ -1,15 +1,14 @@
 :PROPERTIES:
-:ID:       f9c21c9d-ddf7-409f-87d3-4b4df4960fb5
+:ID:       e4d86343-e976-4d8e-9f0f-282548c8a46b
 :END:
-#+title: Monorepos
+#+title: Nx
 #+property: header-args :results output raw silent
 #+property: header-args:sh :results output raw silent
 #+property: header-args:python :results raw value silent
 #+startup: hideblocks
 
-* NX
-** Guides
-*** Creating a new NX monorepo
+* How-tos
+** Creating a new NX monorepo
 :properties:
 :header-args:sh: :session *nx-session*
 :end:
@@ -17,7 +16,7 @@ This section will assist in setting up a new monorepo with [[https://nx.dev/][NX
 
 Use =C-c C-c= to execute codeblocks and links.
 
-**** Prerequisites
+*** Prerequisites
 Ensure that you have [[https://nodejs.org/en/][NodeJS]].
 
 Then install [[https://pnpm.io/][pnpm]] and [[https://nx.dev/][NX]] globally:
@@ -25,16 +24,16 @@ Then install [[https://pnpm.io/][pnpm]] and [[https://nx.dev/][NX]] globally:
   npm install -g pnpm nx
 #+end_src
 
-**** Start Here
+*** Start Here
 Specify where your monorepo will live with the next two sections.
-***** Where do you keep your projects?
+**** Where do you keep your projects?
 #+name: nx-project-root
 /home/ldlework/ext/freenode
-***** What's the name of the new monorepo?
+**** What's the name of the new monorepo?
 #+NAME: nx-monorepo-name
 dnsbot3
 
-**** Create new monorepo
+*** Create new monorepo
 Create a new monorepo if it doesn't exist.
 
 #+begin_src sh :var ROOT=nx-project-root NAME=nx-monorepo-name
@@ -50,7 +49,7 @@ Create a new monorepo if it doesn't exist.
   cd $NAME
 #+end_src
 
-**** Install Node support
+*** Install Node support
 [[https://pnpm.io/][pnpm]] is a new very fast node package manager that solves a lot of long standing
 issues.
 
@@ -58,7 +57,7 @@ issues.
   pnpm install -D @nrwl/node
 #+end_src
 
-**** Install development dependencies
+*** Install development dependencies
 #+begin_src sh :var ROOT=(s-trim (org-ls-resolve 'nx-project-root)) NAME=(s-trim (org-ls-resolve 'nx-monorepo-name))
   cd "$ROOT/$NAME"
   pnpm install -D @types/node type-fest ts-node typescript prettier eslint
@@ -69,7 +68,7 @@ issues.
   pnpm install -D eslint-plugin-unused-imports typescript-eslint @typescript-eslint/eslint-plugin
   pnpm install -D @typescript-eslint/parser
 #+end_src
-**** Configure settings
+*** Configure settings
 - [[elisp:(nx-copy ".vscode/extensions.json" 'extensions)][Configure extensions.json]]
   #+name: extensions
   #+begin_src json
@@ -311,21 +310,21 @@ issues.
     }
 #+end_src
 
-**** Add a node app
+*** Add a node app
 Create a new "backend" node application project.
 
 #+begin_src sh :var NAME=(get "Node app name: ")
 nx generate @nrwl/node:application $NAME
 #+end_src
 
-**** Add a node library
+*** Add a node library
 Create a new "backend" node library project.
 
 #+begin_src sh :var NAME=(get "Node library name: ")
   nx generate @nrwl/node:library $NAME --buildable
 #+end_src
 
-**** utils
+*** utils
 #+name: nx-path
 #+begin_src python :var FILE="" :var NAME=nx-monorepo-name :var PATH=nx-project-root :return
 return f"{PATH.strip()}/{NAME.strip()}/{FILE.strip()}"
@@ -347,98 +346,6 @@ return f"{PATH.strip()}/{NAME.strip()}/{FILE.strip()}"
 #+RESULTS: nx-lib
 : nx-open
 
-* Rush
-** Guides
-*** Creating a new Rush monorepo
-
-This section will assist in setting up a new monorepo with [[https://rushjs.io/][Rush]] and [[https://rushstack.io/pages/heft/overview/][Heft]].
-
-Use =C-c C-c= to execute codeblocks and links.
-
-**** Prerequisites
-Ensure that you have [[https://nodejs.org/en/][NodeJS]].
-
-Then install [[https://pnpm.io/][pnpm]], [[https://rushjs.io/][Rush]] and [[https://rushstack.io/pages/heft/overview/][Heft]] globally:
-#+begin_src sh
-  npm install -g pnpm @microsoft/rush @rushstack/heft
-#+end_src
-
-**** Start Here
-Specify where your monorepo will live with the next two sections.
-***** Where do you keep your projects?
-#+name: rush-project-root
-/home/ldlework/src
-***** What's the name of the new monorepo?
-#+NAME: rush-monorepo-name
-rush-monorepo-test
-
-**** Create new monorepo
-Create a new monorepo if it doesn't exist.
-
-#+begin_src sh :var ROOT=rush-project-root NAME=rush-monorepo-name :results output raw
-  cd $ROOT
-  if [ ! -d $NAME ]
-  then
-    mkdir $NAME
-    cd $NAME
-    rush init
-  fi
-#+end_src
-
-**** Enable PNPM support
-[[elisp:(rush-open "rush.json")][Open rush.json]] and uncomment =pnpmVersion=.
-
-**** Adding a new project
-Each project goes into a "category" folder. For example:
-
-- =libs/corelib/=
-- =apps/cli=
-
-You must then add these projects to =rush.json=:
-
-#+begin_src json
-  "projects": [
-      {
-          "packageName": "corelib",
-          "projectFolder": "libs/corelib"
-      },
-      {
-          "packageName": "cli",
-          "projectFolder": "apps/cli"
-      }
-  ]
-#+end_src
-**** Troubleshooting
-***** Resetting the Rush state
-#+begin_src sh
-  rush update --purge
-#+end_src
-***** Check dependency homogeny
-#+begin_src sh
-  rush check
-#+end_src
-**** utils
-#+name: rush-path
-#+begin_src python :var FILE="" :var NAME=rush-monorepo-name :var PATH=rush-project-root :return
-return f"{PATH.strip()}/{NAME.strip()}/{FILE.strip()}"
-#+end_src
-
-#+name: rush-lib
-#+begin_src elisp
-  (defun rush-copy (file text)
-    (let ((text (org-ls-resolve text)))
-      (with-temp-file (org-ls-call "rush-path" :FILE file)
-        (erase-buffer)
-        (insert text))))
-
-  (defun rush-open (file)
-    (let ((file (org-ls-call "rush-path" :FILE file)))
-      (find-file file)))
-#+end_src
-
-#+RESULTS: rush-lib
-: rush-open
-
 * utils
 #+name: lib
 #+begin_src elisp
@@ -454,12 +361,8 @@ return f"{PATH.strip()}/{NAME.strip()}/{FILE.strip()}"
     (read-string prompt))
 #+end_src
 
-#+RESULTS: lib
-: get
-
 # Local Variables:
 # eval: (org-ls-call "lib")
 # eval: (org-ls-call "nx-lib")
-# eval: (org-ls-call "rush-lib")
 # eval: (progn (org-shifttab)(org-shifttab))
 # End:

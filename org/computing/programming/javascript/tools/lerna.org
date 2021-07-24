@@ -1,22 +1,12 @@
 :PROPERTIES:
-:ID:       ed7cc1c8-4d2d-42f9-b717-660d307ccd9c
+:ID:       4396382b-0482-47aa-9775-c57fbd59f13e
 :END:
+#+title: Lerna
+* How-tos
+** Quickstart
 
-* Package managers
-** NPM
-*** Find global root
-node root -g
-** Yarn
+First enable workspaces with [[id:7c7e033d-ca13-4bee-9f05-f5a21150f6cc][Yarn]]
 
-*** Workspaces
-#+begin_src js
-  {
-      "private": true,
-      "workspaces": ["projects/*"],
-  }
-#+end_src
-
-**** Lerna
 Install lerna into workspace root:
 
 #+begin_src bash
@@ -40,5 +30,4 @@ Install dependency into package:
 #+begin_src bash
   lerna add a --scope=b --scope=c --scope=d  
 #+end_src
-** PNPM
 
