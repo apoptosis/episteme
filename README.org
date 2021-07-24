@@ -106,7 +106,7 @@ Open =Git-Bash= using the Start Menu.
 Then type the following:
 
 #+begin_src sh
-  mkdir .config .config/episteme
+  mkdir -p .config/episteme
   cd Documents/GitHub/episteme
   ./episteme
 #+end_src
