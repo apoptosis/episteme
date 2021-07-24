@@ -1217,6 +1217,8 @@ Backlink support
 
   (use-package org-roam
     :ensure t
+    :init
+    (setq org-roam-v2-ack 2)
     :custom
     (org-roam-directory episteme/org)
     :bind (("C-c n l" . org-roam-buffer-toggle)
@@ -1227,7 +1229,6 @@ Backlink support
            ;; Dailies
            ("C-c n j" . org-roam-dailies-capture-today))
     :config
-    (setq org-roam-v2-ack t)
     (org-roam-setup)
     ;; If using org-roam-protocol
     (require 'org-roam-protocol)
