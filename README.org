@@ -70,30 +70,30 @@ Chocolatey is a system for installing software on Windows.
 
 Follow these instructions:
 
-1. Type "powershell" into Start Menu
-2. Open PowerShell _as Administrator_.
-3. In PowerShell terminal, type (followed by enter):
+1. Right-click on the Start Button (The one with the Windows logo).
+2. Open Windows PowerShell _(Admin)_.
+3. In PowerShell, type (followed by enter):
    =Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))=
-4. In PowerShell terminal, type (followed by enter):
-   =choco -?=
+4. When the command completes, in PowerShell, type (followed by enter):
+      =choco -?=
 
 If the last command succeeded you're ready to move on.
 
 *** Installing Dependencies
 
-Use =choco= command to install the necessary software:
+Use =choco= to install the dependencies:
 
 #+begin_src sh
-  choco install git github emacs sharpkeys
+  choco install git github emacs sharpkeys mingw -y
 #+end_src
 
 *** Installing Episteme
 
-Open =GitHub for Windows= using the Start Menu.
+=GitHub Desktop= will open when it is installed.
 
-Follow the prompts, and use "offline account".
+Follow the prompts, no need to sign in.
 
-Clone a repository, and use the following URL:
+Clone the repository with the following URL:
 
 https://github.com/apoptosis/episteme.git
 
@@ -106,7 +106,8 @@ Open =Git-Bash= using the Start Menu.
 Then type the following:
 
 #+begin_src sh
-  cd $USERPROFILE/Documents/GitHub/episteme
+  mkdir .config .config/episteme
+  cd Documents/GitHub/episteme
   ./episteme
 #+end_src
 
@@ -118,6 +119,7 @@ Use =M-x all-the-icons-install-fonts= and pick a location to download the fonts.
 
 Afterwards, open each downloaded font file, and install it. Restart Episteme
 and the fonts should be working.
+
 * Running Episteme
 
 Use the =-h= flag to explore the =episteme= cli:
