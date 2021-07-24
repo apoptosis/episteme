@@ -1,3 +1,12 @@
+:PROPERTIES:
+:ID:       9f220bd3-1379-4ce6-9393-8a34c516d8ef
+:END:
+
+* TODO Automate font installation on Windows
+Fonts should go into =C:/Windows/Font=
+- look into registry changes that might be needed?
+* TODO Investigate .config permission issue
+During windows install, .config creation fails
 * TODO Implement Embark
 Embark can let us customize how links are opened.
 
