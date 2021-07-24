@@ -1227,10 +1227,10 @@ Backlink support
            ;; Dailies
            ("C-c n j" . org-roam-dailies-capture-today))
     :config
+    (setq org-roam-v2-ack t)
     (org-roam-setup)
     ;; If using org-roam-protocol
     (require 'org-roam-protocol)
-    (setq org-roam-v2-ack t)
     (:hook org-mode
       (add-hook 'before-save-hook 'episteme:ensure-org-id nil t)))
 #+end_src
