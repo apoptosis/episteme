@@ -7,7 +7,7 @@
 ** ProGit
 A particularly well-written piece on Git.
 
-https://magit.vc/manual/magit.html
+https://git-scm.com/book/en/v2
 
 Reading chapters 1 - 3 will change your life.
 
