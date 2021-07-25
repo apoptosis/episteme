@@ -2011,30 +2011,41 @@ Open hydra for current major mode if one exists, otherwise the default hydra.
 
 *** hydra-org
  #+begin_src emacs-lisp
-   (:hydra episteme-hydra-org (:color red :major-mode org-mode)
+   (:hydra episteme-hydra-org (:color amaranth :major-mode org-mode)
      ("Shift"
-      (("K" org-move-subtree-up "up")
+      (
+       ("H" org-promote-subtree "promote")
+       ("L" org-demote-subtree "demote")
        ("J" org-move-subtree-down "down")
-       ("h" org-promote-subtree "promote")
-       ("l" org-demote-subtree "demote"))
+       ("K" org-move-subtree-up "up")
+       )
+
       "Travel"
-      (("p" org-backward-heading-same-level "backward")
-       ("n" org-forward-heading-same-level "forward")
-       ("j" hydra-org-child-level "to child")
-       ("k" hydra-org-parent-level "to parent")
+      (
+       ("h" hydra-org-parent-level "to parent")
+       ("l" hydra-org-child-level "to child")
+       ("j" org-forward-heading-same-level "forward")
+       ("k" org-backward-heading-same-level "backward")
        ("a" hydra-org-goto-first-sibling "first sibling")
-       ("e" hydra-org-goto-last-sibling "last sibling"))
+       ("e" hydra-org-goto-last-sibling "last sibling")
+       )
+
       "Perform"
-      (("t" (org-babel-tangle) "tangle" :color blue)
+      (
+       ("t" (org-babel-tangle) "tangle" :color blue)
        ("e" (org-html-export-to-html) "export" :color blue)
        ("b" helm-org-in-buffer-headings "browse")
        ("r" (lambda () (interactive)
               (helm-org-rifle-current-buffer)
               (org-cycle)
-              (org-cycle)) "rifle")
+              (org-cycle))
+        "rifle")
        ("w" helm-org-walk "walk")
        ("v" avy-org-goto-heading-timer "avy")
-       ("L" org-toggle-link-display "toggle links"))))
+       ("L" org-toggle-link-display "toggle links")
+       ("i" (org-id-get-create) "check id")
+       )
+      ))
 #+end_src
 
 * startup
