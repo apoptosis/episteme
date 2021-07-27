@@ -19,7 +19,17 @@
   /set irc.server.server-name.username "username"
   /set irc.server.server-name.realname "realname"
 #+end_src
-
+** Setup SASL credentials
+#+begin_src text
+  /set irc.server.server-name.sasl_mechanism PLAIN
+  /set irc.server.server-name.sasl_username <nickname>
+  /set irc.server.server-name.sasl_password <password>
+  /save
+#+end_src
+** Ignore self-signed TLS
+#+begin_src text
+  /set irc.server.server-name.ssl_verify off
+#+end_src
 ** Set Hotlist/Notify levels
 https://weechat.org/files/doc/stable/weechat_user.en.html#notify_levels
 * Operator Stuff
