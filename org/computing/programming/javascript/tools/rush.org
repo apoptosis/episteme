@@ -7,6 +7,9 @@
 #+property: header-args:python :results raw value silent
 #+startup: hideblocks
 
+** Community Chat
+https://rushstack.zulipchat.com/#all_messages
+
 ** How-tos
 *** Creating a new Rush monorepo
 
