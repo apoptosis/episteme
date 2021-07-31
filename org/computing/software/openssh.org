@@ -36,3 +36,16 @@ Then base64 decode and decrypt with private key:
   openssl rsautl -decrypt -inkey ~/.ssh/id_rsa -in msg.enc -out msg.txt
 #+end_src
 
+
+
+
+* Tunneling
+
+** Local Fowarding
+
+Connect to a local port redirected through remote ssh host:
+
+#+begin_src shell
+  ssh -L 6697:target.server.com:6697 jump.server.com
+
+#+end_src
