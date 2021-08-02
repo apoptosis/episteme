@@ -1330,7 +1330,7 @@ Macro for defining Hydras.
 **** add-exit-head
 #+begin_src emacs-lisp
   (defun :hydra/add-exit-head (heads)
-    (let ((exit-head '("SPC" (hera-pop) "to exit" :color blue)))
+    (let ((exit-head '("SPC" (hera-pop) "to exit" :color teal)))
       (append heads `(,exit-head))))
 #+end_src
 
@@ -1394,7 +1394,7 @@ Many of the Emacs help facilities at your fingertips!
 
 #+begin_src emacs-lisp
 
-  (:hydra episteme-hydra-help (:color blue)
+  (:hydra episteme-hydra-help (:color teal)
     ("Describe"
      (("c" describe-function "function")
       ("p" describe-package "package")
@@ -1469,7 +1469,7 @@ Many of the Emacs help facilities at your fingertips!
   (use-package ace-window)
   (winner-mode 1)
 
-  (:hydra episteme-hydra-window (:color red)
+  (:hydra episteme-hydra-window (:color amaranth)
     ("Jump"
      (("h" windmove-left "left")
       ("l" windmove-right "right")
@@ -1491,19 +1491,19 @@ Many of the Emacs help facilities at your fingertips!
 
 ** hydra-zoom
 #+begin_src emacs-lisp
-  (:hydra episteme-hydra-zoom (:color red)
+  (:hydra episteme-hydra-zoom (:color amaranth)
     ("Buffer"
      (("i" text-scale-increase "in")
       ("o" text-scale-decrease "out"))
      "Frame"
      (("I" zoom-frm-in "in")
       ("O" zoom-frm-out "out")
-      ("r" toggle-zoom-frame "reset" :color blue))))
+      ("r" toggle-zoom-frame "reset" :color teal))))
 #+end_src
 
 ** hydra-dev
 #+begin_src emacs-lisp
-  (:hydra episteme-hydra-dev (:color blue)
+  (:hydra episteme-hydra-dev (:color teal)
     ("Open"
      (("s" (find-file (concat episteme/repo "/support.org")) "support.org")
       ("d" (find-file (concat episteme/org "/episteme/developer-docs.org")) "docs"))
@@ -1530,7 +1530,7 @@ Many of the Emacs help facilities at your fingertips!
                                        (or path episteme/org) "\.org$"))))
       (find-file file-name)))
 
-  (:hydra episteme-hydra-default (:color blue)
+  (:hydra episteme-hydra-default (:color teal)
     ("Open"
      (("o" (helm-org-walk '(4)) "open")
       ("s" (helm-org-rifle-directories episteme/org) "search")
@@ -1921,7 +1921,7 @@ Open hydra for current major mode if one exists, otherwise the default hydra.
 
 
 
-  (:hydra episteme-hydra-text (:color red :major-mode text-mode)
+  (:hydra episteme-hydra-text (:color amaranth :major-mode text-mode)
     ("Move"
      (("j" table-go-down "go down")
       ("k" table-go-up "go up")
@@ -1951,15 +1951,15 @@ Open hydra for current major mode if one exists, otherwise the default hydra.
 
 ** hydra-elisp
 #+begin_src emacs-lisp
-  (:hydra episteme-hydra-elisp (:color blue :major-mode emacs-lisp-mode)
+  (:hydra episteme-hydra-elisp (:color teal :major-mode emacs-lisp-mode)
     ("Execute"
      (("d" eval-defun "defun")
       ("b" eval-current-buffer "buffer")
       ("r" eval-region "region"))
      "Debug"
      (("D" edebug-defun "defun")
-      ("a" edebug-all-defs "all definitions" :color red)
-      ("A" edebug-all-forms "all forms" :color red)
+      ("a" edebug-all-defs "all definitions" :color amaranth)
+      ("A" edebug-all-forms "all forms" :color amaranth)
       ("x" macrostep-expand "expand macro"))))
 #+end_src
 
@@ -2032,8 +2032,8 @@ Open hydra for current major mode if one exists, otherwise the default hydra.
 
       "Perform"
       (
-       ("t" (org-babel-tangle) "tangle" :color blue)
-       ("e" (org-html-export-to-html) "export" :color blue)
+       ("t" (org-babel-tangle) "tangle" :color teal)
+       ("e" (org-html-export-to-html) "export" :color teal)
        ("b" helm-org-in-buffer-headings "browse")
        ("r" (lambda () (interactive)
               (helm-org-rifle-current-buffer)
