@@ -1,0 +1,16 @@
+:PROPERTIES:
+:ID:       cf8e4437-0ed2-4430-a33d-4b99fb3745a9
+:END:
+#+TITLE: Git
+#+DESCRIPTION: A guide to using git, and other git tips
+
+* TODO What is Git?
+* TODO Using Git
+* TODO Configuration
+**  Setting a default remote
+    You can skip the hassle of setting the default remote yourself. Git can set it to =origin= automatically with the following:
+
+    #+begin_src gitconfig
+[checkout]
+	defaultRemote = origin
+    #+end_src

@@ -220,3 +220,7 @@ Press =C-g= to cancel.
 
 To select a document from a list of all files use the =a= main menu item.
 
+* TODO Dipping In
+** TODO Building your own configuration
+*** TODO =support.el=
+*** TODO Using org-mode
