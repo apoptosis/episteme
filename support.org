@@ -1388,6 +1388,18 @@ Macro for defining Hydras.
 
 #+end_src
 
+* treemacs
+#+begin_src emacs-lisp
+  (use-package treemacs
+    :demand t
+    :straight (treemacs :type git :host github
+                        :repo "Alexander-Miller/treemacs")
+    :custom
+    (treemacs--project-follow-delay 0.5)
+    :config
+    (treemacs-project-follow-mode 1))
+#+end_src
+
 * main menu
 ** hydra-help
 Many of the Emacs help facilities at your fingertips!
@@ -1538,7 +1550,8 @@ Many of the Emacs help facilities at your fingertips!
       ("j" (org-journal-new-entry '(4)) "journal")
       ("J" (org-journal-new-entry nil) "new journal entry"))
      "Bookmarks"
-     (("D" (episteme:find-file-all (concat episteme/org "/episteme")) "Docs")
+     (("S" (treemacs) "Sidebar")
+      ("D" (episteme:find-file-all (concat episteme/org "/episteme")) "Docs")
       ("C" (find-file (concat episteme/org "/episteme/cheatsheet.org")) "Cheatsheet")
       ("U" (find-file (concat episteme/org "/episteme/user-guide.org")) "User guide")
       ("R" (find-file (concat episteme/repo "/README.org")) "README"))
