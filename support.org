@@ -1515,10 +1515,18 @@ Many of the Emacs help facilities at your fingertips!
 
 ** hydra-dev
 #+begin_src emacs-lisp
+  (defun episteme:dev-log ()
+    (interactive)
+    (let* ((_org-journal-dir org-journal-dir))
+      (setq org-journal-dir (concat episteme/repo "/devlog"))
+      (org-journal-new-entry nil)
+      (setq org-journal-dir _org-journal-dir)))
+
   (:hydra episteme-hydra-dev (:color blue)
     ("Open"
      (("s" (find-file (concat episteme/repo "/support.org")) "support.org")
-      ("d" (find-file (concat episteme/org "/episteme/developer-docs.org")) "docs"))
+      ("d" (find-file (concat episteme/org "/episteme/developer-docs.org")) "docs")
+      ("l" (call-interactively 'episteme:dev-log) "log"))
      "Git"
      (("g" (magit-status) "magit")
       ("p" (magit-pull) "pull")
