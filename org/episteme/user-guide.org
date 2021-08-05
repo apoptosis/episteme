@@ -216,7 +216,11 @@ You will be presented with a list of files/folders in the root of the knowledge-
 
 Press =C-g= to cancel.
 
-*** Listing all files
+*** Using the sidebar
+From the main menu, select =S= for the Sidebar.
 
+The sidebar can be used to navigate the episteme repository. Use the arrow keys or =n= / =p= to navigate.
+
+*** Listing all files
 To select a document from a list of all files use the =a= main menu item.
 
