@@ -27,6 +27,10 @@ https://www.amazon.com/Free-Will-Deckle-Edge-Harris/dp/1451683405
 
 In this short work (96 pages), Harris gets you to confront your own lack of authorship by having you introspect upon some common psychological phenomena like speech.
 
+*** The Moral Landscape - Sam Harris
+https://www.amazon.com/Moral-Landscape-Science-Determine-Values/dp/143917122X
+If, for every state of the universe, you could globally poll all agents for their subjective measure of their own well-being, you would chart out a graph of peaks and valleys over time. You'd have a moral landscape of sorts. We could talk about what moved us up out the valleys and to the peaks.
+
 ** Compatibilism
 #+begin_src text
 Compatibilism offers a solution to the free will problem, which concerns a disputed incompatibility between free will and determinism. Compatibilism is the thesis that free will is compatible with determinism. Because free will is typically taken to be a necessary condition of moral responsibility, compatibilism is sometimes expressed as a thesis about the compatibility between moral responsibility and determinism.
