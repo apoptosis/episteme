@@ -1,0 +1,54 @@
+#+title: Free-will
+#+begin_src text
+  Disputes about free will ineluctably involve disputes about metaphysics and ethics. In ferreting out the kind of control involved in free will, we are forced to consider questions about (among others) causation, laws of nature, time, substance, ontological reduction vs emergence, the relationship of causal and reasons-based explanations, the nature of motivation and more generally of human persons. In assessing the significance of free will, we are forced to consider questions about (among others) rightness and wrongness, good and evil, virtue and vice, blame and praise, reward and punishment, and desert. The topic of free will also gives rise to purely empirical questions that are beginning to be explored in the human sciences: do we have it, and to what degree?
+#+end_src
+See: [fn:1]
+
+* Desert
+#+begin_src text
+  If an agent deserves blame, then we have a strong pro tanto reason to blame him simply in virtue of his being accountable for doing wrong. Importantly, these reasons can be outweighed by other considerations. While an agent may deserve blame, it might, all things considered, be best to forgive him unconditionally instead.
+
+  When an agent is morally responsible for doing something wrong, he is blameworthy: he deserves hard treatment marked by resentment and indignation and the actions these emotions dispose us toward, such as censure, rebuke, and ostracism. However, it would seem unfair to treat agents in these ways unless their actions were up to them.
+#+end_src
+See: [fn:2]
+
+* Determinism
+
+Determinism is the idea that every state of the universe is a function of 1) physics 2) the previous state
+
+It is a metaphysics that embodies the The Principle of Sufficient Reason, that each event has a cause.
+
+Determinism represents a problem for morality and ethics because it undermines the notion of [[Desert]].
+
+** Resources
+
+*** Free Will - Sam Harris
+https://www.amazon.com/Free-Will-Deckle-Edge-Harris/dp/1451683405
+
+In this short work (96 pages), Harris gets you to confront your own lack of authorship by having you introspect upon some common psychological phenomena like speech.
+
+** Compatibilism
+#+begin_src text
+Compatibilism offers a solution to the free will problem, which concerns a disputed incompatibility between free will and determinism. Compatibilism is the thesis that free will is compatible with determinism. Because free will is typically taken to be a necessary condition of moral responsibility, compatibilism is sometimes expressed as a thesis about the compatibility between moral responsibility and determinism.
+#+end_src
+See: [fn:3]
+
+Compatibilism largely the idea that, even if the universe is 100% deterministic, system of agents will still need to figure out how to behave in relation to each other.
+** Resources
+*** [[https://www.youtube.com/watch?v=Ss0aCWpNzSM][Robert Wright interviews Dan Dennett]]
+This is a great video to get started thinking about the ideas in compatiblism. This dialectic really explores the problem and solution spaces.
+*** Dan Dennett Reviews Free Will
+https://samharris.org/reflections-on-free-will/
+*** Sam Harris and Dan Dennett Revist Free Will
+https://samharris.org/podcasts/free-will-revisited/
+
+* Footnotes
+
+[fn:3] [[https://plato.stanford.edu/entries/compatibilism/#:~:text=Compatibilism%20offers%20a,responsibility%20and%20determinism.][SEP Compatibilism]] 
+
+[fn:2] [[https://plato.stanford.edu/entries/freewill/#:~:text=if%20an%20agent,him%20unconditionally%20instead.][SEP Free-will]]
+
+[fn:1] [[https://plato.stanford.edu/entries/freewill/#:~:text=disputes%20about%20free,to%20what%20degree%3F][SEP Free-will]]
+
+
+
