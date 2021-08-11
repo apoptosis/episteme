@@ -17,6 +17,7 @@ That said this configuration ought to work out of the box.
 #+begin_src emacs-lisp
   (setq episteme/repo (getenv "repo"))
   (setq episteme/home (getenv "config"))
+  (setq episteme/init (concat episteme/home "/init.el"))
   (setq episteme/config (concat episteme/home "/config.el"))
   (setq episteme/org (concat episteme/repo "/org"))
   (setq episteme/autosaves (concat episteme/home "/autosaves"))
@@ -31,8 +32,8 @@ That said this configuration ought to work out of the box.
   (unless (file-exists-p episteme/home)
     (make-directory episteme/home))
 
-  (unless (file-exists-p episteme/config)
-    (with-temp-file episteme/config
+  (unless (file-exists-p episteme/init)
+    (with-temp-file episteme/init
       (insert "
   ;; keybind for default menu
   (setq episteme/default-hydra \"C-c x\")
@@ -44,9 +45,9 @@ That said this configuration ought to work out of the box.
   (setq episteme/zoom 1)
   ")))
 
-  (when (file-exists-p episteme/config)
-      (message "Loading config from: %s" episteme/config)
-      (load-file episteme/config))
+  (when (file-exists-p episteme/init)
+      (message "Loading globals from: %s" episteme/init)
+      (load-file episteme/init))
 
   (setq org-directory episteme/org)
   (setq user-emacs-directory episteme/home)
@@ -2072,4 +2073,25 @@ Open hydra for current major mode if one exists, otherwise the default hydra.
 * startup
 #+begin_src emacs-lisp
   (call-interactively 'episteme:dashboard)
+#+end_src
+* load user config
+This should remain at the end of this file.
+#+begin_src emacs-lisp
+  (unless (file-exists-p episteme/config)
+    (with-temp-file episteme/config
+      (insert ";; this is your custom configuration for episteme,
+  ;; you can manage it with orgmode by un-commenting
+  ;; the following:
+  ;;
+  ;; (org-babel-load-file
+  ;;  (expand-file-name
+  ;;  \"README.org\"
+  ;;  episteme/home))
+
+  (provide 'config)
+  ;;;config.el ends here")))
+
+  (when (file-exists-p episteme/config)
+      (message "Loading user config from: %s" episteme/config)
+      (load-file episteme/config))
 #+end_src
