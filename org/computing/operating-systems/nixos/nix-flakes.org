@@ -111,9 +111,10 @@ Where
 + <flake> is a flake name ("nixpkgs", "nix-doom-emacs" ...)
 + <store-path> is a =/nix/store..= path
 
-* TODO What Are Those Lock File Things?
+* What Are Those Lock File Things?
 Flakes are clever.
 Dependency management is a big advantage of nix flakes and =flake.lock= files play no small part in that.
+Lock files take hashes of the input repositories, pinning the flake dependencies at a certain revision.
 
 * Preparation
 Nix flakes are currently considered /experimental/ so additional configuration is required to use them.
@@ -143,19 +144,25 @@ Example:
 Create =/etc/nixos/flake.nix= or use `nixos-rebuild switch --flake`
 #+begin_src nix
 {
+  description = "A simple NixOS Configuration";
+
+  inputs = {
+  nixpkgs.url = "github:nixos/nixpkgs/nixpkgs-unstable" # Use the unstable branch of =nixpkgs=
+  };
+
   outputs = { self, nixpkgs, nixos-hardware, ... }: {
     nixosConfigurations = { # An attrset of hostnames, the flake will select a configuration based on the system hostname
-    <hostname0> = # hostname attribute
+    hostname0 = # hostname attribute
       nixpkgs.lib.nixosSystem { # Configure NixOS according to the options set
         system = <system>; # Select the system architecture
         modules = [ # Modules to load
           nixos-hardware.nixosModules.dell-xps-13-9380 # Sample of a third party module
-          ./hosts/<hostname0>/configuration.nix # Sample of a first party module, can be used to load modules recursively
+          ./hosts/<hostname0>/default.nix # Sample of a first party module, can be used to load modules recursively
         ]
       };
-    <hostname1> =
+    hostname1 =
       nixpkgs.lib.nixosSystem {
-        system - <system>;
+        system = <system>;
         modules = [
           <modules>
         ];

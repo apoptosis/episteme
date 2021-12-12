@@ -21,20 +21,20 @@ https://github.com/org-roam/org-roam/issues/1479#issuecomment-844283079
 - [ ] todo carry-over
 - [ ] capture templates
 
-* TODO Flakes Cards :lordvalen:card:nix:
-** TODO [[id:bd364db7-d331-450b-af9b-f0901ab9e82e][Nix Flakes]] [1/5]
-- [ ] Move to an appropriate dir
-- [-] Describe flakes
+* TODO Flake Cards :lordvalen:card:nix:
+** DONE [[id:bd364db7-d331-450b-af9b-f0901ab9e82e][Nix Flakes]] [4/5]
+- [X] Move to an appropriate dir
+- [X] Describe flakes
   - [X] =flake.nix=
-  - [-] =flake.lock=
-- [-] Describe flakes purpose
+  - [X] =flake.lock=
+- [X] Describe flakes purpose
   - [X] =flake.nix=
-  - [-] =flake.lock=
+  - [X] =flake.lock=
 - [X] Flake anatomy
 - [-] Flake implementation
   - [-] Commands
-** TODO [[id:7d033154-4570-4f71-92b4-3e9228f193fd][Flake NixOS Configuration]] [0/5]
-- [ ] Move to an appropriate dir
+** TODO [[id:7d033154-4570-4f71-92b4-3e9228f193fd][Flake NixOS Configuration]] [1/5] :ldlework:
+- [X] Move to an appropriate dir
 - [ ] Design paradigm
 - [ ] Flakes setup
 - [ ] Helper funcs
