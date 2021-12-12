@@ -3,21 +3,46 @@
 :END:
 
 #+title: things to improve
-* TODO Automate font installation on Windows
+* TODO Automate font installation on Windows :dustin:lordvalen:windows:feat:
 Fonts should go into =C:/Windows/Font=
 - look into registry changes that might be needed?
 
-* TODO Investigate .config permission issue
+* TODO Investigate .config permission issue :dustin:lordvalen:windows:bug:
 During windows install, .config creation fails
 - [ ] Fix it
 - [ ] Remove the workaround from README.org
 
-* TODO Implement Embark
+* TODO Implement Embark :feat:dustin:
 Embark can let us customize how links are opened.
 
 https://github.com/org-roam/org-roam/issues/1479#issuecomment-844283079
 
-* TODO Better document journal-mode
+* TODO Better document journal-mode :docs:dustin:
 - [ ] Searching the journal
 - [ ] todo carry-over
 - [ ] capture templates
+
+* TODO Flakes Cards :lordvalen:card:nix:
+** TODO [[id:bd364db7-d331-450b-af9b-f0901ab9e82e][Nix Flakes]] [1/4]
+- [-] Describe flakes
+  - [X] =flake.nix=
+  - [-] =flake.lock=
+- [-] Describe flakes purpose
+  - [X] =flake.nix=
+  - [-] =flake.lock=
+- [X] Flake anatomy
+- [-] Flake implementation
+  - [-] Commands
+** TODO [[id:7d033154-4570-4f71-92b4-3e9228f193fd][Flake NixOS Configuration]] [0/4]
+- [ ] Design paradigm
+- [ ] Flakes setup
+- [ ] Helper funcs
+- [-] MWE [/]
+  - [-] flake.nix
+    - [ ] Dynamic hosts
+    - [-] Basic functionality [/]
+      - [ ] DE
+      - [-] Sound
+      - [-] WIFI
+      - [-] Fonts
+      - [-] User
