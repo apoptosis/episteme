@@ -70,7 +70,7 @@ const bar1 = container.get(Bar)
 const bar2 = container.get(Bar) // same instance
 #+end_src
 
-Here we bind (map) the =Bar= type to "*a way of constructing a* =Bar=" by just
+Above, we bind (map) the =Bar= type to "*a way of constructing a* =Bar=" by just
 providing a pre-instantiated constant. Every time we request an instance of
 =Bar= we just get back the constant instance.
 
@@ -80,7 +80,7 @@ const bar1 = container.get(Bar)
 const bar2 = container.get(Bar) // different instance
 #+end_src
 
-Since =Bar= doesn't have any dependencies (constructor parameters), we can
+Above, since =Bar= doesn't have any dependencies (constructor parameters), we can
 actually bind (map) it to its own constructor. Now every time a =Bar= is
 requested, its constructor is called and a new instance is returned.
 
@@ -90,7 +90,7 @@ const bar1 == container.get(Bar)
 const bar2 == container.get(Bar) // same instance
 #+end_src
 
-The container has a variety of options that make it very flexible. In this
+The container has a variety of options that make it very flexible. In the above
 case, we create a singleton binding so that the construction is memoized.
 
 ** What about dependencies?
