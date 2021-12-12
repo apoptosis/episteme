@@ -51,8 +51,8 @@ thing computers are already proficient at.
 * Automatic Dependency Injection
 
 Constructing the object-graph, or "dependency injection", can be automated with
-an IoC container such as Inversify or ts-syringe. No need to over complicate
-this, a container is simply:
+an dependency injection container such as Inversify or ts-syringe. No need to
+over complicate this, a container is simply:
 
 - A map from *type* ⇒ "*a way to construct that type*"
 - An API for requesting an instance of a mapped type
