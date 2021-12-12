@@ -1,0 +1,224 @@
+:PROPERTIES:
+:ID:       bd364db7-d331-450b-af9b-f0901ab9e82e
+:END:
+#+TITLE: Nix Flakes
+#+AUTHOR: Lord Valen
+* What Are Nix Flakes?
+A flake is a directory or repository containing a =flake.nix= file.
+The =flake.nix= file describes inputs and outputs.
+Inputs describe depenedencies on other flakes (=nixpkgs=, for instance).
+The versions of the dependencies are locked via a =flake.lock= file.
+Outputs describe packages, applications, overlays, modules, configurations (system and home manager alike), library functions, shells, *anything*!
+Essentially, outputs describe the content of the flake.
+
+* Why Nix Flakes?
+Nix flakes offer a standardized means of
+ + importing nix code
+ + exposing nix packages and modules
+ + overriding dependencies of imported code
+ + pinning =nixpkgs=
+ + When used for NixOS configuration *allows for home manager configuration to build alongside the system configuration*
+
+With nix flakes it becomes easier for users to create nix packages and manage dependencies, decreasing dependence on centralized repositories.
+
+* Example
+#+begin_src nix
+# flake.nix for an example package
+{
+  description = "Hello World"; # Optional, does exactly what you think.
+  inputs.nixpkgs.url = "github:NixOS/nixpkgs"; # This flake depends on =nixpkgs=
+  outputs = { self, nixpkgs }:
+    let
+      pkgs = nixpkgs.legacyPackages.x86_64-linux;
+    in {
+      packages.x86_64-linux.example = pkgs.stdenv.mkDerivation {
+        name = "foo"; # Name of the derivation (a build function)
+        src = self; # Build from the flake/src repository
+        installPhase = '' install -m755 example.sh $out/bin/example '' # Run a shell script that installs =example=
+      };
+      defaultPackage.x86_64-linux = self.packages.x86_64-linux.example;
+    };
+}
+#+end_src
+
+* Input/Output Scheme
+A =flake.nix= file has three top-level attributes:
+ + description
+ + inputs
+ + outputs
+
+** Inputs
+Declare dependencies!
+#+begin_src nix
+# Inputs from =flake.nix=
+{
+  inputs = {
+    nixpkgs.url = "github:foo/nixpkgs/master"; # Github example, also supports gitlab:
+    git-example.url = "git+https://git.somehost.tld/user/path"; # git URL
+    directory-example.url = "path:/path/to/repo"; # Using a local directory
+
+    repo = {
+    url = "github:foo/bar/branch";
+    flake = false; # Use repos that aren't flakes!
+    };
+
+    override-example = {
+      url = "github:foo/override-example";
+      inputs.nixpkgs.follows = "nixpkgs"; # Override a flake's inputs, good for using just one =nixpkgs= version
+    };
+
+    pin-example.url = "github:foo/pin-example?rev=238b18d7b2c8239f676358634bfb32693d3706f3"; # Pin inputs to a specific revision
+    subdirectory-example.url = "github:foo/directory-example?dir=subdirectory-example"; # To use a subdirectory of a repo, pass dir=
+  }
+}
+#+end_src
+
+** Output
+Do the work!
+#+begin_src nix
+{ self, ... }@inputs:
+{
+  checks."<system>"."<name>" = derivation; # `nix flake check` executes this
+  packages."<system>"."<name>" = derivation; # `nix build .#<name>` executes this
+  legacyPackages."<system>"."<name>" = derivation; # `nix build .#<name>` also executes this. Used for =nixpkgs= packages
+  defaultPackage."<system>" = derivation; # `nix build .` executes this
+
+  apps."<system>"."<name>" = { # `nix run .#<name>` executes this
+    type = "app";
+    program = "<store-path>";
+  };
+  defaultApp."<system>" = { type = "app"; program = "..."; }; # `nix run . -- <args?>` executes this
+
+  overlay = final: prev: { }; # Default overlay, used for dependent flakes
+  overlays = {}; # Same as =overlay= but accepts a list or attrset as input
+  nixosModule = { config }: { options = {}; config = {}; }; # Default module, used for dependent flakes
+  nixosModules = {}; # Same as =nixosModule= but accepts a list or attrset as input
+
+  nixosConfigurations."<hostname>" = {}; # For `nixos-rebuild --flake .#<hostname>`. Requires =nixosConfigurations."<hostname>".config.system.build.toplevel to be a derivation
+  devShell."<system>" = derivation; # For `nix develop`
+  devShells."<system>"."<name>" = derivation; # For `nix develop .#<name>`
+  hydraJobs."<attr>"."<system>" = derivation; # Build jobs for hydra
+  defaultTemplate = { # For `nix flake init -t <flake>`
+    path = "<store-path>";
+    description = "template description goes here?";
+  };
+  templates."<name>" = { path = "<store-path>"; description = ""; }; # For `nix flake init -t <flake>#<name>`
+}
+#+end_src
+Where
++ <system> describes the system architecture ("x86_64-linux", "I686-linux" ...)
++ <attr> is an attribute ("enable", "hello" ...)
++ <flake> is a flake name ("nixpkgs", "nix-doom-emacs" ...)
++ <store-path> is a =/nix/store..= path
+
+* TODO What Are Those Lock File Things?
+Flakes are clever.
+Dependency management is a big advantage of nix flakes and =flake.lock= files play no small part in that.
+
+* Preparation
+Nix flakes are currently considered /experimental/ so additional configuration is required to use them.
+** NixOS
+Install =nixFlakes=:
+#+begin_src nix
+{
+  # /etc/nixos/configuration.nix
+  nix.package = pkgs.nixUnstable;
+  nix.extraOptions = '' experimental-features = nix-command flakes '';
+}
+#+end_src
+Remove all =nixpkgs= references.
+Example:
+#+begin_src diff
+# /etc/nixos/hardware-configuration.nix
+{
+  {config, pkgs, lib, modulesPath, ...}:
+    imports = [
+-     <nixpkgs/nixos/installer/scan/not-detected.nix>
++     "${modulesPath}/installer/scan/not-detected.nix"
+    ]
+}
+#+end_src
+
+*** [[id:7d033154-4570-4f71-92b4-3e9228f193fd][Flake NixOS Configuration]]
+Create =/etc/nixos/flake.nix= or use `nixos-rebuild switch --flake`
+#+begin_src nix
+{
+  outputs = { self, nixpkgs, nixos-hardware, ... }: {
+    nixosConfigurations = { # An attrset of hostnames, the flake will select a configuration based on the system hostname
+    <hostname0> = # hostname attribute
+      nixpkgs.lib.nixosSystem { # Configure NixOS according to the options set
+        system = <system>; # Select the system architecture
+        modules = [ # Modules to load
+          nixos-hardware.nixosModules.dell-xps-13-9380 # Sample of a third party module
+          ./hosts/<hostname0>/configuration.nix # Sample of a first party module, can be used to load modules recursively
+        ]
+      };
+    <hostname1> =
+      nixpkgs.lib.nixosSystem {
+        system - <system>;
+        modules = [
+          <modules>
+        ];
+      };
+    };
+  };
+}
+#+end_src
+
+** Other Systems
+#+begin_src shell
+$ nix-env -f '<nixpkgs>' -iA nixUnstable
+$ systemctl restart nix-daemon
+#+end_src
+#+begin_src nix
+# nix.conf
+experimental-features = nix-command flakes
+#+end_src
+
+* Tips, Tricks, and Pitfalls
+** Flakes as Git Repositories
+Nix will use information from git to determine whether files are or are not part of a flake.
+So nix will only consider tracked files as part of the flake (that includes =flake.nix=)!
+It sounds troublesome but it can be quite handy to filter out unwanted/unneeded files or directories (build directories be damned!).
+
+** Flake-utils
+By default, nix require the system to be specified.
+Flake-utils provides an abstraction of the process, saving you time and brainpower.
+Good for when you want a dev shell which is architecture agnostic.
+#+begin_src nix
+{
+  description = "Flake utils demo";
+
+      inputs.flake-utils.url = "github:numtide/flake-utils";
+
+      outputs = { self, nixpkgs, flake-utils }:
+        flake-utils.lib.simpleFlake {
+          inherit self nixpkgs;
+          name = "simple-flake";
+          overlay = ./overlay.nix;
+          shell = ./shell.nix;
+        };
+}
+#+end_src
+
+** Commands
+| Command                               | Flake Attr                 | Effect                               |
+|---------------------------------------+----------------------------+--------------------------------------|
+| nix flake init                        | -                          | Creates a very basic flake in PWD    |
+|---------------------------------------+----------------------------+--------------------------------------|
+| nix flake info                        | description                | Lists flake metadata                 |
+|---------------------------------------+----------------------------+--------------------------------------|
+| nix flake update --recreate-lock-file | -                          | Updates =flake.lock=,                |
+|                                       |                            | pinning latest dependency revisions  |
+|---------------------------------------+----------------------------+--------------------------------------|
+| nix flake show                        | packages.<system>.<attrib> | Lists packages provided by the flake |
+|                                       | defaultPackage             |                                      |
+|---------------------------------------+----------------------------+--------------------------------------|
+| nix build .#<package>                 | packages.<system>.<attrib> | Build a package using the            |
+| nix build .#                          | defaultPackage             | instructions in =flake.nix=          |
+|---------------------------------------+----------------------------+--------------------------------------|
+| nix develop                           | devShell.<system>          | Run a shell environment using        |
+|                                       | defaultPackage.<system>    | the instructions in =flake.nix=      |
+|---------------------------------------+----------------------------+--------------------------------------|
+| nix run                               | defaultApp.<system>        | Run the package using the            |
+|                                       | apps.<system>.<name>       | instructions in =flake.nix=          |
