@@ -69,7 +69,6 @@ container.bind(Bar).toConstantValue(new Bar())
 const bar1 = container.get(Bar)
 const bar2 = container.get(Bar) // same instance
 #+end_src
-```
 
 Here we bind (map) the =Bar= type to "*a way of constructing a* =Bar=" by just
 providing a pre-instantiated constant. Every time we request an instance of
