@@ -1,0 +1,31 @@
+:PROPERTIES:
+:ID:       7d033154-4570-4f71-92b4-3e9228f193fd
+:END:
+#+TITLE: Flake NixOS Configuration
+#+AUTHOR: Lord Valen
+* TODO Design Paradigm
+* TODO Helper Functions
+* TODO Home Manager
+* TODO Minimum Working Example
+Here is a minimum working example showing system and home-manager configuration.
+** =flake.nix=
+#+begin_src nix
+{
+  description = "A very basic "
+  inputs = {
+
+  };
+  outputs = {
+
+  };
+}
+#+end_src
+** =hosts=
+** =modules=
+** =util=
+*** =default.nix=
+#+begin_src nix
+{
+with import
+}
+#+end_src

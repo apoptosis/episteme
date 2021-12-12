@@ -23,7 +23,8 @@ https://github.com/org-roam/org-roam/issues/1479#issuecomment-844283079
 - [ ] capture templates
 
 * TODO Flakes Cards :lordvalen:card:nix:
-** TODO [[id:bd364db7-d331-450b-af9b-f0901ab9e82e][Nix Flakes]] [1/4]
+** TODO [[id:bd364db7-d331-450b-af9b-f0901ab9e82e][Nix Flakes]] [1/5]
+- [ ] Move to an appropriate dir
 - [-] Describe flakes
   - [X] =flake.nix=
   - [-] =flake.lock=
@@ -33,14 +34,15 @@ https://github.com/org-roam/org-roam/issues/1479#issuecomment-844283079
 - [X] Flake anatomy
 - [-] Flake implementation
   - [-] Commands
-** TODO [[id:7d033154-4570-4f71-92b4-3e9228f193fd][Flake NixOS Configuration]] [0/4]
+** TODO [[id:7d033154-4570-4f71-92b4-3e9228f193fd][Flake NixOS Configuration]] [0/5]
+- [ ] Move to an appropriate dir
 - [ ] Design paradigm
 - [ ] Flakes setup
 - [ ] Helper funcs
-- [-] MWE [/]
+- [-] MWE [0/1]
   - [-] flake.nix
     - [ ] Dynamic hosts
-    - [-] Basic functionality [/]
+    - [-] Basic functionality [0/5]
       - [ ] DE
       - [-] Sound
       - [-] WIFI
