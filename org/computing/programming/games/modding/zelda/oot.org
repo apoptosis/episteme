@@ -1,0 +1,83 @@
+#+title: Ocarina of Time Modding
+
+People reverse engineered the OOT ROM into C code. You can play with it.
+
+
+* NixOS Workflow
+
+Inspiration: https://discourse.nixos.org/t/building-zelda-ocarina-of-time-with-nix/16468
+
+** Getting the source
+
+Clone the source: https://github.com/zeldaret/oot.git
+
+** shell.nix
+
+This =shell.nix= will build the MIPS toolchain.
+
+#+begin_src nix
+  # NOTE: NIXPKGS_ALLOW_UNSUPPORTED_SYSTEM=1
+
+  let
+    pkgs = import <nixpkgs> {};
+  in
+  {
+    pkgsNative ? import <nixpkgs> { }
+    ,pkgsCross ? import <nixpkgs> {
+      crossSystem = {
+        config = "mips-linux-gnu";
+      };
+    }
+  }:
+
+  pkgsCross.mkShell {
+    buildInputs = [
+      pkgsCross.gcc
+      pkgsNative.libpng
+    ];
+    nativeBuildInputs = [
+      pkgsNative.git
+      pkgsNative.gcc
+      pkgsNative.python3
+      pkgsNative.mupen64plus
+    ];
+  }
+#+end_src
+
+** patch.sh
+
+Run the following script to patch the source for use with Nix:
+
+#+begin_src sh
+  #!/usr/bin/env sh
+
+  set -ex
+
+  interp=$(patchelf --print-interpreter $(which env))
+  for version in 5.3 7.1; do
+      for tool in cc cfe uopt ugen as1; do
+          patchelf --set-interpreter $interp ./tools/ido_recomp/linux/$version/$tool
+      done
+  done
+#+end_src
+
+** Building
+
+Drop in the =Master Quest US Debug Version= ROM into the repo root as
+=baserom_original.*=
+
+Then extract all resource from the ROM:
+
+#+begin_src sh
+  make setup
+#+end_src
+
+Then build the new ROM:
+
+#+begin_src sh
+  make
+#+end_src
+
+If you edit the code, the built rom wont checksum against the original and claim the build failed. It's a lie.
+
+The output rom =zelda_ocarina_mq_dbg.*= should work fine.
