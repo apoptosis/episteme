@@ -20,6 +20,16 @@ There needs to be at least three partitions:
 #+RESULTS:
 | home-manager | https://github.com/rycee/home-manager/archive/release-20.03.tar.gz |
 | nixos        | https://nixos.org/channels/nixos-unstable                          |
+** Upgrading to Unstable
+Move to unstable channel:
+#+begin_src bash
+  nix-channel --add https://nixos.org/channels/nixos-unstable nixos
+#+end_src
+
+Rebuild with upgrade:
+#+begin_src bash
+  nixos-rebuild switch --upgrade
+#+end_src
 
 * Nixlang
 ** Builtins
@@ -34,7 +44,8 @@ each key.
 *** mapAttrs' FUNC ATTRSET
 Like =mapAttrs= but FUNC should return an attrset, like those returned from
 =nameValuePair=, for each key-value pair in ATTRSET.
-
+* Flakes
+https://jdisaacs.com/blog/nixos-config/
 * Home-manager
 ** Installation
 
@@ -106,3 +117,6 @@ https://www.tweag.io/blog/2020-05-25-flakes/
 * Audio
 ** Jack
 https://github.com/NixOS/nixpkgs/pull/93431#issuecomment-680828528
+* Project Management
+** Direnv
+https://github.com/direnv/direnv/wiki/Nix
