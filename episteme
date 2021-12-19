@@ -95,10 +95,9 @@ done
 export repo=`echo $repo | sed -e 's/\/c/c:/'`
 export repo=${repo//\\//}
 export config=${config//\\//}
-    
+
 echo "Repo directory: $repo"
 echo "Config directory: $config"
-
 
 emacs -q \
    --debug-init \
