@@ -1,0 +1,46 @@
+#+title: Niv
+
+https://github.com/nmattia/niv
+
+Niv is like nix-env for your nix-shells.
+
+
+* Installation
+
+#+begin_src nix
+  {
+    environment.systemPackages = [
+      niv
+    ];
+  }
+#+end_src
+
+* Usage
+
+Niv reads packages from =nix/sources.json=.
+
++ =niv init= : bootstrap =sources.json=
++ =niv add= : add packages to =sources.json=
++ =niv update= : update packages in =sources.json=
++ =niv drop= : remove packages from =sources.json=
++ =niv show= : list packages in =sources.json=
+
+** Configuration
+
++ =GITHUB_TOKEN= : for fetching from private repos
+
+
+** Adding packages
+
+From Nixpkgs:
+
+#+begin_src sh
+  niv add jq
+#+end_src
+
+From GitHub:
+
+#+begin_src sh
+  niv add stedolan/jq
+#+end_src
+
