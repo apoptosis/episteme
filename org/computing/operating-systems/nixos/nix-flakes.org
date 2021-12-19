@@ -5,10 +5,16 @@
 #+AUTHOR: Lord Valen
 * What Are Nix Flakes?
 A flake is a directory or repository containing a =flake.nix= file.
+
 The =flake.nix= file describes inputs and outputs.
+
 Inputs describe depenedencies on other flakes (=nixpkgs=, for instance).
+
 The versions of the dependencies are locked via a =flake.lock= file.
-Outputs describe packages, applications, overlays, modules, configurations (system and home manager alike), library functions, shells, *anything*!
+
+Outputs describe packages, applications, overlays, modules, configurations
+(system and home manager alike), library functions, shells, *anything*!
+
 Essentially, outputs describe the content of the flake.
 
 * Why Nix Flakes?
@@ -17,9 +23,11 @@ Nix flakes offer a standardized means of
  + exposing nix packages and modules
  + overriding dependencies of imported code
  + pinning =nixpkgs=
- + When used for NixOS configuration *allows for home manager configuration to build alongside the system configuration*
+ + when used for NixOS configuration *allows for home manager configuration to
+   build alongside the system configuration*
 
-With nix flakes it becomes easier for users to create nix packages and manage dependencies, decreasing dependence on centralized repositories.
+With nix flakes it becomes easier for users to create nix packages and manage
+dependencies, decreasing dependence on centralized repositories.
 
 * Example
 #+begin_src nix
@@ -76,8 +84,7 @@ Declare dependencies!
 ** Output
 Do the work!
 #+begin_src nix
-{ self, ... }@inputs:
-{
+{ self, ... }@inputs: {
   checks."<system>"."<name>" = derivation; # `nix flake check` executes this
   packages."<system>"."<name>" = derivation; # `nix build .#<name>` executes this
   legacyPackages."<system>"."<name>" = derivation; # `nix build .#<name>` also executes this. Used for =nixpkgs= packages
@@ -113,11 +120,14 @@ Where
 
 * What Are Those Lock File Things?
 Flakes are clever.
-Dependency management is a big advantage of nix flakes and =flake.lock= files play no small part in that.
-Lock files take hashes of the input repositories, pinning the flake dependencies at a certain revision.
+
+Dependency management is a big advantage of nix flakes and =flake.lock= files
+play no small part in that.  Lock files take hashes of the input repositories,
+pinning the flake dependencies at a certain revision.
 
 * Preparation
-Nix flakes are currently considered /experimental/ so additional configuration is required to use them.
+Nix flakes are currently considered /experimental/ so additional configuration is
+required to use them.
 ** NixOS
 Install =nixFlakes=:
 #+begin_src nix
@@ -127,7 +137,9 @@ Install =nixFlakes=:
   nix.extraOptions = '' experimental-features = nix-command flakes '';
 }
 #+end_src
+
 Remove all =nixpkgs= references.
+
 Example:
 #+begin_src diff
 # /etc/nixos/hardware-configuration.nix
@@ -184,14 +196,19 @@ experimental-features = nix-command flakes
 
 * Tips, Tricks, and Pitfalls
 ** Flakes as Git Repositories
-Nix will use information from git to determine whether files are or are not part of a flake.
-So nix will only consider tracked files as part of the flake (that includes =flake.nix=)!
-It sounds troublesome but it can be quite handy to filter out unwanted/unneeded files or directories (build directories be damned!).
+
+Nix will use information from git to determine whether files are or are not
+part of a flake.  So nix will only consider tracked files as part of the flake
+(that includes =flake.nix=)!  It sounds troublesome but it can be quite handy to
+filter out unwanted/unneeded files or directories (build directories be
+damned!).
 
 ** Flake-utils
-By default, nix require the system to be specified.
-Flake-utils provides an abstraction of the process, saving you time and brainpower.
-Good for when you want a dev shell which is architecture agnostic.
+
+By default, nix require the system to be specified.  Flake-utils provides an
+abstraction of the process, saving you time and brainpower.  Good for when you
+want a dev shell which is architecture agnostic.
+
 #+begin_src nix
 {
   description = "Flake utils demo";
@@ -229,3 +246,7 @@ Good for when you want a dev shell which is architecture agnostic.
 |---------------------------------------+----------------------------+--------------------------------------|
 | nix run                               | defaultApp.<system>        | Run the package using the            |
 |                                       | apps.<system>.<name>       | instructions in =flake.nix=          |
+
+* Resources
++ https://jdisaacs.com/blog/nixos-config/
++ https://www.tweag.io/blog/2020-05-25-flakes/

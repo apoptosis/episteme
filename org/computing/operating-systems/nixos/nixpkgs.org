@@ -1,0 +1,16 @@
+#+title: Nixpkgs
+
+https://github.com/NixOS/nixpkgs
+
+Nixpkgs is the offical package repository.
+
+* Searching for packages
+*** Command-line
+#+begin_src shell
+ nix-env -qaP '.*emacs.*'
+#+end_src
+*** Web
+https://search.nixos.org/packages
+
+
+
