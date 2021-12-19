@@ -10,7 +10,11 @@ Nixpkgs is the offical package repository.
  nix-env -qaP '.*emacs.*'
 #+end_src
 *** Web
-https://search.nixos.org/packages
++ https://pkgs.on-nix.com/
++ https://search.nixos.org/packages
+* Searching package sources
+Search nixpkgs source code
++ https://github.com/nix-community/awesome-nix
 
 
 

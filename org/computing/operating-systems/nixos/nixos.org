@@ -57,4 +57,7 @@ also nix-whydepends
 ** Jack
 https://github.com/NixOS/nixpkgs/pull/93431#issuecomment-680828528
 * Resources
-+ https://github.com/nix-community/awesome-nix
++ https://search.nix.gsc.io/
++ https://weekly.nixos.org/
++ https://nix.dev/
+  Opinionated guide on development on NixOS
