@@ -36,10 +36,10 @@ That said this configuration ought to work out of the box.
     (with-temp-file episteme/init
       (insert "
   ;; keybind for default menu
-  (setq episteme/default-hydra \"C-c x\")
+  (setq episteme/main-menu-key \"C-c x\")
 
   ;; keybind for major-mode menu
-  (setq episteme/modal-hydra \"C-c m\")
+  (setq episteme/mode-menu-key \"C-c m\")
 
   ;; defaut zoom level
   (setq episteme/zoom 1)
@@ -220,31 +220,28 @@ e.g. =(:push some-list 1 2 3)=
 ** :bind
 Bind some forms or a symbol to a key.
 
-e.g. =(:bind "C-m" (message "Hello world."=
-e.g. =(:bind org-mode "C-m" (message "Hello world."))=
+e.g. =(:bind "C-m" nil (message "Hello world."=
+e.g. =(:bind "C-m" org-mode-map (message "Hello world."))=
 
 #+begin_src emacs-lisp
-  (defmacro :bind (key &rest body)
+  (defmacro :bind (key mode &rest body)
     (declare (indent defun))
-    (pcase key
-      ;; kbd string resolving symbol
-      ((and k (pred symbolp) (pred boundp) (guard (stringp (eval key))))
-       `(global-set-key (kbd ,(eval key)) ,(eval `(:command ,@body))))
-      ;; partial mode symbol
-      ((pred symbolp)
-       (let ((mode (intern (format "%s-map" key)))
-             (key (eval (car body)))
-             (body (eval `(:command ,@(cdr body)))))
-         `(define-key ,mode (kbd ,key) ,body)))
-      ;; global binding
-      (_ `(global-set-key (kbd ,key) ,(eval `(:command ,@body))))))
+    (let ((body (if (symbolp body) `(,body) body)))
+      (if (and (org-not-nil mode) (symbolp mode))
+          (if (boundp mode)
+              `(define-key ,mode (kbd ,key) ,(eval `(:command ,@body)))
+            (let ((mode (intern (format "%s-map" mode)))
+                  (body (eval `(:command ,@(cdr body)))))
+              `(define-key ,mode (kbd ,key) ,body)))
+        `(global-set-key (kbd ,(eval key)) ,(eval `(:command ,@body))))))
 #+end_src
 
 * keybinds
 #+begin_src emacs-lisp
-  (:bind "C-x g" magit-status)
-  (:bind episteme/main-menu-key (hera-start 'episteme-hydra-default/body))
-  (:bind episteme/mode-menu-key episteme:hydra-dwim)
+  (defun episteme/bind-keys ()
+    (:bind episteme/main-menu-key nil (hera-start 'episteme-hydra-default/body))
+    (:bind episteme/mode-menu-key nil episteme:hydra-dwim)
+    (:bind "C-x g" nil magit-status))
 #+end_src
 
 * dashboard
@@ -702,10 +699,10 @@ information.
     :init
     (:hook emacs-lisp-mode (lispy-mode 1))
     (:hook lisp-interaction-mode (lispy-mode 1))
-    :config
-    (:bind lispy-mode ":" self-insert-command)
-    (:bind lispy-mode "[" lispy-open-square)
-    (:bind lispy-mode "]" lispy-close-square))
+    :bind
+    (":" . self-insert-command)
+    ("[" . lispy-open-square)
+    ("]" . lispy-close-square))
 #+end_src
 ** json-mode
 #+begin_src emacs-lisp
@@ -730,19 +727,20 @@ grep, etc. A number of Episteme features are built ontop of Helm.
     :config
     (helm-mode 1)
     (require 'helm-config)
-    (:bind "M-x" helm-M-x)
-    (:bind "C-x C-f" helm-find-files)
-    (:bind "C-x b" helm-mini)
-    (:bind "C-c y" helm-show-kill-ring)
-    (:bind "C-x C-r" helm-recentf))
+    :bind
+    ("M-x" . helm-M-x)
+    ("C-x C-f" . helm-find-files)
+    ("C-x b" . helm-mini)
+    ("C-c y" . helm-show-kill-ring)
+    ("C-x C-r" . helm-recentf))
 #+end_src
 ** ace jump
 Quickly jump to any candidate with a short letter combo.
 
 #+begin_src emacs-lisp
   (use-package ace-jump-helm-line
-    :config
-    (:bind helm "C-;" ace-jump-helm-line))
+    :bind (:map helm-map
+                ("C-;" . ace-jump-helm-line)))
 #+end_src
 
 ** helm-ag
@@ -757,7 +755,7 @@ Use (=C-h b= / =kbd-helm-descbinds=) to inspect current bindings with Helm.
   (use-package helm-descbinds
     :commands helm-descbinds
     :config
-    (:bind "C-h b" helm-descbinds))
+    (:bind "C-h b" nil helm-descbinds))
 #+end_src
 
 ** auto full frame
@@ -2116,6 +2114,7 @@ Open hydra for current major mode if one exists, otherwise the default hydra.
 
 * startup
 #+begin_src emacs-lisp
+  (episteme/bind-keys)
   (call-interactively 'episteme:dashboard)
 #+end_src
 * load user config
