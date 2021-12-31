@@ -1571,8 +1571,8 @@ Many of the Emacs help facilities at your fingertips!
       ("d" (find-file (concat episteme/org "/episteme/developer-docs.org")) "docs")
       ("l" (call-interactively 'episteme:dev-log) "log"))
      "Git"
-     (("g" (magit-status) "magit")
-      ("p" (magit-pull) "pull")
+     (("g" (magit-status episteme/repo) "magit")
+      ("p" (magit-pull episteme/repo) "pull")
       ("R" (magit-reset-hard)))))
 #+end_src
 
