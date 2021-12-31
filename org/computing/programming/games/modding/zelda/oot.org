@@ -81,3 +81,10 @@ Then build the new ROM:
 If you edit the code, the built rom wont checksum against the original and claim the build failed. It's a lie.
 
 The output rom =zelda_ocarina_mq_dbg.*= should work fine.
+
+
+* Resources
+- https://tcrf.net/Proto:The_Legend_of_Zelda:_Ocarina_of_Time_Master_Quest
+- Custom actor: https://github.com/Dragorn421/oot/commit/ab53375ab32b407671ac45607fd082569f6b3712
+- QoL patches: https://github.com/zeldaret/oot/compare/master...Dragorn421:mod_base_for_mods
+
