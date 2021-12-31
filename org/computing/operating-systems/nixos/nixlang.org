@@ -17,6 +17,8 @@ Like =mapAttrs= but FUNC should return an attrset, like those returned from
 * Builtins
 *** readDir PATH
 Read PATH in as a string.
+* Fixed points
+https://akavel.github.io/post/nix-fixpoint/
 * Tips
 ** Force config merge ordering
 #+begin_src nix
