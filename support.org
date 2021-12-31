@@ -24,6 +24,7 @@ That said this configuration ought to work out of the box.
   (setq episteme/backups (concat episteme/home "/backups"))
 
   (setq episteme/journal (concat episteme/home "/journal"))
+  (setq episteme/todo-file (concat episteme/home "/todo.org"))
   (setq episteme/main-menu-key "C-c x")
   (setq episteme/mode-menu-key "C-c m")
   (setq episteme/zoom 1)
@@ -1598,6 +1599,7 @@ Many of the Emacs help facilities at your fingertips!
      (("o" (helm-org-walk '(4)) "open")
       ("s" (helm-org-rifle-directories episteme/org) "search")
       ("a" (episteme:find-file-all) "all files")
+      ("t" (find-file episteme/todo-file) "todo")
       ("j" (org-journal-new-entry '(4)) "journal")
       ("J" (org-journal-new-entry nil) "new journal entry"))
      "Bookmarks"
