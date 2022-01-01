@@ -1,4 +1,4 @@
-with import <nixpkgs> {};
+{ runCommand }:
 
 runCommand "episteme" {} ''
   mkdir -p $out/bin
