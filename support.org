@@ -4,31 +4,26 @@
 #+Options: ^:nil num:nil tags:nil
 #+PROPERTY: header-args    :tangle yes
 
-
-The following Emacs configuration will allow one to use our knowledge-base
-comfortably. You do not need to use the configuration as exactly provided
-here. Feel free to take parts and integrate it into your own
-configuration.
-
-That said this configuration ought to work out of the box.
-
+This file contains all the elisp implementing Episteme's customizations.
 
 * globals
 #+begin_src emacs-lisp
-  (setq episteme/repo (getenv "repo"))
   (setq episteme/home (getenv "config"))
+  (setq episteme/repo (concat episteme/home "/support"))
   (setq episteme/init (concat episteme/home "/init.el"))
   (setq episteme/config (concat episteme/home "/config.el"))
-  (setq episteme/org (concat episteme/repo "/org"))
+  (setq episteme/org (concat episteme/home "/remotes/apoptosis/org"))
   (setq episteme/autosaves (concat episteme/home "/autosaves"))
   (setq episteme/backups (concat episteme/home "/backups"))
 
   (setq episteme/journal (concat episteme/home "/journal"))
   (setq episteme/todo-file (concat episteme/home "/todo.org"))
+  (setq episteme/remotes-path (concat episteme/home "/remotes"))
   (setq episteme/main-menu-key "C-c x")
   (setq episteme/mode-menu-key "C-c m")
   (setq episteme/zoom 1)
   (setq episteme/fill-width 120)
+  (setq episteme/default-remote "episteme")
 
   (unless (file-exists-p episteme/home)
     (make-directory episteme/home))
@@ -46,12 +41,16 @@ That said this configuration ought to work out of the box.
   (setq episteme/zoom 1)
   ")))
 
+  (setq epicenter/remotes-path (concat episteme/home "/epicenter"))
+  (setq epicenter/remotes-file (concat epicenter/remotes-path "/remotes.json"))
+
   (when (file-exists-p episteme/init)
       (message "Loading globals from: %s" episteme/init)
       (load-file episteme/init))
 
-  (setq org-directory episteme/org)
   (setq user-emacs-directory episteme/home)
+  (setq episteme/current-remote episteme/default-remote)
+
 #+end_src
 
 * bootstrap
@@ -237,6 +236,365 @@ e.g. =(:bind "C-m" org-mode-map (message "Hello world."))=
         `(global-set-key (kbd ,(eval key)) ,(eval `(:command ,@body))))))
 #+end_src
 
+* epicenter
+** load-remotes
+#+begin_src emacs-lisp
+  (defun epicenter:load-remotes ()
+    (let ((remotes-map (json-read-file epicenter/remotes-file)))
+      (mapcar (lambda (remote)
+                (let ((name (symbol-name (car remote)))
+                      (url (cdr (nth 1 remote)))
+                      (description (cdr (nth 2 remote))))
+                  (list name url description)))
+                remotes-map)))
+#+end_src
+** update-remotes
+#+begin_src emacs-lisp
+  (defun epicenter:update-remotes ()
+    (let ((default-directory epicenter/remotes-path))
+      (shell-command "git pull")))
+#+end_src
+
+** compare-remotes
+Check every local remote against epicenter remotes.
+Gather a list of remotes whos urls are not the same.
+Each result should have the name, localUrl, and remoteUrl.
+#+begin_src emacs-lisp
+  (defun epicenter:compare-remotes ()
+    (let* ((remotes (epicenter:load-remotes))
+           (remote-names (--map (car it) remotes))
+           (local-remotes (episteme:get-remote-names))
+           ;; calculate which local-remotes are also in remote-names
+           (tracked-remotes (-filter
+                             (lambda (local) (--first (string= local (car it)) remotes))
+                             local-remotes))
+
+           ;; for each tracked-remote create (name localUrl remoteUrl)
+           (target-remotes (-map (lambda (tracked)
+                                   (list tracked
+                                         (episteme:get-remote-url tracked)
+                                         ;; find `remote` with same name, return its url
+                                         (nth 1 (-first (lambda (remote) (string= (car remote) tracked)) remotes))))
+                                 tracked-remotes))
+           ;; filter target-remotes down to those where (not (string= (nth 1) (nth 2)))
+           (problem-remotes (--filter
+                             (not (string= (nth 1 it) (nth 2 it)))
+                             target-remotes))
+           )
+      problem-remotes))
+#+end_src
+
+** pick
+#+begin_src emacs-lisp
+  (defun epicenter:pick-from (remotes &optional title)
+    (helm :sources
+          (helm-build-sync-source (or title "Pick a remote")
+            :multiline t
+            :candidates (mapcar (lambda (remote)
+                                  (let ((name (nth 0 remote))
+                                        (local-url (nth 1 remote))
+                                        (remote-url (nth 2 remote)))
+                                    (cons (format "%s:\nLocal:  %s\nRemote: %s" name local-url remote-url)
+                                          (list name remote-url))))
+                                remotes))
+          :action (lambda (remote)
+                    (let ((name (nth 0 remote))
+                          (remote-url (nth 2 remote)))))))
+#+end_src
+** pick-remote
+#+begin_src emacs-lisp
+  (defun epicenter:pick-remote ()
+    (interactive)
+    (let ((remotes (epicenter:load-remotes)))
+      (helm :sources (helm-build-sync-source "Pick an epicenter remote"
+                       :multiline t
+                       :candidates (mapcar (lambda (remote)
+                                             (let ((name (nth 0 remote))
+                                                   (url (nth 1 remote))
+                                                   (description (nth 2 remote)))
+                                               (cons (format "%s: %s\n  %s" name url description)
+                                                     (list name url description))))
+                                           remotes)))))
+#+end_src
+
+** do-track-remote
+#+begin_src emacs-lisp
+  (defun epicenter:do-track-remote ()
+    (interactive)
+    (let ((remote (epicenter:pick-remote)))
+      (if remote
+          (let ((name (nth 0 remote))
+                (url (nth 1 remote)))
+
+            (episteme:add-remote name url)))))
+#+end_src
+** do-compare-remotes
+Call compare-remotes to get a list of divergent remotes.
+For each problem remote, ask the user if they want to update the local remote.
+If so, call set-remote-url on it.
+#+begin_src emacs-lisp
+  (defun epicenter:do-compare-remotes ()
+    (interactive)
+    (let ((remotes (epicenter:compare-remotes)))
+      (if remotes
+          (let* ((choice (epicenter:pick-from remotes))
+                 (name (nth 0 choice))
+                 (url (nth 1 choice)))
+            (episteme:set-remote-url name url)
+            (message "Remote `%s` url set to %s" name url))
+        (message "No remote urls out-of-sync."))))
+#+end_src
+* remotes
+** remote-exists?
+#+begin_src emacs-lisp
+  (defun episteme:remote-exists? (remote)
+    (file-exists-p (episteme:get-remote-path remote)))
+#+end_src
+** remote-is-local?
+#+begin_src emacs-lisp
+  (defun episteme:remote-is-local? (remote)
+    (let ((default-directory (episteme:get-remote-path remote)))
+      (not (file-directory-p ".git"))))
+#+end_src
+** remote-is-dirty?
+#+begin_src emacs-lisp
+  (defun episteme:remote-is-dirty? (remote)
+    (let ((default-directory (episteme:get-remote-path remote)))
+      (not (string= (shell-command-to-string "git status --porcelain") ""))))
+#+end_src
+** get-remote-path
+#+begin_src emacs-lisp
+  (defun episteme:get-remote-path (remote)
+    (expand-file-name remote (expand-file-name "remotes" user-emacs-directory)))
+#+end_src
+** get-remote-root
+#+begin_src emacs-lisp
+  (defun episteme:get-remote-root (remote)
+    (let* ((path (episteme:get-remote-path remote))
+           (conf-path (f-join path "epi.json"))
+           (conf-exists (file-exists-p conf-path)))
+      (if conf-exists
+          ;; get "root" key from json file
+          (let* ((conf (json-read-file conf-path))
+                 (root (cdr (assoc 'root conf))))
+            (if root
+                (concat path "/" root)
+              path))
+        path)))
+#+end_src
+** get-remote-url
+#+begin_src emacs-lisp
+  (defun episteme:get-remote-url (remote)
+    (let ((default-directory (episteme:get-remote-path remote)))
+      (s-trim (shell-command-to-string "git config --get remote.origin.url"))))
+#+end_src
+** set-remote-url
+#+begin_src emacs-lisp
+  (defun episteme:set-remote-url (remote url)
+    (let ((default-directory (episteme:get-remote-path remote))
+          (command (format "git config --replace-all remote.origin.url %s" url)))
+      (message "%s" command)
+      (shell-command command)))
+#+end_src
+** get-remote-paths
+#+begin_src emacs-lisp
+  (defun episteme:get-remote-paths ()
+    (let* ((filter (lambda (it) (not (s-starts-with? "." it))))
+           (files (-filter filter (directory-files episteme/remotes-path)))
+           (paths (-map 'episteme:get-remote-path files))
+           (folders (-filter 'f-directory? paths)))
+      folders))
+#+end_src
+** get-remote-names
+#+begin_src emacs-lisp
+  (defun episteme:get-remote-names ()
+    (let* ((filter (lambda (it) (not (s-starts-with? "." it))))
+           (files (-filter filter (directory-files episteme/remotes-path)))
+           (paths (-map 'episteme:get-remote-path files))
+           (folders (-filter 'f-directory? paths)))
+      files))
+#+end_src
+
+** add-remote
+#+begin_src emacs-lisp
+    (defun episteme:add-remote (name url)
+        (if (episteme:remote-exists? name)
+            (message "Remote %s already exists" name)
+          (let ((default-directory episteme/remotes-path))
+            ;; check url is empty
+            (if (string= "" url)
+                (progn
+                    (make-directory (episteme:get-remote-path name))
+                    (message "Local remote %s created" name))
+              (progn
+                (shell-command (format "git clone %s" url))
+                (message "Remote %s added" name))))))
+#+end_src
+** remove-remote
+#+begin_src emacs-lisp
+  (defun episteme:remove-remote (name)
+    (let ((path (episteme:get-remote-path name))
+          (notify (lambda () (message "Remote %s was permanently deleted." name))))
+      (if (f-exists? path)
+          ;; confirm that the user wants to remove the remote
+          (when (yes-or-no-p (format "Are you sure you want to remove %s?" name))
+            ;; check if the remote is dirty
+            (when (and (or (episteme:remote-is-local? name) (episteme:remote-is-dirty? name))
+                       (yes-or-no-p (format "Remote %s has uncommited changes!  Are you sure you want to remove it?" name)))
+              (delete-directory path t)
+              (funcall notify))
+            (delete-directory path t)
+            (funcall notify))
+        (message "Remote %s does not exist" name))))
+#+end_src
+** update-remote
+#+begin_src emacs-lisp
+  (defun episteme:update-remote (name)
+    (let ((path (episteme:get-remote-path name)))
+      (if (f-exists? path)
+          (if (episteme:remote-is-local? name)
+              (message "Remote %s is local and can't be updated." name)
+            (if (episteme:remote-is-dirty? name)
+                (message "Remote %s has uncommitted changes. Commit all changes before updating." name)
+              ;; pull on `path` with magit
+              (let ((default-directory path))
+                (magit-pull-from-upstream nil)))
+            (message "Updated remote %s." name))
+        (message "No remote exists with name %s." name))))
+#+end_src
+** remote-status
+#+begin_src emacs-lisp
+  (defun episteme:remote-status (name)
+    (let ((path (episteme:get-remote-path name)))
+      (if (f-exists? path)
+          (if (episteme:remote-is-local? name)
+              (message "Remote %s is local and has no git status.")
+            (magit-status path))
+        (message "No remote exists with name %s." name))))
+#+end_src
+** pick-remote
+#+begin_src emacs-lisp
+  (defun episteme:pick-remote ()
+    (let ((remotes (episteme:get-remote-paths)))
+      (if (not remotes)
+          (message "No remotes found.")
+        (let* ((names (-map 'f-filename remotes))
+               (name (helm :sources (helm-build-sync-source "Pick remote"
+                                                             :candidates names
+                                                             :action (lambda (name) name)))))
+            name))))
+#+end_src
+** init-remotes
+#+begin_src emacs-lisp
+  (defun episteme:init-remotes ()
+      (let ((path (episteme:get-remote-path episteme/current-remote))
+	    (root (episteme:get-remote-root episteme/current-remote)))
+	(unless (f-exists? path)
+	  (error "Current remote %s does not exist." episteme/current-remote))
+	(unless (f-exists? root)
+	  (error "Current remote's root does not exist: %s " root))
+
+	(setq episteme/current-remote-root root)
+	(setq org-directory episteme/current-remote-root)
+	(setq org-roam-directory episteme/current-remote-root)))
+  (episteme:init-remotes)
+#+end_src
+** activate-remote
+Set episteme/current-remote and episteme/current-remote-root.
+#+begin_src emacs-lisp
+  (defun episteme:activate-remote(name)
+    (setq episteme/current-remote name)
+    (episteme:init-remotes))
+#+end_src
+** do-add-remote
+Add a remote interactively.
+#+begin_src emacs-lisp
+  (defun episteme:do-add-remote ()
+    (interactive)
+    (let* ((name (read-string "Name: "))
+           (url (read-string "URL: ")))
+      (episteme:add-remote name url)))
+#+end_src
+** do-remove-remote
+Remove a remote interactively.
+#+begin_src emacs-lisp
+  (defun episteme:do-remove-remote ()
+    (interactive)
+    (let* ((name (episteme:pick-remote)))
+      (when name
+        (episteme:remove-remote name))))
+#+end_src
+** do-update-remote
+Update a remote interactively.
+#+begin_src emacs-lisp
+  (defun episteme:do-update-remote ()
+    (interactive)
+    (let* ((name (episteme:pick-remote)))
+      (when name
+        (episteme:update-remote name))))
+#+end_src
+** do-remote-status
+Check a remote interactively.
+#+begin_src emacs-lisp
+  (defun episteme:do-remote-status ()
+    (interactive)
+    (let* ((name (episteme:pick-remote)))
+      (when name
+        (episteme:remote-status name))))
+#+end_src
+** do-set-remote-url
+Set the remote url interactively.
+#+begin_src emacs-lisp
+  (defun episteme:do-set-remote-url ()
+    (interactive)
+    (let* ((name (episteme:pick-remote)))
+      (when name
+        (let ((url (read-string "URL: ")))
+          (episteme:set-remote-url name url)
+          (message "Remote url for %s set to %s" name url)))))
+#+end_src
+** do-activate-remote
+Set episteme/current-remote interactively.
+#+begin_src emacs-lisp
+  (defun episteme:do-activate-remote ()
+    (interactive)
+    (let* ((name (episteme:pick-remote)))
+      (when name
+        (episteme:activate-remote name))))
+#+end_src
+** tab-bar support
+#+begin_src emacs-lisp
+  (defun episteme:tab-bar-format ()
+    (let* ((remote episteme/current-remote)
+           (is-dirty (when (episteme:remote-is-dirty? remote)
+                       (propertize "⚠️"
+                                   'face 'default
+                                   'help-echo "Remote has uncommitted changes.")))
+           (is-local (when (episteme:remote-is-local? remote) "🏠️"))
+           (icon (or is-dirty is-local "🌐"))
+           (str (s-trim (format " %s %s (%s)"
+                         icon
+                         episteme/current-remote
+                         episteme/current-remote-root))))
+      `((global menu-item ,str ignore))))
+
+  (defun episteme:init-tab-bar ()
+    (copy-face 'doom-modeline-bar 'tab-bar)
+    (invert-face 'tab-bar)
+    (let ((fg (face-attribute 'tab-bar :foreground))
+          (bg (face-attribute 'default :background)))
+      (set-face-attribute 'tab-bar nil
+                          :height 100
+                          :foreground fg
+                          :background (color-darken-name bg 3)))
+    (setq tab-bar-format '(episteme:tab-bar-format))
+    (tab-bar-mode 1))
+
+  (episteme:tab-bar-format)
+
+  (progn
+    (add-hook 'emacs-startup-hook 'episteme:init-tab-bar))
+#+end_src
 * keybinds
 #+begin_src emacs-lisp
   (defun episteme/bind-keys ()
@@ -254,21 +612,19 @@ e.g. =(:bind "C-m" org-mode-map (message "Hello world."))=
     (setq dashboard-startup-banner (concat episteme/repo "/cain.png"))
     (setq dashboard-footer-messages
           '("Co-edification through tinkering, dialectic and reference!"))
-    ;; (setq dashboard-footer-icon (all-the-icons-octicon "dashboard"
-    ;;                                                    :height 1.1
-    ;;                                                    :v-adjust -0.05
-    ;;                                                    :face 'font-lock-keyword-face))
     (setq dashboard-center-content t)
     (setq dashboard-items '((recents . 20)))
     (dashboard-setup-startup-hook))
-  
+
   (defun episteme:dashboard ()
     "Jump to the dashboard buffer, if doesn't exists create one."
     (interactive)
     (switch-to-buffer dashboard-buffer-name)
     (dashboard-mode)
     (dashboard-insert-startupify-lists)
-    (dashboard-refresh-buffer))
+    (dashboard-refresh-buffer)
+    (beginning-of-buffer)
+    (search-forward "apoptosis/episteme"))
 #+end_src
 
 * aesthetics
@@ -307,19 +663,23 @@ Use [[https://github.com/seagle0128/doom-modeline][doom-modeline]] to ornament t
   (use-package doom-modeline
     :ensure t
     :config
+    (doom-modeline-def-segment current-remote
+      "Display current episteme remote"
+      (format "[%s]" episteme/current-remote))
     (doom-modeline-def-modeline
-     'my-modeline
+      'epi-modeline
 
-     '(bar workspace-name window-number modals matches buffer-info remote-host selection-info)
-     '(objed-state misc-info buffer-position major-mode process vcs checker))
-
+      '(bar workspace-name window-number modals matches buffer-info remote-host selection-info)
+      '(current-remote objed-state buffer-position major-mode process vcs checker misc-info))
     (doom-modeline-mode 1)
     (setq doom-modeline-height 35)
     (setq doom-modeline-bar-width 5)
+    (setq tab-bar-format '(episteme:tab-bar-format))
     :init
     (defun setup-custom-doom-modeline ()
-      (doom-modeline-set-modeline 'my-modeline 'default))
-    (:hook doom-modeline-mode 'setup-custom-doom-modeline))
+      (doom-modeline-set-modeline 'epi-modeline t)
+      (force-mode-line-update))
+    (add-hook 'doom-modeline-mode-hook 'setup-custom-doom-modeline))
 #+end_src
 
 ** doom theme
@@ -1210,7 +1570,7 @@ Backlink support
 #+begin_src emacs-lisp
   (defun episteme:ensure-org-id ()
     (interactive)
-    (when (s-starts-with? episteme/org (buffer-file-name))
+    (when (s-starts-with? episteme/current-remote-root (buffer-file-name))
       (save-excursion
         (beginning-of-buffer)
         (org-id-get-create))))
@@ -1227,7 +1587,7 @@ Backlink support
            ;; Dailies
            ("C-c n j" . org-roam-dailies-capture-today))
     :config
-    (setq org-roam-directory episteme/org)
+    (setq org-roam-directory episteme/current-remote-root)
 
     ;; STOP PREPENDING DATES >:|
     (setq org-roam-capture-templates '(("d" "default" plain "%?" :target
@@ -1280,6 +1640,14 @@ Backlink support
      (add-hook 'before-save-hook 'episteme:ensure-org-id nil t)))
 #+end_src
 * other packages
+** persistent-scratch
+#+begin_src emacs-lisp
+  (use-package persistent-scratch
+    :config
+    (persistent-scratch-setup-default)
+    (setq persistent-scratch-save-file (concat episteme/home "/scratch")
+          persistent-scratch-autosave-interval 20))
+#+end_src
 ** embrace
 #+begin_src emacs-lisp
   (use-package embrace
@@ -1577,6 +1945,22 @@ Many of the Emacs help facilities at your fingertips!
       ("R" (magit-reset-hard)))))
 #+end_src
 
+** hydra-remotes
+#+begin_src emacs-lisp
+    (:hydra episteme-hydra-remotes (:color blue)
+      ("Knowledge-bases  "
+       (("l" (call-interactively (lambda () (interactive) (episteme:pick-remote))) "list")
+        ("a" (lambda () (interactive) (episteme:do-activate-remote)) "activate")
+        ("n" episteme:do-add-remote "new")
+        ("u" episteme:do-update-remote "update")
+        ("r" episteme:do-remove-remote "remove")
+        ("g" episteme:do-remote-status "git status")
+        ("s" episteme:do-set-remote-url "set url"))
+       "Epicenter"
+       (("U" (epicenter:update-remotes) "update epicenter")
+        ("i" (epicenter:do-track-remote) "install community kb"))))
+#+end_src
+
 ** hydra-default
 #+begin_src emacs-lisp
   (defun episteme:cleanup ()
@@ -1589,25 +1973,34 @@ Many of the Emacs help facilities at your fingertips!
 
   (defun episteme:find-file-all (&optional path)
     (interactive)
-    (let ((file-name (completing-read "file: "
-                                      (directory-files-recursively
-                                       (or path episteme/org) "\.org$"))))
+    (let ((file-name
+           (completing-read "file: "
+                            (directory-files-recursively
+                             (or path episteme/current-remote-root) "\.org$"))))
       (find-file file-name)))
 
   (:hydra episteme-hydra-default (:color blue)
     ("Open"
      (("o" (helm-org-walk '(4)) "open")
-      ("s" (helm-org-rifle-directories episteme/org) "search")
+      ("s" (helm-org-rifle-directories episteme/current-remote-root) "search")
       ("a" (episteme:find-file-all) "all files")
       ("t" (find-file episteme/todo-file) "todo")
       ("j" (org-journal-new-entry '(4)) "journal")
-      ("J" (org-journal-new-entry nil) "new journal entry"))
+      ("J" (org-journal-new-entry nil) "new journal entry")
+      ("k" (hera-push 'episteme-hydra-remotes/body) "knowledge-bases"))
      "Bookmarks"
-     (("S" (treemacs) "Sidebar")
+     (("S" (lambda () (interactive) (let ((treemacs--find-user-project-functions '((lambda ()
+                                                                       episteme/current-remote-root))))
+                        (treemacs-display-current-project-exclusively)))
+       "Sidebar")
       ("D" (episteme:find-file-all (concat episteme/org "/episteme")) "Docs")
-      ("C" (find-file (concat episteme/org "/episteme/cheatsheet.org")) "Cheatsheet")
-      ("U" (find-file (concat episteme/org "/episteme/user-guide.org")) "User guide")
-      ("R" (find-file (concat episteme/repo "/README.org")) "README"))
+      ("C" (find-file
+            (concat (episteme:get-remote-root "apoptosis")
+                    "/episteme/cheatsheet.org")) "Cheatsheet")
+      ("U" (find-file
+            (concat (episteme:get-remote-root "apoptosis")
+                    "/episteme/user-guide.org")) "User guide")
+      ("I" (find-file (concat episteme/repo "/README.org")) "README"))
      "Emacs"
      (("h" (hera-push 'episteme-hydra-help/body) "help")
       ("m" (hera-push 'episteme-hydra-mark/body) "mark")
@@ -1766,7 +2159,7 @@ Open hydra for current major mode if one exists, otherwise the default hydra.
 
   ;;
   ;; Motion
-  ;; 
+  ;;
 
   (defun table-goto-first-row ()
     (interactive)
@@ -2117,6 +2510,7 @@ Open hydra for current major mode if one exists, otherwise the default hydra.
 * startup
 #+begin_src emacs-lisp
   (episteme/bind-keys)
+  (episteme:init-remotes)
   (call-interactively 'episteme:dashboard)
 #+end_src
 * load user config
@@ -2139,4 +2533,9 @@ This should remain at the end of this file.
   (when (file-exists-p episteme/config)
       (message "Loading user config from: %s" episteme/config)
       (load-file episteme/config))
+#+end_src
+
+#+begin_src emacs-lisp
+  (message "finished init, redrawing...")
+  (run-with-timer 5 nil (lambda () (message "redrawing now.") (redraw-display)))
 #+end_src
