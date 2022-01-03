@@ -1,0 +1,482 @@
+#+title: Episteme User Guide
+
+Episteme is a system for working with knowledge-bases!
+
+The essence of Episteme is:
+
+- Searching and editing knowledge-bases
+- Creating your own knowledge-bases
+- Working with local or remote knowledge-bases
+- Discovering community knowledge-bases
+- A personal todo list
+- A personal date-based journal
+
+Episteme is fundamentally an [[https://www.gnu.org/software/emacs/][Emacs]] experience. Check out the [[https://www.gnu.org/software/emacs/tour/][Guided Tour]] to get
+your bearings. If you're viewing this in Emacs, the [[elisp:(help-with-tutorial t)][Interactive Tutorial]]
+is even better.
+
+To help you navigate this guide, here are some starter tips:
+
+- Use =TAB= and =Shift-TAB= to open/close headings
+- Bindings are spelled =C-= for Control and =M-= for Alt
+- Bindings like =C-c x= mean "Press Control-c. Release. Press x."
+- To abort popups, etc: press =C-g=
+
+* Installing
+
+On all systems, you'll need [[https://www.gnu.org/software/emacs/][Emacs]] and [[https://git-scm.com/][Git]] installed.
+
+Start by cloning Episteme somewhere:
+
+#+begin_src sh
+  git clone https://github.com/apoptosis/episteme.git ~/episteme
+#+end_src
+
+** Linux
+
+Just run =episteme=:
+
+#+begin_src sh
+  ./episteme -h
+#+end_src
+
+** Windows
+
+The following will be installed via [[https://chocolatey.org/][Chocolatey]]:
+
+- Emacs
+- Git
+- Github for Windows
+- Sharpkeys (optional)
+
+*** Installing Chocolatey
+
+Chocolatey is a system for installing software on Windows.
+
+Follow these instructions:
+
+1. Right-click on the Start Button (The one with the Windows logo).
+2. Open Windows PowerShell _(Admin)_.
+3. In PowerShell, type (followed by enter):
+   =Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))=
+4. When the command completes, in PowerShell, type (followed by enter):
+      =choco -?=
+
+If the last command succeeded you're ready to move on.
+
+*** Installing Dependencies
+
+Use =choco= to install the dependencies:
+
+#+begin_src sh
+  choco install git github emacs sharpkeys mingw -y
+#+end_src
+
+*** Installing Episteme
+
+=GitHub Desktop= will open when it is installed.
+
+Follow the prompts, no need to sign in.
+
+Clone the repository with the following URL:
+
+https://github.com/apoptosis/episteme.git
+
+This will put Episteme at =%USERPROFILE%\Documents\GitHub\episteme=
+
+*** Running Episteme
+
+Open =Git-Bash= using the Start Menu.
+
+Then type the following:
+
+#+begin_src sh
+  mkdir -p .config/episteme
+  cd Documents/GitHub/episteme
+  ./episteme
+#+end_src
+
+*** Installing fonts
+
+Once Episteme is running some fonts might be missing.
+
+Use =M-x all-the-icons-install-fonts= and pick a location to download the fonts.
+
+Afterwards, open each downloaded font file, and install it. Restart Episteme
+and the fonts should be working.
+
+* Running Episteme
+
+You can start Episteme without args:
+
+#+begin_src shell
+    $ ./episteme
+#+end_src
+
+Use the =-h= flag to explore other CLI options:
+
+#+begin_src text
+  episteme [EPISTEME-OPTS] [EMACS-OPTS]
+
+  EPISTEME-OPTS:
+  -h             list usage
+  -config        Episteme config directory (default: ~/.config/episteme)
+  -themes        print theme names & exit
+  -theme NAME    use theme called NAME
+
+  EMACS-OPTS:
+  typical Emacs options
+#+end_src
+
+** -config
+
+Use this to specify the location of the Episteme config directory.
+
+This is the directory where =init.el= and =config.el= should be placed.
+
+The default is =$HOME/.config/episteme=
+
+** -themes
+
+List the available themes.
+
+** -theme
+
+Specify the name of theme to use.
+
+** Emacs Options
+
+Any additional options will be passed to emacs.
+
+* Getting Started
+
+Go ahead and start Episteme with =./episteme=
+
+** First Run
+
+On the first run, you'll be asked if Episteme can initialize data into the
+config directory.
+
+By default, this is =~/.config/episteme/= but can be changed with the =-config= CLI
+option.
+
+Once Emacs starts, packages will be installed. This could take a minute.
+
+** Finding Your Way Back
+
+If something goes awry while following this guide, try the following:
+
+Got stuck on some popup: hit =C-g= a few times
+
+Getting back to this user-guide: hit =C-c x U=
+
+** The Dashboard
+
+Once Emacs has loaded, you'll be presented with the dashboard:
+
+# TODO show screenshot here
+
+The dashboard features some helpful information:
+
+- The current version of Episteme
+- Available knowledge-bases
+- Recently opened files
+- Button to open this user guide
+- Button to open the main menu
+- Button to browse community knowledge-bases
+
+Clicking the name of a knowledge-base will activate it.
+
+Clicking a recently opened file will open it.
+
+** The Main Menu
+
+By default, the main menu can be opened with =C-c x=:
+
+# TODO show a screenshot
+
+Select menu items by pressing the key for that item.
+
+The main menu can be closed with =space= or =C-g=.
+
+Pressing =U= (shift-u) will open this very user guide!
+
+The main menu has many features which are covered in more detail [[ ][more detail
+here]].
+
+# TODO link this to actual main menu documentation
+
+** The Statusbar
+
+At the very top of the window, the active knowledge-base is shown.
+
+# TODO show a screenshot
+
+** Opening Knowledge Files
+
+There are a few ways to open knowledge files.
+
+To get back here, hit =U= on the main menu.
+
+*** By filename
+With the main menu open, press =a= to get a list of all knowledge files.
+
+Selecting one (=enter=) will open it.
+
+*** By full-text search
+With the main menu open, press =s= to search all knowledge files.
+
+Selecting one (=enter=) will open it.
+
+*** By browsing
+With the main menu open, press =o= to browse the knowledge files.
+
+Selecting an entry (=enter=) will enter a directory or file.
+
+Pressing =backspace= will navigate to the parent directory.
+
+** Managing Knowledge-bases
+
+Episteme supports multiple knowledge-bases. One knowledge-base is active at a
+time and you can switch between them.
+
+In the main menu, =k= will open the knowledge-base submenu.
+
+*** Listing installed knowledge-bases
+
+In the knowledge-base submenu, =l= will list all of your installed
+knowledge-bases.
+
+*** Activating a knowledge-base
+
+In the knowledge-base submenu, =a= will list all of your installed
+knowledge-bases.
+
+Selecting one (=enter=) will make it the active knowledge-base.
+
+The statusbar will update to show the active knowledge-base.
+
+*** Creating a new knowledge-base
+
+In the knowledge-base submenu, =n= will create a new knowlege-base.
+
+You'll be prompted for its name and git URL.
+
+If a git URL is provided, the remote knowledge-base will be cloned.
+
+If no URL is provided, an empty local knowledge-base will be created.
+
+*** Making a local knowledge-base remote
+
+If you decide to publish your local knowledge-base, use =s= in the knowledge-base
+submenu to set its git URL.
+
+*** Tracking community knowledge-bases
+
+In the knowledge-base submenu, hit =U= to update your community knowledge-base
+list.
+
+Again in the knowledge-base submenu, hit =T= to browse a list of community
+knowledge-bases.
+
+Selecting one (=enter=) will install it.
+
+*** Committing your changes
+
+As you create and change files, you're encouraged to commit your knowledge-base
+changes to [[https://git-scm.com/][Git]]. While a good idea for your own local knowledge-bases, it's
+required step for contributing those changes back to community knowledge-bases.
+
+If the active knowledge-base has uncommitted changes, the icon in the
+status-bar will change to a warning sign.
+
+# TODO show screenshot here
+
+From the knowledge-base submenu, press =g= to view the git status of a
+knowlege-base.
+
+Episteme's git support is provided by [[https://magit.vc/][Magit]]. Check out our guide on using Magit
+to learn more about managing your knowledge-base changes.
+
+# TODO write magit guide
+
+* Main Menu
+
+The main menu serves as a central point for invoking Episteme's features.
+
+Some of the things you can do:
+
+- Activate and manage knowledge-bases
+- Search and navigate the active knowledge-bases
+- Access your personal todos and journal
+- Invoke helpful Emacs functions
+- Get documentation on Episteme and Emacs
+
+** Opening the Main Menu
+
+By default, the main menu is opened with =C-c x=.
+
+This keybind can be changed by setting =episteme/main-menu-key= in your config.
+
+The main menu lists items which can be selected with the key listed.
+
+** Submenus
+
+Some menu items open submenus.
+
+Within a submenu, the spacebar will return to the previous menu.
+
+Press =C-g= to close all menus.
+
+** =o=: open
+Walk directories and files of the active knowledge-base until reaching the
+desired content.
+
+Use =enter= to navigate into a directory or file.
+
+Use =backspace= to go back to the parent directory.
+
+** s: search
+Full-text search the active knowledge-base.
+
+Typing a query will filter results. Selecting one (=enter=) will open it.
+
+** a: all files
+List all files in the active knowledge-base.
+
+Selecting one (=enter=) will open it.
+
+** t: todo
+
+Open your personal todo file.
+
+It's stored as =~/.config/episteme/todo.org=
+
+** j: journal
+
+Open your personal journal.
+
+It's stored as =~/.config/episteme/journal/=
+
+** J: new journal entry
+
+Create a new entry in today's journal file.
+
+** k: knowledge-bases
+
+Open the knowledge-bases submenu.
+
+*** l: list
+
+List installed knowledge-bases
+
+*** a: activate
+
+Activate an installed knowledge-base.
+
+*** n: new
+
+Clone a community knowledge-base or create a local one.
+
+*** u: update
+
+Update a community knowledge-base.
+
+*** r: remove
+
+Permanently delete an installed knowledge-base.
+
+*** g: git status
+
+Use [[https://magit.vc/][Magit]] to view the git status of a knowledge-base.
+
+*** s: set url
+
+Set the git URL for an installed knowledge-base.
+
+*** U: update epicenter
+
+Update the list of available community knowledge-bases.
+
+*** i: install community kb
+
+View the list of available community knowledge-bases.
+
+Selecting one (=enter=) will install it.
+
+** S: sidebar
+Open a sidebar showing a tree-view of the active knowledge-base.
+
+Use =q= to close it.
+
+** =g=: github
+
+Open the git interface.
+
+As you make changes to Episteme you'll use git to submit your changes.
+
+** =h=: help
+
+Access a comprehensive menu.
+
+** =m=: mark
+
+Manipulate the document mark.
+
+** =w=: windows
+
+Manage the emacs windows.
+
+** =z=: zoom
+
+Adjust the zoom per-buffer or globally.
+
+** =r=: registers
+
+Maniplate the emacs registers.
+
+** =;=: embrace
+
+Convert between balanced parenthesis types. (e.g. (foo) => [foo], etc.)
+
+* Mode Menus
+
+Activate the mode menu for the current buffer mode, if there is one, with the
+keybind assigned to =episteme/mode-menu-key= (=C-c m= by default).
+
+The spacebar will return to previous menus.
+
+Modes which currently feature a menu:
+
+- =emacs-lisp-mode=
+- =org-mode=
+
+Each mode menu is different, so explore!
+
+* Configuration
+
+Edit =config.el= within the Episteme configuration directory to customize
+options.
+
+** Setting options
+
+Options are set with the =setq= function:
+
+#+begin_src emacs-lisp
+  (setq variable-name "variable value")
+#+end_src
+
+** Keybindings
+
+#+begin_src emacs-lisp
+  ;; keybind for the main menu
+  (setq episteme/main-menu-key "C-c x")
+
+  ;; keybind for the mode menu
+  (setq episteme/mode-menu-key "C-c m")
+#+end_src
+
+** Additional Configuration
+
+Your =config.el= may contain any additional emacs configuration.
+

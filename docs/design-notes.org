@@ -1,0 +1,14 @@
+#+title: Design Notes
+
+* Remotes
+
+Remotes allow for juggling multiple knowledge-bases.
+
+Remotes are stored as directories under =~.config/episteme/remotes/=
+
+** Data Spec
+
+Each remote has the following properties:
+
+- =name= : used for the path under =remotes/= and displaying to the user
+- =url=  : nil or the git url for the remote
