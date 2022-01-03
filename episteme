@@ -9,14 +9,13 @@ themes="default one one-light vibrant acario-dark acario-light city-lights chall
 help="episteme [EPISTEME-OPTS] [EMACS-OPTS]
 
 EPISTEME-OPTS:
-  -h             list usage
-  -repo          Episteme repo (default: $PWD)
-  -config        Episteme config directory (default: $HOME/.config/episteme)
-  -themes        print theme names & exit
-  -theme NAME    use theme called NAME
+-h             list usage
+-config        Episteme config directory (default: $HOME/.config/episteme)
+-themes        print theme names & exit
+-theme NAME    use theme called NAME
 
 EMACS-OPTS:
-  typical Emacs options"
+typical Emacs options"
 
 if [[ " $@[@] " =~ "-h" ]]; then
     echo "$help"
@@ -26,8 +25,8 @@ fi
 if [[ " $@[@] " =~ "-themes" ]]; then
     echo "Available themes:"
     for t in $themes; do
-      let "i=$RANDOM % 256"
-      echo -en "\e[38;5;''${i}m$t \e[0m";
+        let "i=$RANDOM % 256"
+        echo -en "\e[38;5;''${i}m$t \e[0m";
     done
     exit 0
 fi
@@ -38,74 +37,57 @@ export HOME="${HOME//\\//}"
 themeFlag=""
 export theme="laserwave"
 
-repoFlag=""
-export repo="$PWD"
-
 configFlag=""
 export config="$HOME/.config/episteme"
 
 for arg do
-  shift
+    shift
 
-  if [ ! -z "$themeFlag" ]; then
-    if [[ ! " $themes[@] " =~ " $arg " ]]; then
-      printf "''${RED}✗''${YELLOW} '$arg' is not a valid theme.''${NC}\n"
-      for t in $themes; do
-        let "i=$RANDOM % 256"
-        echo -en "\e[38;5;''${i}m$t \e[0m";
-      done
-      exit 1
+    if [ ! -z "$themeFlag" ]; then
+        if [[ ! " $themes[@] " =~ " $arg " ]]; then
+            printf "''${RED}✗''${YELLOW} '$arg' is not a valid theme.''${NC}\n"
+            for t in $themes; do
+                let "i=$RANDOM % 256"
+                echo -en "\e[38;5;''${i}m$t \e[0m";
+            done
+            exit 1
+        fi
+
+        export theme="$arg"
+        themeFlag=""
+        continue
     fi
 
-    export theme="$arg"
-    themeFlag=""
-    continue
-  fi
+    if [ ! -z "$configFlag" ]; then
+        export config="$arg"
+        configFlag=""
+        continue
+    fi
 
-  if [ ! -z "$repoFlag" ]; then
-    export repo="$arg"
-    repoFlag=""
-    continue
-  fi
+    if [ "$arg" = "-theme" ]; then
+        themeFlag="1"
+        continue
+    fi
 
-  if [ ! -z "$configFlag" ]; then
-    export config="$arg"
-    configFlag=""
-    continue
-  fi
+    if [ "$arg" = "-config" ]; then
+        configFlag="1"
+        continue
+    fi
 
-  if [ "$arg" = "-theme" ]; then
-    themeFlag="1"
-    continue
-  fi
-
-  if [ "$arg" = "-repo" ]; then
-    repoFlag="1"
-    continue
-  fi
-
-  if [ "$arg" = "-config" ]; then
-    configFlag="1"
-    continue
-  fi
-
-  set -- "$@" "$arg"
+    set -- "$@" "$arg"
 done
 
-export repo=`echo $repo | sed -e 's/\/c/c:/'`
-export repo=${repo//\\//}
 export config=${config//\\//}
 
-echo "Repo directory: $repo"
 echo "Config directory: $config"
 
 emacs -q \
-   --debug-init \
-   --chdir $repo \
-   --eval "(setq byte-compile-warnings '(cl-functions))" \
-   --eval "(require 'org)" \
-   --eval "(org-babel-tangle-file \"$repo/support.org\")" \
-   --eval "(setq user-emacs-directory \"$config\")" \
-   --eval "(setq user-init-file \"$repo/support.el\")" \
-   --load $repo/support.el \
-   $@
+--debug-init \
+--eval "(setq byte-compile-warnings '(cl-functions))" \
+--eval "(require 'org)" \
+--chdir "$config/support/" \
+--eval "(org-babel-tangle-file \"$config/support/support.org\" \"$config/support/support.el\")" \
+--eval "(setq user-emacs-directory \"$config\")" \
+--eval "(setq user-init-file \"$config/support/support.el\")" \
+--load $config/support/support.el \
+$@
