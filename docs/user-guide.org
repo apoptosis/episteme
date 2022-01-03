@@ -17,8 +17,9 @@ is even better.
 
 To help you navigate this guide, here are some starter tips:
 
+- Bindings are spelled =C-= for "hold Control" and =M-= for "hold Alt"
+- Use =C-n= and =C-p= to get around
 - Use =TAB= and =Shift-TAB= to open/close headings
-- Bindings are spelled =C-= for Control and =M-= for Alt
 - Bindings like =C-c x= mean "Press Control-c. Release. Press x."
 - To abort popups, etc: press =C-g=
 
