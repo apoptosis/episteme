@@ -6,30 +6,55 @@
 
 This file contains all the elisp implementing Episteme's customizations.
 
-* globals
+* preamble
 #+begin_src emacs-lisp
+  ;;; support.el --- episteme customizations  -*- lexical-binding:t -*-
+  (setq warning-minimum-level :error)
+#+end_src
+** episteme paths
+#+begin_src emacs-lisp
+  ;; paths
   (setq episteme/home (getenv "config"))
-  (setq episteme/repo (concat episteme/home "/support"))
-  (setq episteme/init (concat episteme/home "/init.el"))
+  (setq episteme/support (concat episteme/home "/support"))
+  (setq episteme/user-init-file (concat episteme/home "/init.el"))
   (setq episteme/config (concat episteme/home "/config.el"))
   (setq episteme/org (concat episteme/home "/remotes/apoptosis/org"))
   (setq episteme/autosaves (concat episteme/home "/autosaves"))
   (setq episteme/backups (concat episteme/home "/backups"))
-
   (setq episteme/journal (concat episteme/home "/journal"))
   (setq episteme/todo-file (concat episteme/home "/todo.org"))
   (setq episteme/remotes-path (concat episteme/home "/remotes"))
+#+end_src
+
+** epicenter paths
+#+begin_src emacs-lisp
+  (setq epicenter/remotes-path (concat episteme/home "/epicenter"))
+  (setq epicenter/remotes-file (concat epicenter/remotes-path "/remotes.json"))
+#+end_src
+
+** default keybinds
+#+begin_src emacs-lisp
   (setq episteme/main-menu-key "C-c x")
   (setq episteme/mode-menu-key "C-c m")
-  (setq episteme/zoom 1)
-  (setq episteme/fill-width 120)
+#+end_src
+
+** default settings
+#+begin_src emacs-lisp
   (setq episteme/default-remote "episteme")
+  (setq episteme/fill-width 120)
+  (setq episteme/zoom 1)
+#+end_src
+** hooks
+#+begin_src emacs-lisp
+  (defvar episteme-after-load-hook nil
+    "Hook called after the custom file is loaded")
+#+end_src
 
-  (unless (file-exists-p episteme/home)
-    (make-directory episteme/home))
-
-  (unless (file-exists-p episteme/init)
-    (with-temp-file episteme/init
+** user init.el
+#+begin_src emacs-lisp
+  ;; create if it doesn't exist
+  (unless (file-exists-p episteme/user-init-file)
+    (with-temp-file episteme/user-init-file
       (insert "
   ;; keybind for default menu
   (setq episteme/main-menu-key \"C-c x\")
@@ -41,18 +66,15 @@ This file contains all the elisp implementing Episteme's customizations.
   (setq episteme/zoom 1)
   ")))
 
-  (setq epicenter/remotes-path (concat episteme/home "/epicenter"))
-  (setq epicenter/remotes-file (concat epicenter/remotes-path "/remotes.json"))
+  ;; load the user init.el
+  (when (file-exists-p episteme/user-init-file)
+      (message "Loading globals from: %s" episteme/user-init-file)
+      (load-file episteme/user-init-file))
 
-  (when (file-exists-p episteme/init)
-      (message "Loading globals from: %s" episteme/init)
-      (load-file episteme/init))
-
+  ;; update some globals that are calculated from epi vars
   (setq user-emacs-directory episteme/home)
   (setq episteme/current-remote episteme/default-remote)
-
 #+end_src
-
 * bootstrap
 
 The following sections take care of bootstrapping =straight.el= for
@@ -103,6 +125,8 @@ data structures.
 
 #+begin_src emacs-lisp
   (require 'cl-lib)
+  (require 'color)
+  (require 'json)
   (use-package f :demand t)          ;; files
   (use-package dash :demand t)       ;; lists
   (use-package ht :demand t)         ;; hash-tables
@@ -590,8 +614,6 @@ Set episteme/current-remote interactively.
     (setq tab-bar-format '(episteme:tab-bar-format))
     (tab-bar-mode 1))
 
-  (episteme:tab-bar-format)
-
   (progn
     (add-hook 'emacs-startup-hook 'episteme:init-tab-bar))
 #+end_src
@@ -604,27 +626,165 @@ Set episteme/current-remote interactively.
 #+end_src
 
 * dashboard
+** lib
+*** align-remotes-by-length
 #+begin_src emacs-lisp
-  (use-package dashboard
-    :ensure t
-    :config
-    (setq dashboard-banner-logo-title "apoptosis/episteme")
-    (setq dashboard-startup-banner (concat episteme/repo "/cain.png"))
-    (setq dashboard-footer-messages
-          '("Co-edification through tinkering, dialectic and reference!"))
-    (setq dashboard-center-content t)
-    (setq dashboard-items '((recents . 20)))
-    (dashboard-setup-startup-hook))
+  (defun episteme:align-remotes-by-length ()
+    (let ((len-item (cdr (assoc 'remotes dashboard-items)))
+          (align-length -1)
+          (count 0)
+          (remotes (episteme:get-remote-names))
+          len-list base)
+      (setq len-list (length remotes))
+      (while (and (< count len-item) (< count len-list))
+        (setq base (nth count remotes)
+              align-length (max align-length (length (dashboard-f-filename base))))
+        (cl-incf count))
+      align-length))
+#+end_src
 
-  (defun episteme:dashboard ()
-    "Jump to the dashboard buffer, if doesn't exists create one."
-    (interactive)
-    (switch-to-buffer dashboard-buffer-name)
-    (dashboard-mode)
-    (dashboard-insert-startupify-lists)
-    (dashboard-refresh-buffer)
-    (beginning-of-buffer)
-    (search-forward "apoptosis/episteme"))
+*** dashboard-remotes-format
+#+begin_src emacs-lisp
+(defun episteme:dashboard-remotes-format ()
+  (let* ((len-align (episteme:align-remotes-by-length))
+         (new-fmt (dashboard--generate-align-format
+                   dashboard-recentf-item-format len-align)))
+    new-fmt))
+#+end_src
+
+*** dashboard-insert-section-list
+#+begin_src emacs-lisp
+(defmacro episteme:dashboard-insert-section-list (section-name list action &rest rest)
+  "Insert into SECTION-NAME a LIST of items, expanding ACTION and passing REST to widget creation."
+  `(when (car ,list)
+     (insert "\n")
+     (mapc
+      (lambda (el)
+        (let ((tag ,@rest))
+          (insert "  ")
+          (when (and (display-graphic-p)
+                     dashboard-set-file-icons
+                     (or (fboundp 'all-the-icons-icon-for-dir)
+                         (require 'all-the-icons nil 'noerror)))
+            (let* ((path (car (last (split-string ,@rest " - "))))
+                   (icon (if (and (not (file-remote-p path))
+                                  (file-directory-p path))
+                             (all-the-icons-icon-for-dir path nil "")
+                           (cond
+                            ((or (string-equal ,section-name "Agenda for today:")
+                                 (string-equal ,section-name "Agenda for the coming week:"))
+                             (all-the-icons-octicon "primitive-dot" :height 1.0 :v-adjust 0.01))
+                            ((file-remote-p path)
+                             (all-the-icons-octicon "radio-tower" :height 1.0 :v-adjust 0.01))
+                            (t (all-the-icons-icon-for-file (file-name-nondirectory path)
+                                                            :v-adjust -0.05))))))
+              (setq tag (concat icon " " ,@rest))))
+
+          (widget-create 'item
+                         :tag tag
+                         :action ,action
+                         :button-face 'dashboard-items-face
+                         :mouse-face 'highlight
+                         :button-prefix ""
+                         :button-suffix ""
+                         :format "%[%t%]")))
+      ,list)))
+#+end_src
+
+*** dashboard-insert-section
+#+begin_src emacs-lisp
+(defmacro episteme:dashboard-insert-section (section-name list list-size shortcut action &rest widget-params)
+  "Add a section with SECTION-NAME and LIST of LIST-SIZE items to the dashboard.
+SHORTCUT is the keyboard shortcut used to access the section.
+ACTION is theaction taken when the user activates the widget button.
+WIDGET-PARAMS are passed to the \"widget-create\" function."
+  `(progn
+     (dashboard-insert-heading ,section-name
+                               (if (and ,list ,shortcut dashboard-show-shortcuts) ,shortcut))
+     (if ,list
+         (when (and (episteme:dashboard-insert-section-list
+                     ,section-name
+                     (dashboard-subseq ,list ,list-size)
+                     ,action
+                     ,@widget-params)
+                    ,shortcut)
+           (dashboard-insert-shortcut ,shortcut ,section-name))
+       (insert (propertize "\n    --- No items ---" 'face 'dashboard-no-items-face)))))
+#+end_src
+
+*** dashboard-links
+#+begin_src emacs-lisp
+(defun episteme:dashboard-links (list-size)
+  (let* ((fmt (episteme:dashboard-remotes-format))
+         (remotes (episteme:get-remote-names))
+         (items (list (list "github" "https://github.com/apoptosis/episteme")
+                      (list "discord" "https://discord.gg/3uPNVyQ5kr")
+                      (list "report issue" "https://github.com/apoptosis/episteme/issues/new")))
+         (keys (mapcar 'car items)))
+    (episteme:dashboard-insert-section
+     "web links" keys 5 "l"
+     `(lambda (&rest ignore) (browse-url-xdg-open (cadr (assoc ,el (quote ,items)))))
+     (format "[%s]" el))))
+#+end_src
+
+*** dashboard-buttons
+#+begin_src emacs-lisp
+(defun episteme:dashboard-buttons (list-size)
+  (let* ((fmt (episteme:dashboard-remotes-format))
+         (remotes (episteme:get-remote-names))
+         (items (list (cons "main menu" '((lambda () (episteme-hydra-default/body))))
+                      (cons "todo" '((lambda () (episteme:todo))))
+                      (cons "journal" '((lambda () (episteme:journal))))
+                      (cons "epicenter" '((lambda () (epicenter:do-track-remote))))
+                      (cons "user guide" '((lambda () (find-file (concat episteme/support "/docs/user-guide.org")))))))
+         (keys (mapcar 'car items)))
+    (episteme:dashboard-insert-section
+     "common actions" keys 5 "m"
+     `(lambda (&rest ignore) (funcall (cadr (assoc ,el (quote ,items)))))
+     (format "[%s]" el))))
+#+end_src
+
+*** dashboard-remotes
+#+begin_src emacs-lisp
+(defun episteme:dashboard-remotes (list-size)
+  (let ((fmt (episteme:dashboard-remotes-format))
+        (remotes (episteme:get-remote-names)))
+    (dashboard-insert-section
+     "knowledge bases" remotes 5 "k"
+     `(lambda (&rest ignore) (message "@@ %s" ,el))
+     (format fmt el (episteme:get-remote-url el)))
+    ))
+#+end_src
+
+** dashboard
+#+begin_src emacs-lisp
+(defun episteme:dashboard ()
+  "Jump to the dashboard buffer, if doesn't exists create one."
+  (interactive)
+  (switch-to-buffer dashboard-buffer-name)
+  (dashboard-mode)
+  (dashboard-insert-startupify-lists)
+  (dashboard-refresh-buffer)
+  (beginning-of-buffer)
+  (search-forward "apoptosis/episteme"))
+#+end_src
+
+** use-package
+#+begin_src emacs-lisp
+(use-package dashboard
+  :ensure t
+  :config
+  (setq dashboard-banner-logo-title "apoptosis/episteme")
+  (setq dashboard-startup-banner (concat episteme/support "/cain.png"))
+  (setq dashboard-footer-messages
+        '("Co-edification through tinkering, dialectic and reference!"))
+  (setq dashboard-center-content t)
+  (add-to-list 'dashboard-item-generators '(links . episteme:dashboard-links))
+  (add-to-list 'dashboard-item-generators '(buttons . episteme:dashboard-buttons))
+  (add-to-list 'dashboard-item-generators '(remotes . episteme:dashboard-remotes))
+  (setq dashboard-items '((links . 10)
+                          (buttons . 10) (remotes . 10) (recents . 5)))
+  (dashboard-setup-startup-hook))
 #+end_src
 
 * aesthetics
@@ -1804,12 +1964,23 @@ Macro for defining Hydras.
 #+begin_src emacs-lisp
   (use-package treemacs
     :demand t
-    :straight (treemacs :type git :host github
-                        :repo "Alexander-Miller/treemacs")
     :custom
-    (treemacs--project-follow-delay 0.5)
-    :config
-    (treemacs-project-follow-mode 1))
+    (treemacs--project-follow-delay 0.5))
+
+  (defun episteme:show-sidebar ()
+    (interactive)
+    (let ((current-window (get-buffer-window))
+          (treemacs--find-user-project-functions
+           '((lambda () episteme/current-remote-root))))
+      (treemacs-display-current-project-exclusively)
+      (select-window current-window)))
+
+  (defun episteme:toggle-sidebar ()
+    (interactive)
+    (if-let (win (treemacs-get-local-window))
+        (progn (treemacs-select-window)
+               (kill-buffer-and-window))
+      (episteme:show-sidebar)))
 #+end_src
 
 * main menu
@@ -1930,18 +2101,18 @@ Many of the Emacs help facilities at your fingertips!
   (defun episteme:dev-log ()
     (interactive)
     (let* ((_org-journal-dir org-journal-dir))
-      (setq org-journal-dir (concat episteme/repo "/devlog"))
+      (setq org-journal-dir (concat episteme/support "/devlog"))
       (org-journal-new-entry nil)
       (setq org-journal-dir _org-journal-dir)))
 
   (:hydra episteme-hydra-dev (:color blue)
     ("Open"
-     (("s" (find-file (concat episteme/repo "/support.org")) "support.org")
+     (("s" (find-file (concat episteme/support "/support.org")) "support.org")
       ("d" (find-file (concat episteme/org "/episteme/developer-docs.org")) "docs")
       ("l" (call-interactively 'episteme:dev-log) "log"))
      "Git"
-     (("g" (magit-status episteme/repo) "magit")
-      ("p" (magit-pull episteme/repo) "pull")
+     (("g" (magit-status episteme/support) "magit")
+      ("p" (magit-pull episteme/support) "pull")
       ("R" (magit-reset-hard)))))
 #+end_src
 
@@ -1963,56 +2134,81 @@ Many of the Emacs help facilities at your fingertips!
 
 ** hydra-default
 #+begin_src emacs-lisp
-  (defun episteme:cleanup ()
+  (:hydra episteme-hydra-default (:color blue)
+    ("Open"
+     (("!" (episteme:cleanup) "dashboard")
+      ("o" (episteme:open) "open")
+      ("s" (episteme:search) "search")
+      ("a" (episteme:find) "all files")
+      ("t" (episteme:todo) "todo")
+      ("j" (episteme:journal) "journal")
+      ("J" (episteme:journal-entry) "new journal entry")
+      ("k" (hera-push 'episteme-hydra-remotes/body) "knowledge-bases"))
+     "Emacs"
+     (("h" (hera-push 'episteme-hydra-help/body) "help")
+      ("m" (hera-push 'episteme-hydra-mark/body) "mark")
+      ("w" (hera-push 'episteme-hydra-window/body) "windows")
+      ("z" (hera-push 'episteme-hydra-zoom/body) "zoom")
+      ("r" (hera-push 'episteme-hydra-registers/body) "registers")
+      (";" embrace-commander "parens / quotes"))
+     "Bookmarks"
+     (("S" episteme:toggle-sidebar "sidebar" :color red)
+      ("D" (episteme:find (concat episteme/support "/docs")) "docs")
+      ("C" (find-file (concat episteme/support "/docs/cheatsheet.org")) "cheatsheet")
+      ("U" (find-file (concat episteme/support "/docs/user-guide.org")) "user guide")
+      ("I" (find-file (concat episteme/support "/README.org")) "readme"))
+     "Misc"
+     (("." (hera-push 'episteme-hydra-dev/body) "dev tools"))))
+#+end_src
+
+*** open
+#+begin_src emacs-lisp
+  (defun episteme:open ()
     (interactive)
-
-    (mapc 'kill-buffer (--filter (not (buffer-modified-p it)) (buffer-list)))
-    (delete-other-windows)
-    (episteme:dashboard)
-    (helm-mini))
-
-  (defun episteme:find-file-all (&optional path)
+    (helm-org-walk '(4)))
+#+end_src
+*** search
+#+begin_src emacs-lisp
+  (defun episteme:search ()
+    (interactive)
+    (helm-org-rifle-directories episteme/current-remote-root))
+#+end_src
+*** find
+#+begin_src emacs-lisp
+  (defun episteme:find (&optional path)
     (interactive)
     (let ((file-name
            (completing-read "file: "
                             (directory-files-recursively
                              (or path episteme/current-remote-root) "\.org$"))))
       (find-file file-name)))
-
-  (:hydra episteme-hydra-default (:color blue)
-    ("Open"
-     (("o" (helm-org-walk '(4)) "open")
-      ("s" (helm-org-rifle-directories episteme/current-remote-root) "search")
-      ("a" (episteme:find-file-all) "all files")
-      ("t" (find-file episteme/todo-file) "todo")
-      ("j" (org-journal-new-entry '(4)) "journal")
-      ("J" (org-journal-new-entry nil) "new journal entry")
-      ("k" (hera-push 'episteme-hydra-remotes/body) "knowledge-bases"))
-     "Bookmarks"
-     (("S" (lambda () (interactive) (let ((treemacs--find-user-project-functions '((lambda ()
-                                                                       episteme/current-remote-root))))
-                        (treemacs-display-current-project-exclusively)))
-       "Sidebar")
-      ("D" (episteme:find-file-all (concat episteme/org "/episteme")) "Docs")
-      ("C" (find-file
-            (concat (episteme:get-remote-root "apoptosis")
-                    "/episteme/cheatsheet.org")) "Cheatsheet")
-      ("U" (find-file
-            (concat (episteme:get-remote-root "apoptosis")
-                    "/episteme/user-guide.org")) "User guide")
-      ("I" (find-file (concat episteme/repo "/README.org")) "README"))
-     "Emacs"
-     (("h" (hera-push 'episteme-hydra-help/body) "help")
-      ("m" (hera-push 'episteme-hydra-mark/body) "mark")
-      ("w" (hera-push 'episteme-hydra-window/body) "windows")
-      ("z" (hera-push 'episteme-hydra-zoom/body) "zoom")
-      ("r" (hera-push 'episteme-hydra-registers/body) "registers"))
-     "Misc"
-     (("!" (episteme:cleanup) "cleanup windows/buffers")
-      ("." (hera-push 'episteme-hydra-dev/body) "devtools")
-      (";" embrace-commander "embrace"))))
 #+end_src
-
+*** todo
+#+begin_src emacs-lisp
+  (defun episteme:todo ()
+    (interactive)
+    (find-file episteme/todo-file))
+#+end_src
+*** journal
+#+begin_src emacs-lisp
+  (defun episteme:journal ()
+    (interactive)
+    (org-journal-new-entry '(4)))
+#+end_src
+*** journal-entry
+#+begin_src emacs-lisp
+  (defun episteme:journal-entry ()
+    (interactive)
+    (org-journal-new-entry nil))
+#+end_src
+*** cleanup
+#+begin_src emacs-lisp
+  (defun episteme:cleanup ()
+    (interactive)
+    (mapc 'kill-buffer (--filter (not (buffer-modified-p it)) (buffer-list)))
+    (delete-other-windows)
+    (episteme:dashboard))
+#+end_src
 * mode menus
 ** boilerplate
 *** hydra-dwim
@@ -2513,7 +2709,7 @@ Open hydra for current major mode if one exists, otherwise the default hydra.
   (episteme:init-remotes)
   (call-interactively 'episteme:dashboard)
 #+end_src
-* load user config
+* user config.el
 This should remain at the end of this file.
 #+begin_src emacs-lisp
   (unless (file-exists-p episteme/config)
@@ -2536,6 +2732,5 @@ This should remain at the end of this file.
 #+end_src
 
 #+begin_src emacs-lisp
-  (message "finished init, redrawing...")
-  (run-with-timer 5 nil (lambda () (message "redrawing now.") (redraw-display)))
+  (run-hooks 'episteme-after-load-hook)
 #+end_src
