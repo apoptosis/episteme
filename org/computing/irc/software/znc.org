@@ -1,7 +1,0 @@
-#+title: ZNC
-* NixOS Quirks
-** No declarative SASL
-Have to specify SASL credentials via the ZNC =*sasl= query:
-#+begin_src text
-  /msg *sasl set username password
-#+end_src

@@ -1,4 +1,0 @@
-#+title: Typescript
-* Typesafe EventEmitter
-https://rjzaworski.com/2019/10/event-emitters-in-typescript
-
