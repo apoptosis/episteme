@@ -6,87 +6,15 @@
 
 This file contains all the elisp implementing Episteme's customizations.
 
-* preamble
-#+begin_src emacs-lisp
-  ;;; support.el --- episteme customizations  -*- lexical-binding:t -*-
-  (setq warning-minimum-level :error)
-#+end_src
-** episteme paths
-#+begin_src emacs-lisp
-  ;; paths
-  (setq episteme/home (getenv "config"))
-  (setq episteme/support (concat episteme/home "/support"))
-  (setq episteme/user-init-file (concat episteme/home "/init.el"))
-  (setq episteme/config (concat episteme/home "/config.el"))
-  (setq episteme/org (concat episteme/home "/remotes/apoptosis/org"))
-  (setq episteme/autosaves (concat episteme/home "/autosaves"))
-  (setq episteme/backups (concat episteme/home "/backups"))
-  (setq episteme/journal (concat episteme/home "/journal"))
-  (setq episteme/todo-file (concat episteme/home "/todo.org"))
-  (setq episteme/remotes-path (concat episteme/home "/remotes"))
-#+end_src
-
-** epicenter paths
-#+begin_src emacs-lisp
-  (setq epicenter/remotes-path (concat episteme/home "/epicenter"))
-  (setq epicenter/remotes-file (concat epicenter/remotes-path "/remotes.json"))
-#+end_src
-
-** default keybinds
-#+begin_src emacs-lisp
-  (setq episteme/main-menu-key "C-c x")
-  (setq episteme/mode-menu-key "C-c m")
-#+end_src
-
-** default settings
-#+begin_src emacs-lisp
-  (setq episteme/default-remote "episteme")
-  (setq episteme/fill-width 120)
-  (setq episteme/zoom 1)
-#+end_src
-** hooks
-#+begin_src emacs-lisp
-  (defvar episteme-after-load-hook nil
-    "Hook called after the custom file is loaded")
-#+end_src
-
-** user init.el
-#+begin_src emacs-lisp
-  ;; create if it doesn't exist
-  (unless (file-exists-p episteme/user-init-file)
-    (with-temp-file episteme/user-init-file
-      (insert "
-  ;; keybind for default menu
-  (setq episteme/main-menu-key \"C-c x\")
-
-  ;; keybind for major-mode menu
-  (setq episteme/mode-menu-key \"C-c m\")
-
-  ;; defaut zoom level
-  (setq episteme/zoom 1)
-  ")))
-
-  ;; load the user init.el
-  (when (file-exists-p episteme/user-init-file)
-      (message "Loading globals from: %s" episteme/user-init-file)
-      (load-file episteme/user-init-file))
-
-  ;; update some globals that are calculated from epi vars
-  (setq user-emacs-directory episteme/home)
-  (setq episteme/current-remote episteme/default-remote)
-#+end_src
 * bootstrap
 
 The following sections take care of bootstrapping =straight.el= for
 package-management and some other concerns before things can get started.
 
-** lexical binding
-
-This line controls how the elisp scoping works in the rest of the file. Lexical
-binding is explained in the Emacs documentation.
-
+** preamble
 #+begin_src emacs-lisp
-;;; -*- lexical-binding: t; -*-
+  ;;; support.el --- episteme customizations  -*- lexical-binding:t -*-
+  (setq warning-minimum-level :error)
 #+end_src
 
 ** straight.el
@@ -123,10 +51,15 @@ The following package dependencies are used throughout the rest of the
 configuration. They provide contemporary APIs for working with various elisp
 data structures.
 
+*** core libraries
 #+begin_src emacs-lisp
   (require 'cl-lib)
   (require 'color)
   (require 'json)
+#+end_src
+
+*** third-party libraries
+#+begin_src emacs-lisp
   (use-package f :demand t)          ;; files
   (use-package dash :demand t)       ;; lists
   (use-package ht :demand t)         ;; hash-tables
@@ -136,6 +69,7 @@ data structures.
 #+end_src
 
 * helpers
+
 These macros are conveinent shorthands.
 
 ** :function
@@ -259,606 +193,931 @@ e.g. =(:bind "C-m" org-mode-map (message "Hello world."))=
               `(define-key ,mode (kbd ,key) ,body)))
         `(global-set-key (kbd ,(eval key)) ,(eval `(:command ,@body))))))
 #+end_src
-
-* epicenter
-** load-remotes
+** :later
 #+begin_src emacs-lisp
-  (defun epicenter:load-remotes ()
-    (let ((remotes-map (json-read-file epicenter/remotes-file)))
-      (mapcar (lambda (remote)
-                (let ((name (symbol-name (car remote)))
-                      (url (cdr (nth 1 remote)))
-                      (description (cdr (nth 2 remote))))
-                  (list name url description)))
-                remotes-map)))
+  (defmacro :later (&rest body)
+    `(:hook episteme/after-load ,@body))
 #+end_src
-** update-remotes
+* configuration
+** episteme paths
 #+begin_src emacs-lisp
-  (defun epicenter:update-remotes ()
-    (let ((default-directory epicenter/remotes-path))
-      (shell-command "git pull")))
-#+end_src
+  ;; paths
+  (setq episteme/home-path (getenv "config"))
+  (setq episteme/support-path (concat episteme/home-path "/support"))
+  (setq episteme/docs-path (concat episteme/support-path "/docs"))
+  (setq episteme/autosaves-path (concat episteme/home-path "/autosaves"))
+  (setq episteme/backups-path (concat episteme/home-path "/backups"))
+  (setq episteme/journal-path (concat episteme/home-path "/journal"))
+  (setq episteme/remotes-path (concat episteme/home-path "/remotes"))
 
-** compare-remotes
-Check every local remote against epicenter remotes.
-Gather a list of remotes whos urls are not the same.
-Each result should have the name, localUrl, and remoteUrl.
-#+begin_src emacs-lisp
-  (defun epicenter:compare-remotes ()
-    (let* ((remotes (epicenter:load-remotes))
-           (remote-names (--map (car it) remotes))
-           (local-remotes (episteme:get-remote-names))
-           ;; calculate which local-remotes are also in remote-names
-           (tracked-remotes (-filter
-                             (lambda (local) (--first (string= local (car it)) remotes))
-                             local-remotes))
-
-           ;; for each tracked-remote create (name localUrl remoteUrl)
-           (target-remotes (-map (lambda (tracked)
-                                   (list tracked
-                                         (episteme:get-remote-url tracked)
-                                         ;; find `remote` with same name, return its url
-                                         (nth 1 (-first (lambda (remote) (string= (car remote) tracked)) remotes))))
-                                 tracked-remotes))
-           ;; filter target-remotes down to those where (not (string= (nth 1) (nth 2)))
-           (problem-remotes (--filter
-                             (not (string= (nth 1 it) (nth 2 it)))
-                             target-remotes))
-           )
-      problem-remotes))
+  ;; files
+  (setq episteme/user-init-file (concat episteme/home-path "/init.el"))
+  (setq episteme/user-config-file (concat episteme/home-path "/config.el"))
+  (setq episteme/todo-file (concat episteme/home-path "/todo.org"))
 #+end_src
 
-** pick
+** epicenter paths
 #+begin_src emacs-lisp
-  (defun epicenter:pick-from (remotes &optional title)
-    (helm :sources
-          (helm-build-sync-source (or title "Pick a remote")
-            :multiline t
-            :candidates (mapcar (lambda (remote)
-                                  (let ((name (nth 0 remote))
-                                        (local-url (nth 1 remote))
-                                        (remote-url (nth 2 remote)))
-                                    (cons (format "%s:\nLocal:  %s\nRemote: %s" name local-url remote-url)
-                                          (list name remote-url))))
-                                remotes))
-          :action (lambda (remote)
-                    (let ((name (nth 0 remote))
-                          (remote-url (nth 2 remote)))))))
-#+end_src
-** pick-remote
-#+begin_src emacs-lisp
-  (defun epicenter:pick-remote ()
-    (interactive)
-    (let ((remotes (epicenter:load-remotes)))
-      (helm :sources (helm-build-sync-source "Pick an epicenter remote"
-                       :multiline t
-                       :candidates (mapcar (lambda (remote)
-                                             (let ((name (nth 0 remote))
-                                                   (url (nth 1 remote))
-                                                   (description (nth 2 remote)))
-                                               (cons (format "%s: %s\n  %s" name url description)
-                                                     (list name url description))))
-                                           remotes)))))
+  ;; paths
+  (setq epicenter/remotes-path (concat episteme/home-path "/epicenter"))
+
+  ;; files
+  (setq epicenter/remotes-file (concat epicenter/remotes-path "/remotes.json"))
 #+end_src
 
-** do-track-remote
+** default keybinds
 #+begin_src emacs-lisp
-  (defun epicenter:do-track-remote ()
-    (interactive)
-    (let ((remote (epicenter:pick-remote)))
-      (if remote
-          (let ((name (nth 0 remote))
-                (url (nth 1 remote)))
-
-            (episteme:add-remote name url)))))
-#+end_src
-** do-compare-remotes
-Call compare-remotes to get a list of divergent remotes.
-For each problem remote, ask the user if they want to update the local remote.
-If so, call set-remote-url on it.
-#+begin_src emacs-lisp
-  (defun epicenter:do-compare-remotes ()
-    (interactive)
-    (let ((remotes (epicenter:compare-remotes)))
-      (if remotes
-          (let* ((choice (epicenter:pick-from remotes))
-                 (name (nth 0 choice))
-                 (url (nth 1 choice)))
-            (episteme:set-remote-url name url)
-            (message "Remote `%s` url set to %s" name url))
-        (message "No remote urls out-of-sync."))))
-#+end_src
-* remotes
-** remote-exists?
-#+begin_src emacs-lisp
-  (defun episteme:remote-exists? (remote)
-    (file-exists-p (episteme:get-remote-path remote)))
-#+end_src
-** remote-is-local?
-#+begin_src emacs-lisp
-  (defun episteme:remote-is-local? (remote)
-    (let ((default-directory (episteme:get-remote-path remote)))
-      (not (file-directory-p ".git"))))
-#+end_src
-** remote-is-dirty?
-#+begin_src emacs-lisp
-  (defun episteme:remote-is-dirty? (remote)
-    (let ((default-directory (episteme:get-remote-path remote)))
-      (not (string= (shell-command-to-string "git status --porcelain") ""))))
-#+end_src
-** get-remote-path
-#+begin_src emacs-lisp
-  (defun episteme:get-remote-path (remote)
-    (expand-file-name remote (expand-file-name "remotes" user-emacs-directory)))
-#+end_src
-** get-remote-root
-#+begin_src emacs-lisp
-  (defun episteme:get-remote-root (remote)
-    (let* ((path (episteme:get-remote-path remote))
-           (conf-path (f-join path "epi.json"))
-           (conf-exists (file-exists-p conf-path)))
-      (if conf-exists
-          ;; get "root" key from json file
-          (let* ((conf (json-read-file conf-path))
-                 (root (cdr (assoc 'root conf))))
-            (if root
-                (concat path "/" root)
-              path))
-        path)))
-#+end_src
-** get-remote-url
-#+begin_src emacs-lisp
-  (defun episteme:get-remote-url (remote)
-    (let ((default-directory (episteme:get-remote-path remote)))
-      (s-trim (shell-command-to-string "git config --get remote.origin.url"))))
-#+end_src
-** set-remote-url
-#+begin_src emacs-lisp
-  (defun episteme:set-remote-url (remote url)
-    (let ((default-directory (episteme:get-remote-path remote))
-          (command (format "git config --replace-all remote.origin.url %s" url)))
-      (message "%s" command)
-      (shell-command command)))
-#+end_src
-** get-remote-paths
-#+begin_src emacs-lisp
-  (defun episteme:get-remote-paths ()
-    (let* ((filter (lambda (it) (not (s-starts-with? "." it))))
-           (files (-filter filter (directory-files episteme/remotes-path)))
-           (paths (-map 'episteme:get-remote-path files))
-           (folders (-filter 'f-directory? paths)))
-      folders))
-#+end_src
-** get-remote-names
-#+begin_src emacs-lisp
-  (defun episteme:get-remote-names ()
-    (let* ((filter (lambda (it) (not (s-starts-with? "." it))))
-           (files (-filter filter (directory-files episteme/remotes-path)))
-           (paths (-map 'episteme:get-remote-path files))
-           (folders (-filter 'f-directory? paths)))
-      files))
+  (setq episteme/main-menu-key "C-c x")
+  (setq episteme/mode-menu-key "C-c m")
 #+end_src
 
-** add-remote
+** default settings
 #+begin_src emacs-lisp
-    (defun episteme:add-remote (name url)
-        (if (episteme:remote-exists? name)
-            (message "Remote %s already exists" name)
-          (let ((default-directory episteme/remotes-path))
-            ;; check url is empty
-            (if (string= "" url)
-                (progn
-                    (make-directory (episteme:get-remote-path name))
-                    (message "Local remote %s created" name))
-              (progn
-                (shell-command (format "git clone %s" url))
-                (message "Remote %s added" name))))))
+  (setq episteme/default-remote "episteme")
+  (setq episteme/fill-width 120)
+  (setq episteme/zoom 1)
 #+end_src
-** remove-remote
-#+begin_src emacs-lisp
-  (defun episteme:remove-remote (name)
-    (let ((path (episteme:get-remote-path name))
-          (notify (lambda () (message "Remote %s was permanently deleted." name))))
-      (if (f-exists? path)
-          ;; confirm that the user wants to remove the remote
-          (when (yes-or-no-p (format "Are you sure you want to remove %s?" name))
-            ;; check if the remote is dirty
-            (when (and (or (episteme:remote-is-local? name) (episteme:remote-is-dirty? name))
-                       (yes-or-no-p (format "Remote %s has uncommited changes!  Are you sure you want to remove it?" name)))
-              (delete-directory path t)
-              (funcall notify))
-            (delete-directory path t)
-            (funcall notify))
-        (message "Remote %s does not exist" name))))
-#+end_src
-** update-remote
-#+begin_src emacs-lisp
-  (defun episteme:update-remote (name)
-    (let ((path (episteme:get-remote-path name)))
-      (if (f-exists? path)
-          (if (episteme:remote-is-local? name)
-              (message "Remote %s is local and can't be updated." name)
-            (if (episteme:remote-is-dirty? name)
-                (message "Remote %s has uncommitted changes. Commit all changes before updating." name)
-              ;; pull on `path` with magit
-              (let ((default-directory path))
-                (magit-pull-from-upstream nil)))
-            (message "Updated remote %s." name))
-        (message "No remote exists with name %s." name))))
-#+end_src
-** remote-status
-#+begin_src emacs-lisp
-  (defun episteme:remote-status (name)
-    (let ((path (episteme:get-remote-path name)))
-      (if (f-exists? path)
-          (if (episteme:remote-is-local? name)
-              (message "Remote %s is local and has no git status.")
-            (magit-status path))
-        (message "No remote exists with name %s." name))))
-#+end_src
-** pick-remote
-#+begin_src emacs-lisp
-  (defun episteme:pick-remote ()
-    (let ((remotes (episteme:get-remote-paths)))
-      (if (not remotes)
-          (message "No remotes found.")
-        (let* ((names (-map 'f-filename remotes))
-               (name (helm :sources (helm-build-sync-source "Pick remote"
-                                                             :candidates names
-                                                             :action (lambda (name) name)))))
-            name))))
-#+end_src
-** init-remotes
-#+begin_src emacs-lisp
-  (defun episteme:init-remotes ()
-      (let ((path (episteme:get-remote-path episteme/current-remote))
-	    (root (episteme:get-remote-root episteme/current-remote)))
-	(unless (f-exists? path)
-	  (error "Current remote %s does not exist." episteme/current-remote))
-	(unless (f-exists? root)
-	  (error "Current remote's root does not exist: %s " root))
 
-	(setq episteme/current-remote-root root)
-	(setq org-directory episteme/current-remote-root)
-	(setq org-roam-directory episteme/current-remote-root)))
-  (episteme:init-remotes)
-#+end_src
-** activate-remote
-Set episteme/current-remote and episteme/current-remote-root.
+** hooks
 #+begin_src emacs-lisp
-  (defun episteme:activate-remote(name)
-    (setq episteme/current-remote name)
-    (episteme:init-remotes))
+  (defvar episteme/after-load-hook nil
+    "Hook called after the custom file is loaded")
 #+end_src
-** do-add-remote
-Add a remote interactively.
-#+begin_src emacs-lisp
-  (defun episteme:do-add-remote ()
-    (interactive)
-    (let* ((name (read-string "Name: "))
-           (url (read-string "URL: ")))
-      (episteme:add-remote name url)))
-#+end_src
-** do-remove-remote
-Remove a remote interactively.
-#+begin_src emacs-lisp
-  (defun episteme:do-remove-remote ()
-    (interactive)
-    (let* ((name (episteme:pick-remote)))
-      (when name
-        (episteme:remove-remote name))))
-#+end_src
-** do-update-remote
-Update a remote interactively.
-#+begin_src emacs-lisp
-  (defun episteme:do-update-remote ()
-    (interactive)
-    (let* ((name (episteme:pick-remote)))
-      (when name
-        (episteme:update-remote name))))
-#+end_src
-** do-remote-status
-Check a remote interactively.
-#+begin_src emacs-lisp
-  (defun episteme:do-remote-status ()
-    (interactive)
-    (let* ((name (episteme:pick-remote)))
-      (when name
-        (episteme:remote-status name))))
-#+end_src
-** do-set-remote-url
-Set the remote url interactively.
-#+begin_src emacs-lisp
-  (defun episteme:do-set-remote-url ()
-    (interactive)
-    (let* ((name (episteme:pick-remote)))
-      (when name
-        (let ((url (read-string "URL: ")))
-          (episteme:set-remote-url name url)
-          (message "Remote url for %s set to %s" name url)))))
-#+end_src
-** do-activate-remote
-Set episteme/current-remote interactively.
-#+begin_src emacs-lisp
-  (defun episteme:do-activate-remote ()
-    (interactive)
-    (let* ((name (episteme:pick-remote)))
-      (when name
-        (episteme:activate-remote name))))
-#+end_src
-** tab-bar support
-#+begin_src emacs-lisp
-  (defun episteme:tab-bar-format ()
-    (let* ((remote episteme/current-remote)
-           (is-dirty (when (episteme:remote-is-dirty? remote)
-                       (propertize "⚠️"
-                                   'face 'default
-                                   'help-echo "Remote has uncommitted changes.")))
-           (is-local (when (episteme:remote-is-local? remote) "🏠️"))
-           (icon (or is-dirty is-local "🌐"))
-           (str (s-trim (format " %s %s (%s)"
-                         icon
-                         episteme/current-remote
-                         episteme/current-remote-root))))
-      `((global menu-item ,str ignore))))
 
-  (defun episteme:init-tab-bar ()
-    (copy-face 'doom-modeline-bar 'tab-bar)
-    (invert-face 'tab-bar)
-    (let ((fg (face-attribute 'tab-bar :foreground))
-          (bg (face-attribute 'default :background)))
-      (set-face-attribute 'tab-bar nil
-                          :height 100
-                          :foreground fg
-                          :background (color-darken-name bg 3)))
-    (setq tab-bar-format '(episteme:tab-bar-format))
-    (tab-bar-mode 1))
+* user init.el
+#+begin_src emacs-lisp
+  ;; create user init.el if it doesn't exist
+  (unless (file-exists-p episteme/user-init-file)
+    (with-temp-file episteme/user-init-file
+      (insert "
+  ;; keybind for default menu
+  (setq episteme/main-menu-key \"C-c x\")
 
-  (progn
-    (add-hook 'emacs-startup-hook 'episteme:init-tab-bar))
+  ;; keybind for major-mode menu
+  (setq episteme/mode-menu-key \"C-c m\")
+
+  ;; defaut zoom level
+  (setq episteme/zoom 1)
+  ")))
+
+  ;; load the user init.el
+  (when (file-exists-p episteme/user-init-file)
+      (message "Loading globals from: %s" episteme/user-init-file)
+      (load-file episteme/user-init-file))
+
+  ;; update some globals that are calculated from episteme vars
+  (setq user-emacs-directory episteme/home-path)
+  (setq episteme/current-remote episteme/default-remote)
 #+end_src
+
 * keybinds
 #+begin_src emacs-lisp
-  (defun episteme/bind-keys ()
+  (:later
     (:bind episteme/main-menu-key nil (hera-start 'episteme-hydra-default/body))
     (:bind episteme/mode-menu-key nil episteme:hydra-dwim)
     (:bind "C-x g" nil magit-status))
 #+end_src
 
-* dashboard
-** lib
-*** align-remotes-by-length
+* third-party packages
+** hydra
+
+[[https://github.com/abo-abo/hydra][Hydra]] provides customizable interactive command palettes.
+
+*** pretty-hydra
+[[https://github.com/jerrypnz/major-mode-hydra.el#pretty-hydra][Pretty-hydra]] provides a macro that makes it easy to get good looking hydras.
+
 #+begin_src emacs-lisp
-  (defun episteme:align-remotes-by-length ()
-    (let ((len-item (cdr (assoc 'remotes dashboard-items)))
-          (align-length -1)
-          (count 0)
-          (remotes (episteme:get-remote-names))
-          len-list base)
-      (setq len-list (length remotes))
-      (while (and (< count len-item) (< count len-list))
-        (setq base (nth count remotes)
-              align-length (max align-length (length (dashboard-f-filename base))))
-        (cl-incf count))
-      align-length))
+  (use-package pretty-hydra
+    :demand t
+    :straight (pretty-hydra :type git :host github
+                            :repo "jerrypnz/major-mode-hydra.el"
+                            :files ("pretty-hydra.el")))
 #+end_src
 
-*** dashboard-remotes-format
+*** major-mode-hydra
+[[https://github.com/jerrypnz/major-mode-hydra.el][Major-mode-hydra]] associates hydras with major-modes.
+
 #+begin_src emacs-lisp
-(defun episteme:dashboard-remotes-format ()
-  (let* ((len-align (episteme:align-remotes-by-length))
-         (new-fmt (dashboard--generate-align-format
-                   dashboard-recentf-item-format len-align)))
-    new-fmt))
+  (use-package major-mode-hydra
+    :straight (major-mode-hydra :type git :host github
+                                :repo "jerrypnz/major-mode-hydra.el"
+                                :files ("major-mode-hydra.el")))
 #+end_src
 
-*** dashboard-insert-section-list
-#+begin_src emacs-lisp
-(defmacro episteme:dashboard-insert-section-list (section-name list action &rest rest)
-  "Insert into SECTION-NAME a LIST of items, expanding ACTION and passing REST to widget creation."
-  `(when (car ,list)
-     (insert "\n")
-     (mapc
-      (lambda (el)
-        (let ((tag ,@rest))
-          (insert "  ")
-          (when (and (display-graphic-p)
-                     dashboard-set-file-icons
-                     (or (fboundp 'all-the-icons-icon-for-dir)
-                         (require 'all-the-icons nil 'noerror)))
-            (let* ((path (car (last (split-string ,@rest " - "))))
-                   (icon (if (and (not (file-remote-p path))
-                                  (file-directory-p path))
-                             (all-the-icons-icon-for-dir path nil "")
-                           (cond
-                            ((or (string-equal ,section-name "Agenda for today:")
-                                 (string-equal ,section-name "Agenda for the coming week:"))
-                             (all-the-icons-octicon "primitive-dot" :height 1.0 :v-adjust 0.01))
-                            ((file-remote-p path)
-                             (all-the-icons-octicon "radio-tower" :height 1.0 :v-adjust 0.01))
-                            (t (all-the-icons-icon-for-file (file-name-nondirectory path)
-                                                            :v-adjust -0.05))))))
-              (setq tag (concat icon " " ,@rest))))
+*** hera
+[[https://github.com/dustinlacewell/hera][Hera]] lets hydras form a stack.
 
-          (widget-create 'item
-                         :tag tag
-                         :action ,action
-                         :button-face 'dashboard-items-face
-                         :mouse-face 'highlight
-                         :button-prefix ""
-                         :button-suffix ""
-                         :format "%[%t%]")))
-      ,list)))
+#+begin_src emacs-lisp
+  (use-package hera
+    :demand t
+    :straight (hera :type git :host github :repo "dustinlacewell/hera"))
 #+end_src
 
-*** dashboard-insert-section
+*** :hydra
+Macro for defining Hydras.
+**** boilerplate
+***** inject-hint
 #+begin_src emacs-lisp
-(defmacro episteme:dashboard-insert-section (section-name list list-size shortcut action &rest widget-params)
-  "Add a section with SECTION-NAME and LIST of LIST-SIZE items to the dashboard.
-SHORTCUT is the keyboard shortcut used to access the section.
-ACTION is theaction taken when the user activates the widget button.
-WIDGET-PARAMS are passed to the \"widget-create\" function."
-  `(progn
-     (dashboard-insert-heading ,section-name
-                               (if (and ,list ,shortcut dashboard-show-shortcuts) ,shortcut))
-     (if ,list
-         (when (and (episteme:dashboard-insert-section-list
-                     ,section-name
-                     (dashboard-subseq ,list ,list-size)
-                     ,action
-                     ,@widget-params)
-                    ,shortcut)
-           (dashboard-insert-shortcut ,shortcut ,section-name))
-       (insert (propertize "\n    --- No items ---" 'face 'dashboard-no-items-face)))))
+  (defun :hydra/inject-hint (symbol hint)
+    (-let* ((name (symbol-name symbol))
+            (hint-symbol (intern (format "%s/hint" name)))
+            (format-form (eval hint-symbol))
+            (string-cdr (nthcdr 1 format-form))
+            (format-string (string-trim (car string-cdr)))
+            (amended-string (format "%s\n\n%s" format-string hint)))
+      (setcar string-cdr amended-string)))
 #+end_src
 
-*** dashboard-links
+***** make-head-hint
 #+begin_src emacs-lisp
-(defun episteme:dashboard-links (list-size)
-  (let* ((fmt (episteme:dashboard-remotes-format))
-         (remotes (episteme:get-remote-names))
-         (items (list (list "github" "https://github.com/apoptosis/episteme")
-                      (list "discord" "https://discord.gg/3uPNVyQ5kr")
-                      (list "report issue" "https://github.com/apoptosis/episteme/issues/new")))
-         (keys (mapcar 'car items)))
-    (episteme:dashboard-insert-section
-     "web links" keys 5 "l"
-     `(lambda (&rest ignore) (browse-url-xdg-open (cadr (assoc ,el (quote ,items)))))
-     (format "[%s]" el))))
+  (defun :hydra/make-head-hint (head default-color)
+    (-let (((key _ hint . rest) head))
+      (when key
+        (-let* (((&plist :color color) rest)
+                (color (or color default-color))
+                (face (intern (format "hydra-face-%s" color)))
+                (propertized-key (propertize key 'face face)))
+          (format " [%s]: %s" propertized-key hint)))))
 #+end_src
 
-*** dashboard-buttons
+***** make-hint
 #+begin_src emacs-lisp
-(defun episteme:dashboard-buttons (list-size)
-  (let* ((fmt (episteme:dashboard-remotes-format))
-         (remotes (episteme:get-remote-names))
-         (items (list (cons "main menu" '((lambda () (episteme-hydra-default/body))))
-                      (cons "todo" '((lambda () (episteme:todo))))
-                      (cons "journal" '((lambda () (episteme:journal))))
-                      (cons "epicenter" '((lambda () (epicenter:do-track-remote))))
-                      (cons "user guide" '((lambda () (find-file (concat episteme/support "/docs/user-guide.org")))))))
-         (keys (mapcar 'car items)))
-    (episteme:dashboard-insert-section
-     "common actions" keys 5 "m"
-     `(lambda (&rest ignore) (funcall (cadr (assoc ,el (quote ,items)))))
-     (format "[%s]" el))))
+  (defun :hydra/make-hint (heads default-color)
+    (string-join
+     (cl-loop for head in heads
+              for hint = (:hydra/make-head-hint head default-color)
+              collect hint) "\n"))
 #+end_src
 
-*** dashboard-remotes
+***** clear-hint
 #+begin_src emacs-lisp
-(defun episteme:dashboard-remotes (list-size)
-  (let ((fmt (episteme:dashboard-remotes-format))
-        (remotes (episteme:get-remote-names)))
-    (dashboard-insert-section
-     "knowledge bases" remotes 5 "k"
-     `(lambda (&rest ignore) (message "@@ %s" ,el))
-     (format fmt el (episteme:get-remote-url el)))
-    ))
+  (defun :hydra/clear-hint (head)
+    (-let* (((key form _ . rest) head))
+      `(,key ,form nil ,@rest)))
 #+end_src
 
+***** add-exit-head
+#+begin_src emacs-lisp
+  (defun :hydra/add-exit-head (heads)
+    (let ((exit-head '("SPC" (hera-pop) "to exit" :color blue)))
+      (append heads `(,exit-head))))
+#+end_src
+
+***** add-heads
+#+begin_src emacs-lisp
+    (defun :hydra/add-heads (columns extra-heads)
+      (let* ((cell (nthcdr 1 columns))
+             (heads (car cell))
+             (extra-heads (mapcar ':hydra/clear-hint extra-heads)))
+        (setcar cell (append heads extra-heads))))
+
+#+end_src
+
+**** macro
+#+begin_src emacs-lisp
+    (defmacro :hydra (name body columns &optional extra-heads)
+      (declare (indent defun))
+      (-let* (((&plist :color default-color :major-mode mode) body)
+              (extra-heads (:hydra/add-exit-head extra-heads))
+              (extra-hint (:hydra/make-hint extra-heads default-color))
+              (body (plist-put body :hint nil))
+              (body-name (format "%s/body" (symbol-name name)))
+              (body-symbol (intern body-name))
+              (mode-body-name (major-mode-hydra--body-name-for mode))
+              (mode-support
+               `(when ',mode
+                  (defun ,mode-body-name () (interactive) (,body-symbol)))))
+        (:hydra/add-heads columns extra-heads)
+        (when mode
+          (cl-remf body :major-mode))
+        `(progn
+           (pretty-hydra-define ,name ,body ,columns)
+           (:hydra/inject-hint ',name ,extra-hint)
+           ,mode-support
+           )))
+#+end_src
+
+**** tests
+#+begin_src emacs-lisp
+    ;; (macroexpand-all `(:hydra hydra-test (:color red :major-mode fundamental-mode)
+    ;;    ("First"
+    ;;     (("a" (message "first - a") "msg a" :color blue)
+    ;;      ("b" (message "first - b") "msg b"))
+    ;;     "Second"
+    ;;     (("c" (message "second - c") "msg c" :color blue)
+    ;;      ("d" (message "second - d") "msg d")))))
+
+    ;; (:hydra hydra-test (:color red :major-mode fundamental-mode)
+    ;;    ("First"
+    ;;     (("a" (message "first - a") "msg a" :color blue)
+    ;;      ("b" (message "first - b") "msg b"))
+    ;;     "Second"
+    ;;     (("c" (message "second - c") "msg c" :color blue)
+    ;;      ("d" (message "second - d") "msg d"))))
+
+#+end_src
+** treemacs
+#+begin_src emacs-lisp
+  (use-package treemacs
+    :demand t
+    :custom
+    (treemacs--project-follow-delay 0.5))
+
+  (defun episteme:show-sidebar ()
+    (interactive)
+    (let ((current-window (get-buffer-window))
+          (treemacs--find-user-project-functions
+           '((lambda () episteme/current-remote-root))))
+      (treemacs-display-current-project-exclusively)
+      (select-window current-window)))
+
+  (defun episteme:toggle-sidebar ()
+    (interactive)
+    (if-let (win (treemacs-get-local-window))
+        (progn (treemacs-select-window)
+               (kill-buffer-and-window))
+      (episteme:show-sidebar)))
+#+end_src
+
+** helpful
+Alternative to the built-in Emacs help that provides much more contextual
+information.
+
+#+begin_src emacs-lisp
+  (use-package helpful
+      :straight (helpful :type git :host github :repo "Wilfred/helpful")
+      :bind (("C-h s" . #'helpful-symbol)
+             ("C-h c" . #'helpful-command)
+             ("C-h f" . #'helpful-function)
+             ("C-h v" . #'helpful-variable)
+             ("C-h k" . #'helpful-key)
+             ("C-h m" . #'helpful-mode)
+             ("C-h C-h" . #'helpful-at-point)))
+#+end_src
+
+*** contextual help
+**** toggle-context-help
+#+begin_src emacs-lisp
+  (defun toggle-context-help ()
+    "Turn on or off the context help.
+  Note that if ON and you hide the help buffer then you need to
+  manually reshow it. A double toggle will make it reappear"
+    (interactive)
+    (with-current-buffer (help-buffer)
+      (unless (local-variable-p 'context-help)
+        (set (make-local-variable 'context-help) t))
+      (if (setq context-help (not context-help))
+          (progn
+             (if (not (get-buffer-window (help-buffer)))
+                 (display-buffer (help-buffer)))))
+      (message "Context help %s" (if context-help "ON" "OFF"))))
+#+end_src
+
+**** context-help
+#+begin_src emacs-lisp
+  (defun context-help ()
+    "Display function or variable at point in *Help* buffer if visible.
+  Default behaviour can be turned off by setting the buffer local
+  context-help to false"
+    (interactive)
+    (let ((rgr-symbol (symbol-at-point))) ; symbol-at-point http://www.emacswiki.org/cgi-bin/wiki/thingatpt%2B.el
+      (with-current-buffer (help-buffer)
+       (unless (local-variable-p 'context-help)
+         (set (make-local-variable 'context-help) t))
+       (if (and context-help (get-buffer-window (help-buffer))
+           rgr-symbol)
+         (if (fboundp  rgr-symbol)
+             (describe-function rgr-symbol)
+           (if (boundp  rgr-symbol) (describe-variable rgr-symbol)))))))
+#+end_src
+
+**** advise symbol eldoc
+#+begin_src emacs-lisp
+  (defadvice eldoc-print-current-symbol-info
+    (around eldoc-show-c-tag activate)
+    (cond
+          ((eq major-mode 'emacs-lisp-mode) (context-help) ad-do-it)
+          ((eq major-mode 'lisp-interaction-mode) (context-help) ad-do-it)
+          ((eq major-mode 'apropos-mode) (context-help) ad-do-it)
+          (t ad-do-it)))
+#+end_src
 ** dashboard
 #+begin_src emacs-lisp
-(defun episteme:dashboard ()
-  "Jump to the dashboard buffer, if doesn't exists create one."
-  (interactive)
-  (switch-to-buffer dashboard-buffer-name)
-  (dashboard-mode)
-  (dashboard-insert-startupify-lists)
-  (dashboard-refresh-buffer)
-  (beginning-of-buffer)
-  (search-forward "apoptosis/episteme"))
+  (use-package dashboard
+    :ensure t)
 #+end_src
 
-** use-package
+** languages
+*** lispy-mode
 #+begin_src emacs-lisp
-(use-package dashboard
-  :ensure t
-  :config
-  (setq dashboard-banner-logo-title "apoptosis/episteme")
-  (setq dashboard-startup-banner (concat episteme/support "/cain.png"))
-  (setq dashboard-footer-messages
-        '("Co-edification through tinkering, dialectic and reference!"))
-  (setq dashboard-center-content t)
-  (add-to-list 'dashboard-item-generators '(links . episteme:dashboard-links))
-  (add-to-list 'dashboard-item-generators '(buttons . episteme:dashboard-buttons))
-  (add-to-list 'dashboard-item-generators '(remotes . episteme:dashboard-remotes))
-  (setq dashboard-items '((links . 10)
-                          (buttons . 10) (remotes . 10) (recents . 5)))
-  (dashboard-setup-startup-hook))
-#+end_src
-
-* aesthetics
-** visual fill mode
-#+begin_src emacs-lisp
-  (use-package visual-fill-column
-    :config
-    (setq fill-column episteme/fill-width)
-    (setq global-visual-fill-column-mode 1))
-#+end_src
-** vertical border
-Make the border between windows visible.
-
-#+begin_src emacs-lisp
-  (set-face-foreground 'vertical-border "gray")
-#+end_src
-
-** blend in the fringes
-Hide the default buffer margins.
-
-#+begin_src emacs-lisp
-  (set-face-attribute 'fringe nil :background nil)
-#+end_src
-
-** column number
-Show column number in addition to line number.
-
-#+begin_src emacs-lisp
-  (column-number-mode 1)
-#+end_src
-
-** doom modeline
-Use [[https://github.com/seagle0128/doom-modeline][doom-modeline]] to ornament the modeline.
-
-#+begin_src emacs-lisp
-  (use-package doom-modeline
-    :ensure t
-    :config
-    (doom-modeline-def-segment current-remote
-      "Display current episteme remote"
-      (format "[%s]" episteme/current-remote))
-    (doom-modeline-def-modeline
-      'epi-modeline
-
-      '(bar workspace-name window-number modals matches buffer-info remote-host selection-info)
-      '(current-remote objed-state buffer-position major-mode process vcs checker misc-info))
-    (doom-modeline-mode 1)
-    (setq doom-modeline-height 35)
-    (setq doom-modeline-bar-width 5)
-    (setq tab-bar-format '(episteme:tab-bar-format))
+  (use-package lispy
     :init
-    (defun setup-custom-doom-modeline ()
-      (doom-modeline-set-modeline 'epi-modeline t)
-      (force-mode-line-update))
-    (add-hook 'doom-modeline-mode-hook 'setup-custom-doom-modeline))
+    (:hook emacs-lisp-mode (lispy-mode 1))
+    (:hook lisp-interaction-mode (lispy-mode 1))
+    :bind
+    (":" . self-insert-command)
+    ("[" . lispy-open-square)
+    ("]" . lispy-close-square))
 #+end_src
-
-** doom theme
+*** json-mode
 #+begin_src emacs-lisp
-  (use-package doom-themes
-    :ensure t
+  (use-package json-mode
+    :straight (json-mode :type git
+                         :host github
+                         :repo "kiennq/json-mode"
+                         :branch "feat/jsonc-mode")
     :config
-    ;; Global settings (defaults)
-    (setq doom-themes-enable-bold t     ; if nil, bold is universally disabled
-          doom-themes-enable-italic t)  ; if nil, italics is universally disabled
-    (load-theme (intern (format "doom-%s" (or (getenv "theme") "laserwave"))) t)
-
-    ;; Enable flashing mode-line on errors
-    (doom-themes-visual-bell-config)
-    ;; Corrects (and improves) org-mode's native fontification.
-    (doom-themes-org-config))
+    (setf auto-mode-alist (assoc-delete-all "\\(?:\\(?:\\.\\(?:b\\(?:\\(?:abel\\|ower\\)rc\\)\\|json\\(?:ld\\)?\\)\\|composer\\.lock\\)\\'\\)"
+                                            auto-mode-alist))
+    (setf auto-mode-alist (assoc-delete-all "\\.json\\'" auto-mode-alist))
+    (add-to-list 'auto-mode-alist '("\\.json\\'" . jsonc-mode)))
 #+end_src
 
-* core settings
+** helm
+Menu and selection framework for finding files, switching buffers, running
+grep, etc. A number of Episteme features are built ontop of Helm.
+
+#+begin_src emacs-lisp
+  (use-package helm
+    :config
+    (helm-mode 1)
+    (require 'helm-config)
+    :bind
+    ("M-x" . helm-M-x)
+    ("C-x C-f" . helm-find-files)
+    ("C-x b" . helm-mini)
+    ("C-c y" . helm-show-kill-ring)
+    ("C-x C-r" . helm-recentf))
+#+end_src
+*** ace jump
+Quickly jump to any candidate with a short letter combo.
+
+#+begin_src emacs-lisp
+  (use-package ace-jump-helm-line
+    :bind (:map helm-map
+                ("C-;" . ace-jump-helm-line)))
+#+end_src
+
+*** helm-ag
+#+begin_src emacs-lisp
+  (use-package helm-ag)
+#+end_src
+
+*** helm-descbinds
+Use (=C-h b= / =kbd-helm-descbinds=) to inspect current bindings with Helm.
+
+#+begin_src emacs-lisp
+  (use-package helm-descbinds
+    :commands helm-descbinds
+    :config
+    (:bind "C-h b" nil helm-descbinds))
+#+end_src
+
+*** auto full frame
+Make Helm always full height.
+
+#+begin_src emacs-lisp
+  (defvar helm-full-frame-threshold 0.75)
+
+  (when window-system
+    (defun helm-full-frame-hook ()
+    (let ((threshold (* helm-full-frame-threshold (x-display-pixel-height))))
+      (setq helm-full-frame (< (frame-height) threshold))))
+
+    (:hook helm-before-initialize 'helm-full-frame-hook))
+#+end_src
+** magit
+The best git frontend there is.
+
+#+begin_src emacs-lisp
+  (use-package magit)
+#+end_src
+
+** org-mode
+A souped up markup with tasking, scheduling and aggregation features.
+
+*** straight.el fixes
+
+Fix some issues with straight.el and org until [[https://github.com/raxod502/straight.el#installing-org-with-straightel][that is resolved]].
+
+**** fix-org-git-version
+#+begin_src emacs-lisp
+  (defun fix-org-git-version ()
+    "The Git version of org-mode.
+    Inserted by installing org-mode or when a release is made."
+    (require 'git)
+    (let ((git-repo (expand-file-name
+                     "straight/repos/org/" user-emacs-directory)))
+      (string-trim
+       (git-run "describe"
+                "--match=release\*"
+                "--abbrev=6"
+                "HEAD"))))
+#+end_src
+
+**** fix-org-release
+#+begin_src emacs-lisp
+  (defun fix-org-release ()
+    "The release version of org-mode.
+    Inserted by installing org-mode or when a release is made."
+    (require 'git)
+    (let ((git-repo (expand-file-name
+                     "straight/repos/org/" user-emacs-directory)))
+      (string-trim
+       (string-remove-prefix
+        "release_"
+        (git-run "describe"
+                 "--match=release\*"
+                 "--abbrev=0"
+                 "HEAD")))))
+#+end_src
+
+*** installation
+#+begin_src emacs-lisp
+  (use-package org
+    :config
+    ;; these depend on the 'straight.el fixes' above
+    (defalias #'org-git-version #'fix-org-git-version)
+    (defalias #'org-release #'fix-org-release)
+    (require 'org-habit)
+    (require 'org-indent)
+    (require 'org-capture)
+    (require 'org-tempo)
+    (add-to-list 'org-modules 'org-habit t))
+#+end_src
+
+*** look
+**** theme customizations
+#+begin_src emacs-lisp
+  (when window-system
+    (use-package org-beautify-theme
+      :after (org)
+      :config
+      (setq org-fontify-whole-heading-line t)
+      (setq org-fontify-quote-and-verse-blocks t)
+      (setq org-hide-emphasis-markers t)
+      (cl-loop for (face . spec) in
+       `((org-document-title .
+          ((t (:inherit org-level-1 :height 2.0 :underline nil :box nil))))
+         (org-level-1 . ((t (:height 1.5 :box nil))))
+         (org-level-2 . ((t (:height 1.25 :box nil))))
+         (org-level-3 . ((t (:box nil))))
+         (org-level-4 . ((t (:box nil))))
+         (org-level-5 . ((t (:box nil))))
+         (org-level-6 . ((t (:box nil))))
+         (org-level-7 . ((t (:box nil))))
+         (org-level-8 . ((t (:box nil))))
+         (org-link . ((t (:underline t)))))
+       do (face-spec-set face spec))))
+#+end_src
+
+**** pretty symbols
+Add a hook to set the pretty symbols alist.
+
+#+begin_src emacs-lisp
+  (setq episteme/pretty-symbols nil)
+  (:hook org-mode
+    (setq-local prettify-symbols-alist episteme/pretty-symbols))
+#+end_src
+**** indent by header level
+Hide the heading asterisks. Instead indent headings based on depth.
+
+#+begin_src emacs-lisp
+  (:hook org-mode 'org-indent-mode)
+#+end_src
+
+**** pretty heading bullets
+Use nice unicode bullets instead of the default asterisks.
+
+#+begin_src emacs-lisp
+  (use-package org-bullets
+    :init
+    (:hook org-mode 'org-bullets-mode)
+    :config
+    (setq org-bullets-bullet-list '("◉" "○" "✸" "•")))
+#+end_src
+
+**** pretty priority cookies
+Instead of the default =[#A]= and =[#C]= priority cookies, use little unicode arrows to
+indicate high and low priority. =[#B]=, which is the same as no priority, is shown as
+normal.
+
+#+begin_src emacs-lisp
+  (:push episteme/pretty-symbols
+    '("[#A]" . "⇑")
+    '("[#C]" . "⇓"))
+#+end_src
+
+#+begin_src emacs-lisp
+  ;; only show priority cookie symbols on headings.
+  (defun nougat/org-pretty-compose-p (start end match)
+    (if (or (string= match "[#A]") (string= match "[#C]"))
+        ;; prettify asterisks in headings
+        (org-match-line org-outline-regexp-bol)
+      ;; else rely on the default function
+      (funcall #'prettify-symbols-default-compose-p start end match)))
+
+
+  (:hook org-mode (setq-local prettify-symbols-compose-predicate
+                              #'nougat/org-pretty-compose-p))
+#+end_src
+
+**** pretty heading ellipsis
+Show a little arrow for collapsed headings.
+
+#+begin_src emacs-lisp
+  (:after org
+    (setq org-ellipsis " ▿"))
+#+end_src
+
+**** prettify source blocks
+#+begin_src emacs-lisp
+  (:push episteme/pretty-symbols
+    '("#+begin_src" . ">>")
+    '("#+end_src" . "·"))
+#+end_src
+**** dynamic tag position
+#+begin_src emacs-lisp
+  (defun org-realign-tags ()
+    (interactive)
+    (setq org-tags-column (- 0 (window-width)))
+    (org-align-tags t))
+
+  ;; (:hook window-configuration-change 'org-realign-tags)
+#+end_src
+
+*** feel
+**** show all headings on startup
+#+begin_src emacs-lisp
+  (setq org-startup-folded 'content)
+#+end_src
+
+**** don't fold blocks on open
+#+begin_src emacs-lisp
+  (setq org-hide-block-startup nil)
+#+end_src
+
+**** resepect content on insert
+Don't split existing entries when inserting a new heading.
+
+#+begin_src emacs-lisp
+  (setq org-insert-heading-respect-content nil)
+#+end_src
+
+**** use helpful for help links
+#+begin_src emacs-lisp
+  (advice-add 'org-link--open-help :override
+              (lambda (path) (helpful-symbol (intern path))))
+#+end_src
+*** todo keywords
+**** boilerplate
+***** make-state-model
+#+begin_src emacs-lisp
+  (defun todo-make-state-model (name key props)
+    (append (list :name name :key key) props))
+#+end_src
+***** parse-state-data
+#+begin_src emacs-lisp
+  (defun todo-parse-state-data (state-data)
+    (-let* (((name second &rest) state-data)
+            ((key props) (if (stringp second)
+                             (list second (cddr state-data))
+                           (list nil (cdr state-data)))))
+      (todo-make-state-model name key props)))
+#+end_src
+***** make-sequence-mode
+#+begin_src emacs-lisp
+  (defun todo-make-sequence-model (states)
+    (mapcar 'todo-parse-state-data states))
+#+end_src
+***** parse-sequences-data
+#+begin_src emacs-lisp
+  (defun todo-parse-sequences-data (sequences-data)
+    (mapcar 'todo-make-sequence-model sequences-data))
+#+end_src
+***** todo-keyword-name
+#+begin_src emacs-lisp
+  (defun todo-keyword-name (name key)
+    (if key (format "%s(%s)" name key) name))
+#+end_src
+***** keyword-name-forstate
+#+begin_src emacs-lisp
+  (defun todo-keyword-name-for-state (state)
+    (todo-keyword-name (plist-get state :name)
+                       (plist-get state :key)))
+#+end_src
+***** is-done-state
+#+begin_src emacs-lisp
+  (defun todo-is-done-state (state)
+    (equal t (plist-get state :done-state)))
+#+end_src
+***** is-not-done-state
+#+begin_src emacs-lisp
+  (defun todo-is-not-done-state (state)
+    (equal nil (plist-get state :done-state)))
+#+end_src
+***** org-sequence
+#+begin_src emacs-lisp
+  (defun todo-org-sequence (states)
+    (let ((active (seq-filter 'todo-is-not-done-state states))
+          (inactive (seq-filter 'todo-is-done-state states)))
+      (append '(sequence)
+              (mapcar 'todo-keyword-name-for-state active)
+              '("|")
+              (mapcar 'todo-keyword-name-for-state inactive))))
+#+end_src
+***** org-todo-keywords
+#+begin_src emacs-lisp
+  (defun todo-org-todo-keywords (sequences)
+    (mapcar 'todo-org-sequence (todo-parse-sequences-data sequences)))
+  ;; (todo-org-todo-keywords todo-keywords)
+#+end_src
+***** org-todo-keyword-faces
+#+begin_src emacs-lisp
+  (defun todo-org-todo-keyword-faces (sequences)
+    (cl-loop for sequence in (todo-parse-sequences-data sequences)
+             append (cl-loop for state in sequence
+                             for name = (plist-get state :name)
+                             for face = (plist-get state :face)
+                             collect (cons name face))))
+  ;; (todo-org-todo-keyword-faces todo-keywords)
+#+end_src
+***** prettify-symbols-alist
+#+begin_src emacs-lisp
+  (defun todo-prettify-symbols-alist (sequences)
+    (cl-loop for sequence in (todo-parse-sequences-data sequences)
+             append (cl-loop for state in sequence
+                             for name = (plist-get state :name)
+                             for icon = (plist-get state :icon)
+                             collect (cons name icon))))
+  ;; (todo-prettify-symbols-alist todo-keywords)
+#+end_src
+***** finalize-agenda-for-state
+#+begin_src emacs-lisp
+  (defun todo-finalize-agenda-for-state (state)
+    (-let (((&plist :name :icon :face) state))
+      (beginning-of-buffer)
+      (while (search-forward name nil 1)
+        (let* ((line-props (text-properties-at (point)))
+               (line-props (org-plist-delete line-props 'face)))
+          (call-interactively 'set-mark-command)
+          (search-backward name)
+          (call-interactively 'kill-region)
+          (let ((symbol-pos (point)))
+            (insert icon)
+            (beginning-of-line)
+            (let ((start (point))
+                  (end (progn (end-of-line) (point))))
+              (add-text-properties start end line-props)
+              (add-face-text-property symbol-pos (+ 1 symbol-pos) face))))))
+    (beginning-of-buffer)
+    (replace-regexp "[[:space:]]+[=]+" ""))
+#+end_src
+
+**** keywords
+#+begin_src emacs-lisp
+  (setq todo-keywords
+        ;; normal workflow
+        '((("DOING" "d" :icon "🏃" :face org-doing-face)
+           ("TODO" "t" :icon "□ " :face org-todo-face)
+           ("DONE" "D" :icon "✓ " :face org-done-face :done-state t))
+          ;; auxillary states
+          (("SOON" "s" :icon "❗ " :face org-soon-face)
+           ("SOMEDAY" "S" :icon "🛌" :face org-doing-face)))
+        org-todo-keywords (todo-org-todo-keywords todo-keywords)
+        org-todo-keyword-faces (todo-org-todo-keyword-faces todo-keywords))
+
+  (--map (:push episteme/pretty-symbols it)
+         (todo-prettify-symbols-alist todo-keywords))
+#+end_src
+
+**** org agenda finalization
+#+begin_src emacs-lisp
+  (setq episteme/todo-sequences-data (todo-parse-sequences-data todo-keywords))
+  (:hook org-agenda-finalize
+    (--each episteme/todo-sequences-data
+      (-each it 'todo-finalize-agenda-for-state)))
+#+end_src
+**** sorting
+#+begin_src emacs-lisp
+  (defun episteme:todo-sort (a b)
+    (let* ((a-state (get-text-property 0 'todo-state a))
+           (b-state (get-text-property 0 'todo-state b))
+           (a-index (-elem-index a-state todo-keyword-order))
+           (b-index (-elem-index b-state todo-keyword-order)))
+      (pcase (- b-index a-index)
+        ((and v (guard (< 0 v))) 1)
+        ((and v (guard (> 0 v))) -1)
+        (default nil))))
+
+  (setq org-agenda-cmp-user-defined 'episteme:todo-sort
+        todo-keyword-order '("DOING" "SOON" "TODO" "SOMEDAY" "DONE"))
+#+end_src
+
+*** org-babel
+**** babel languages
+***** ob-csharp
+#+begin_src emacs-lisp
+  (use-package ob-csharp
+    :straight (ob-csharp :type git
+                         :host github
+                         :repo "thomas-villagers/ob-csharp"
+                         :files ("src/ob-csharp.el"))
+    :config
+    (:push org-babel-load-languages '(csharp . t)))
+#+end_src
+***** ob-fsharp
+#+begin_src emacs-lisp
+  (use-package ob-fsharp
+    :straight (ob-fsharp :type git
+                         :host github
+                         :repo "zweifisch/ob-fsharp"
+                         :files ("ob-fsharp.el"))
+    :config
+    (:push org-babel-load-languages '(fsharp . t)))
+#+end_src
+**** enable languages
+#+begin_src emacs-lisp
+  (setq org-babel-load-languages
+        '((shell . t)
+          (emacs-lisp . t)
+          (python . t)
+          (js . t)
+          (csharp . t)
+          (fsharp . t)))
+#+end_src
+
+**** default header args
+#+begin_src emacs-lisp
+  (:after org
+    (setq org-babel-default-header-args
+          '((:session . "none")
+            (:results . "replace")
+            (:exports . "code")
+            (:cache . "no")
+            (:noweb . "no")
+            (:hlines . "no")
+            (:tangle . "no"))))
+#+end_src
+
+**** security
+Disable prompts for evaluating org-mode links.
+#+begin_src emacs-lisp
+  (progn
+    (setq org-confirm-babel-evaluate nil)
+    (setq org-confirm-elisp-link-function nil)
+    (setq org-confirm-shell-link-function nil)
+    (setq safe-local-variable-values '((org-confirm-elisp-link-function . nil))))
+#+end_src
+**** install babel handlers
+#+begin_src emacs-lisp
+  (:hook after-init
+    (org-babel-do-load-languages 'org-babel-load-languages
+                                 org-babel-load-languages))
+#+end_src
+
+*** org-fragtog
+Automatically preview LaTex fragments.
+
+#+begin_src emacs-lisp
+  (use-package org-fragtog
+    :config
+    (:hook org-mode 'org-fragtog-mode))
+#+end_src
+
+*** helm-org
+#+begin_src emacs-lisp
+  (use-package helm-org)
+#+end_src
+*** helm-org-rifle
+Quickly search through the current org buffer.
+
+#+begin_src emacs-lisp
+  (use-package helm-org-rifle)
+#+end_src
+*** helm-org-walk
+Easily navigate Org files with Helm.
+#+begin_src emacs-lisp
+  (use-package helm-org-walk
+    :straight (helm-org-walk :type git :host github :repo "dustinlacewell/helm-org-walk"))
+#+end_src
+*** org-ql
+Query Org files for elements.
+#+begin_src emacs-lisp
+  (use-package org-ql)
+#+end_src
+*** org-ls
+Interact with babel codeblocks from elisp.
+#+begin_src emacs-lisp
+  (use-package org-ls
+    :straight (org-ls :type git :host github :repo "dustinlacewell/org-ls"))
+#+end_src
+*** org-journal
+#+begin_src emacs-lisp
+  (use-package org-journal
+    :config
+    (setq org-journal-dir episteme/journal-path)
+    (setq org-journal-file-type 'weekly))
+#+end_src
+
+*** org-roam
+Backlink support
+#+begin_src emacs-lisp
+  (defun episteme:ensure-org-id ()
+    (interactive)
+    (when (s-starts-with? episteme/current-remote-root (buffer-file-name))
+      (save-excursion
+        (beginning-of-buffer)
+        (org-id-get-create))))
+
+  (use-package org-roam
+    :ensure t
+    :init
+    (setq org-roam-v2-ack 2)
+    :bind (("C-c n l" . org-roam-buffer-toggle)
+           ("C-c n f" . org-roam-node-find)
+           ("C-c n g" . org-roam-graph)
+           ("C-c n i" . org-roam-node-insert)
+           ("C-c n c" . org-roam-capture)
+           ;; Dailies
+           ("C-c n j" . org-roam-dailies-capture-today))
+    :config
+    (setq org-roam-directory episteme/current-remote-root)
+
+    ;; STOP PREPENDING DATES >:|
+    (setq org-roam-capture-templates '(("d" "default" plain "%?" :target
+                                        (file+head "${slug}.org" "#+TITLE: ${title}\n")
+                                        :unnarrowed t)))
+    (setq org-roam-extract-new-file-path "${slug}.org")
+
+    ;; STOP USING "_" instead of "-" >:|
+    (cl-defmethod org-roam-node-slug ((node org-roam-node))
+      (let ((title (org-roam-node-title node))
+            (slug-trim-chars '(;; Combining Diacritical Marks https://www.unicode.org/charts/PDF/U0300.pdf
+                               768 ; U+0300 COMBINING GRAVE ACCENT
+                               769 ; U+0301 COMBINING ACUTE ACCENT
+                               770 ; U+0302 COMBINING CIRCUMFLEX ACCENT
+                               771 ; U+0303 COMBINING TILDE
+                               772 ; U+0304 COMBINING MACRON
+                               774 ; U+0306 COMBINING BREVE
+                               775 ; U+0307 COMBINING DOT ABOVE
+                               776 ; U+0308 COMBINING DIAERESIS
+                               777 ; U+0309 COMBINING HOOK ABOVE
+                               778 ; U+030A COMBINING RING ABOVE
+                               780 ; U+030C COMBINING CARON
+                               795 ; U+031B COMBINING HORN
+                               803 ; U+0323 COMBINING DOT BELOW
+                               804 ; U+0324 COMBINING DIAERESIS BELOW
+                               805 ; U+0325 COMBINING RING BELOW
+                               807 ; U+0327 COMBINING CEDILLA
+                               813 ; U+032D COMBINING CIRCUMFLEX ACCENT BELOW
+                               814 ; U+032E COMBINING BREVE BELOW
+                               816 ; U+0330 COMBINING TILDE BELOW
+                               817))) ; U+0331 COMBINING MACRON BELOW
+        (cl-flet* ((nonspacing-mark-p (char)
+                                      (memq char slug-trim-chars))
+                   (strip-nonspacing-marks (s)
+                                           (ucs-normalize-NFC-string
+                                            (apply #'string (seq-remove #'nonspacing-mark-p
+                                                                        (ucs-normalize-NFD-string s)))))
+                   (cl-replace (title pair)
+                               (replace-regexp-in-string (car pair) (cdr pair) title)))
+          (let* ((pairs `(("[^[:alnum:][:digit:]]" . "-")
+                          ("--*" . "-")
+                          ("^-" . "")
+                          ("-$" . "")))
+                 (slug (-reduce-from #'cl-replace (strip-nonspacing-marks title) pairs)))
+            (downcase slug)))))
+
+    ;; If using org-roam-protocol
+    (require 'org-roam-protocol)
+    (:hook org-mode
+     (add-hook 'before-save-hook 'episteme:ensure-org-id nil t)))
+#+end_src
+** other packages
+*** persistent-scratch
+#+begin_src emacs-lisp
+  (use-package persistent-scratch
+    :config
+    (persistent-scratch-setup-default)
+    (setq persistent-scratch-save-file (concat episteme/home-path "/scratch")
+          persistent-scratch-autosave-interval 20))
+#+end_src
+*** embrace
+#+begin_src emacs-lisp
+  (use-package embrace
+    :config
+    (embrace-add-pair (kbd "\;") "`" "`"))
+#+end_src
+
+*** htmlize
+Allows org codeblocks to be syntax highlighted on html export.
+
+#+begin_src emacs-lisp
+  (use-package htmlize)
+#+end_src
+
+* emacs settings
 ** autosaves
 Periodically save a copy of open files.
 
@@ -875,11 +1134,11 @@ Periodically save a copy of open files.
 
 *** keep autosaves in a single place
 #+begin_src emacs-lisp
-  (unless (file-exists-p episteme/autosaves)
-      (make-directory episteme/autosaves))
+  (unless (file-exists-p episteme/autosaves-path)
+      (make-directory episteme/autosaves-path))
 
   (setq auto-save-file-name-transforms
-        `((".*" ,episteme/autosaves t)))
+        `((".*" ,episteme/autosaves-path t)))
 #+end_src
 
 ** backups
@@ -913,11 +1172,11 @@ Backups are created everytime a buffer is manually saved.
 
 *** keep backups in a single place
 #+begin_src emacs-lisp
-  (unless (file-exists-p episteme/backups)
-    (make-directory episteme/backups))
+  (unless (file-exists-p episteme/backups-path)
+    (make-directory episteme/backups-path))
 
   (setq backup-directory-alist
-        `((".*" . ,episteme/backups)))
+        `((".*" . ,episteme/backups-path)))
 
   (setq make-backup-files t)
 #+end_src
@@ -1150,837 +1409,662 @@ Show tracebacks when errors happen.
   (setq debug-on-error t)
 #+end_src
 
-* helpful
-Alternative to the built-in Emacs help that provides much more contextual
-information.
-
+* aesthetics
+** visual fill mode
 #+begin_src emacs-lisp
-  (use-package helpful
-      :straight (helpful :type git :host github :repo "Wilfred/helpful")
-      :bind (("C-h s" . #'helpful-symbol)
-             ("C-h c" . #'helpful-command)
-             ("C-h f" . #'helpful-function)
-             ("C-h v" . #'helpful-variable)
-             ("C-h k" . #'helpful-key)
-             ("C-h m" . #'helpful-mode)
-             ("C-h C-h" . #'helpful-at-point)))
-#+end_src
-
-** contextual help
-*** toggle-context-help
-#+begin_src emacs-lisp
-  (defun toggle-context-help ()
-    "Turn on or off the context help.
-  Note that if ON and you hide the help buffer then you need to
-  manually reshow it. A double toggle will make it reappear"
-    (interactive)
-    (with-current-buffer (help-buffer)
-      (unless (local-variable-p 'context-help)
-        (set (make-local-variable 'context-help) t))
-      (if (setq context-help (not context-help))
-          (progn
-             (if (not (get-buffer-window (help-buffer)))
-                 (display-buffer (help-buffer)))))
-      (message "Context help %s" (if context-help "ON" "OFF"))))
-#+end_src
-
-*** context-help
-#+begin_src emacs-lisp
-  (defun context-help ()
-    "Display function or variable at point in *Help* buffer if visible.
-  Default behaviour can be turned off by setting the buffer local
-  context-help to false"
-    (interactive)
-    (let ((rgr-symbol (symbol-at-point))) ; symbol-at-point http://www.emacswiki.org/cgi-bin/wiki/thingatpt%2B.el
-      (with-current-buffer (help-buffer)
-       (unless (local-variable-p 'context-help)
-         (set (make-local-variable 'context-help) t))
-       (if (and context-help (get-buffer-window (help-buffer))
-           rgr-symbol)
-         (if (fboundp  rgr-symbol)
-             (describe-function rgr-symbol)
-           (if (boundp  rgr-symbol) (describe-variable rgr-symbol)))))))
-#+end_src
-
-*** advise symbol eldoc
-#+begin_src emacs-lisp
-  (defadvice eldoc-print-current-symbol-info
-    (around eldoc-show-c-tag activate)
-    (cond
-          ((eq major-mode 'emacs-lisp-mode) (context-help) ad-do-it)
-          ((eq major-mode 'lisp-interaction-mode) (context-help) ad-do-it)
-          ((eq major-mode 'apropos-mode) (context-help) ad-do-it)
-          (t ad-do-it)))
-#+end_src
-
-* languages
-** lispy-mode
-#+begin_src emacs-lisp
-  (use-package lispy
-    :init
-    (:hook emacs-lisp-mode (lispy-mode 1))
-    (:hook lisp-interaction-mode (lispy-mode 1))
-    :bind
-    (":" . self-insert-command)
-    ("[" . lispy-open-square)
-    ("]" . lispy-close-square))
-#+end_src
-** json-mode
-#+begin_src emacs-lisp
-  (use-package json-mode
-    :straight (json-mode :type git
-                         :host github
-                         :repo "kiennq/json-mode"
-                         :branch "feat/jsonc-mode")
+  (use-package visual-fill-column
     :config
-    (setf auto-mode-alist (assoc-delete-all "\\(?:\\(?:\\.\\(?:b\\(?:\\(?:abel\\|ower\\)rc\\)\\|json\\(?:ld\\)?\\)\\|composer\\.lock\\)\\'\\)"
-                                            auto-mode-alist))
-    (setf auto-mode-alist (assoc-delete-all "\\.json\\'" auto-mode-alist))
-    (add-to-list 'auto-mode-alist '("\\.json\\'" . jsonc-mode)))
+    (setq fill-column episteme/fill-width)
+    (setq global-visual-fill-column-mode 1))
 #+end_src
-
-* helm
-Menu and selection framework for finding files, switching buffers, running
-grep, etc. A number of Episteme features are built ontop of Helm.
+** vertical border
+Make the border between windows visible.
 
 #+begin_src emacs-lisp
-  (use-package helm
-    :config
-    (helm-mode 1)
-    (require 'helm-config)
-    :bind
-    ("M-x" . helm-M-x)
-    ("C-x C-f" . helm-find-files)
-    ("C-x b" . helm-mini)
-    ("C-c y" . helm-show-kill-ring)
-    ("C-x C-r" . helm-recentf))
-#+end_src
-** ace jump
-Quickly jump to any candidate with a short letter combo.
-
-#+begin_src emacs-lisp
-  (use-package ace-jump-helm-line
-    :bind (:map helm-map
-                ("C-;" . ace-jump-helm-line)))
+  (set-face-foreground 'vertical-border "gray")
 #+end_src
 
-** helm-ag
-#+begin_src emacs-lisp
-  (use-package helm-ag)
-#+end_src
-
-** helm-descbinds
-Use (=C-h b= / =kbd-helm-descbinds=) to inspect current bindings with Helm.
+** blend in the fringes
+Hide the default buffer margins.
 
 #+begin_src emacs-lisp
-  (use-package helm-descbinds
-    :commands helm-descbinds
-    :config
-    (:bind "C-h b" nil helm-descbinds))
+  (set-face-attribute 'fringe nil :background nil)
 #+end_src
 
-** auto full frame
-Make Helm always full height.
+** column number
+Show column number in addition to line number.
 
 #+begin_src emacs-lisp
-  (defvar helm-full-frame-threshold 0.75)
-
-  (when window-system
-    (defun helm-full-frame-hook ()
-    (let ((threshold (* helm-full-frame-threshold (x-display-pixel-height))))
-      (setq helm-full-frame (< (frame-height) threshold))))
-
-    (:hook helm-before-initialize 'helm-full-frame-hook))
+  (column-number-mode 1)
 #+end_src
 
-* magit
-The best git frontend there is.
+** doom modeline
+Use [[https://github.com/seagle0128/doom-modeline][doom-modeline]] to ornament the modeline.
 
 #+begin_src emacs-lisp
-  (use-package magit)
-#+end_src
-* org-mode
-A souped up markup with tasking, scheduling and aggregation features.
-
-** straight.el fixes
-Fix some issues with straight.el and org until [[https://github.com/raxod502/straight.el#installing-org-with-straightel][that is resolved]].
-
-*** fix-org-git-version
-#+begin_src emacs-lisp
-  (defun fix-org-git-version ()
-    "The Git version of org-mode.
-    Inserted by installing org-mode or when a release is made."
-    (require 'git)
-    (let ((git-repo (expand-file-name
-                     "straight/repos/org/" user-emacs-directory)))
-      (string-trim
-       (git-run "describe"
-                "--match=release\*"
-                "--abbrev=6"
-                "HEAD"))))
-#+end_src
-
-*** fix-org-release
-#+begin_src emacs-lisp
-  (defun fix-org-release ()
-    "The release version of org-mode.
-    Inserted by installing org-mode or when a release is made."
-    (require 'git)
-    (let ((git-repo (expand-file-name
-                     "straight/repos/org/" user-emacs-directory)))
-      (string-trim
-       (string-remove-prefix
-        "release_"
-        (git-run "describe"
-                 "--match=release\*"
-                 "--abbrev=0"
-                 "HEAD")))))
-#+end_src
-
-** installation
-#+begin_src emacs-lisp
-  (use-package org
-    :config
-    ;; these depend on the 'straight.el fixes' above
-    (defalias #'org-git-version #'fix-org-git-version)
-    (defalias #'org-release #'fix-org-release)
-    (require 'org-habit)
-    (require 'org-indent)
-    (require 'org-capture)
-    (require 'org-tempo)
-    (add-to-list 'org-modules 'org-habit t))
-#+end_src
-
-** look
-*** theme customizations
-#+begin_src emacs-lisp
-  (when window-system
-    (use-package org-beautify-theme
-      :after (org)
-      :config
-      (setq org-fontify-whole-heading-line t)
-      (setq org-fontify-quote-and-verse-blocks t)
-      (setq org-hide-emphasis-markers t)
-      (cl-loop for (face . spec) in
-       `((org-document-title .
-          ((t (:inherit org-level-1 :height 2.0 :underline nil :box nil))))
-         (org-level-1 . ((t (:height 1.5 :box nil))))
-         (org-level-2 . ((t (:height 1.25 :box nil))))
-         (org-level-3 . ((t (:box nil))))
-         (org-level-4 . ((t (:box nil))))
-         (org-level-5 . ((t (:box nil))))
-         (org-level-6 . ((t (:box nil))))
-         (org-level-7 . ((t (:box nil))))
-         (org-level-8 . ((t (:box nil))))
-         (org-link . ((t (:underline t)))))
-       do (face-spec-set face spec))))
-#+end_src
-
-*** pretty symbols
-Add a hook to set the pretty symbols alist.
-
-#+begin_src emacs-lisp
-  (setq episteme/pretty-symbols nil)
-  (:hook org-mode
-    (setq-local prettify-symbols-alist episteme/pretty-symbols))
-#+end_src
-*** indent by header level
-Hide the heading asterisks. Instead indent headings based on depth.
-
-#+begin_src emacs-lisp
-  (:hook org-mode 'org-indent-mode)
-#+end_src
-
-*** pretty heading bullets
-Use nice unicode bullets instead of the default asterisks.
-
-#+begin_src emacs-lisp
-  (use-package org-bullets
-    :init
-    (:hook org-mode 'org-bullets-mode)
-    :config
-    (setq org-bullets-bullet-list '("◉" "○" "✸" "•")))
-#+end_src
-
-*** pretty priority cookies
-Instead of the default =[#A]= and =[#C]= priority cookies, use little unicode arrows to
-indicate high and low priority. =[#B]=, which is the same as no priority, is shown as
-normal.
-
-#+begin_src emacs-lisp
-  (:push episteme/pretty-symbols
-    '("[#A]" . "⇑")
-    '("[#C]" . "⇓"))
-#+end_src
-
-#+begin_src emacs-lisp
-  ;; only show priority cookie symbols on headings.
-  (defun nougat/org-pretty-compose-p (start end match)
-    (if (or (string= match "[#A]") (string= match "[#C]"))
-        ;; prettify asterisks in headings
-        (org-match-line org-outline-regexp-bol)
-      ;; else rely on the default function
-      (funcall #'prettify-symbols-default-compose-p start end match)))
-
-
-  (:hook org-mode (setq-local prettify-symbols-compose-predicate
-                              #'nougat/org-pretty-compose-p))
-#+end_src
-
-*** pretty heading ellipsis
-Show a little arrow for collapsed headings.
-
-#+begin_src emacs-lisp
-  (:after org
-    (setq org-ellipsis " ▿"))
-#+end_src
-
-*** prettify source blocks
-#+begin_src emacs-lisp
-  (:push episteme/pretty-symbols
-    '("#+begin_src" . ">>")
-    '("#+end_src" . "·"))
-#+end_src
-*** dynamic tag position
-#+begin_src emacs-lisp
-  (defun org-realign-tags ()
-    (interactive)
-    (setq org-tags-column (- 0 (window-width)))
-    (org-align-tags t))
-
-  ;; (:hook window-configuration-change 'org-realign-tags)
-#+end_src
-
-** feel
-*** show all headings on startup
-#+begin_src emacs-lisp
-  (setq org-startup-folded 'content)
-#+end_src
-
-*** don't fold blocks on open
-#+begin_src emacs-lisp
-  (setq org-hide-block-startup nil)
-#+end_src
-
-*** resepect content on insert
-Don't split existing entries when inserting a new heading.
-
-#+begin_src emacs-lisp
-  (setq org-insert-heading-respect-content nil)
-#+end_src
-
-*** use helpful for help links
-#+begin_src emacs-lisp
-  (advice-add 'org-link--open-help :override
-              (lambda (path) (helpful-symbol (intern path))))
-#+end_src
-** todo keywords
-*** boilerplate
-**** make-state-model
-#+begin_src emacs-lisp
-  (defun todo-make-state-model (name key props)
-    (append (list :name name :key key) props))
-#+end_src
-**** parse-state-data
-#+begin_src emacs-lisp
-  (defun todo-parse-state-data (state-data)
-    (-let* (((name second &rest) state-data)
-            ((key props) (if (stringp second)
-                             (list second (cddr state-data))
-                           (list nil (cdr state-data)))))
-      (todo-make-state-model name key props)))
-#+end_src
-**** make-sequence-mode
-#+begin_src emacs-lisp
-  (defun todo-make-sequence-model (states)
-    (mapcar 'todo-parse-state-data states))
-#+end_src
-**** parse-sequences-data
-#+begin_src emacs-lisp
-  (defun todo-parse-sequences-data (sequences-data)
-    (mapcar 'todo-make-sequence-model sequences-data))
-#+end_src
-**** todo-keyword-name
-#+begin_src emacs-lisp
-  (defun todo-keyword-name (name key)
-    (if key (format "%s(%s)" name key) name))
-#+end_src
-**** keyword-name-forstate
-#+begin_src emacs-lisp
-  (defun todo-keyword-name-for-state (state)
-    (todo-keyword-name (plist-get state :name)
-                       (plist-get state :key)))
-#+end_src
-**** is-done-state
-#+begin_src emacs-lisp
-  (defun todo-is-done-state (state)
-    (equal t (plist-get state :done-state)))
-#+end_src
-**** is-not-done-state
-#+begin_src emacs-lisp
-  (defun todo-is-not-done-state (state)
-    (equal nil (plist-get state :done-state)))
-#+end_src
-**** org-sequence
-#+begin_src emacs-lisp
-  (defun todo-org-sequence (states)
-    (let ((active (seq-filter 'todo-is-not-done-state states))
-          (inactive (seq-filter 'todo-is-done-state states)))
-      (append '(sequence)
-              (mapcar 'todo-keyword-name-for-state active)
-              '("|")
-              (mapcar 'todo-keyword-name-for-state inactive))))
-#+end_src
-**** org-todo-keywords
-#+begin_src emacs-lisp
-  (defun todo-org-todo-keywords (sequences)
-    (mapcar 'todo-org-sequence (todo-parse-sequences-data sequences)))
-  ;; (todo-org-todo-keywords todo-keywords)
-#+end_src
-**** org-todo-keyword-faces
-#+begin_src emacs-lisp
-  (defun todo-org-todo-keyword-faces (sequences)
-    (cl-loop for sequence in (todo-parse-sequences-data sequences)
-             append (cl-loop for state in sequence
-                             for name = (plist-get state :name)
-                             for face = (plist-get state :face)
-                             collect (cons name face))))
-  ;; (todo-org-todo-keyword-faces todo-keywords)
-#+end_src
-**** prettify-symbols-alist
-#+begin_src emacs-lisp
-  (defun todo-prettify-symbols-alist (sequences)
-    (cl-loop for sequence in (todo-parse-sequences-data sequences)
-             append (cl-loop for state in sequence
-                             for name = (plist-get state :name)
-                             for icon = (plist-get state :icon)
-                             collect (cons name icon))))
-  ;; (todo-prettify-symbols-alist todo-keywords)
-#+end_src
-**** finalize-agenda-for-state
-#+begin_src emacs-lisp
-  (defun todo-finalize-agenda-for-state (state)
-    (-let (((&plist :name :icon :face) state))
-      (beginning-of-buffer)
-      (while (search-forward name nil 1)
-        (let* ((line-props (text-properties-at (point)))
-               (line-props (org-plist-delete line-props 'face)))
-          (call-interactively 'set-mark-command)
-          (search-backward name)
-          (call-interactively 'kill-region)
-          (let ((symbol-pos (point)))
-            (insert icon)
-            (beginning-of-line)
-            (let ((start (point))
-                  (end (progn (end-of-line) (point))))
-              (add-text-properties start end line-props)
-              (add-face-text-property symbol-pos (+ 1 symbol-pos) face))))))
-    (beginning-of-buffer)
-    (replace-regexp "[[:space:]]+[=]+" ""))
-#+end_src
-
-*** keywords
-#+begin_src emacs-lisp
-  (setq todo-keywords
-        ;; normal workflow
-        '((("DOING" "d" :icon "🏃" :face org-doing-face)
-           ("TODO" "t" :icon "□ " :face org-todo-face)
-           ("DONE" "D" :icon "✓ " :face org-done-face :done-state t))
-          ;; auxillary states
-          (("SOON" "s" :icon "❗ " :face org-soon-face)
-           ("SOMEDAY" "S" :icon "🛌" :face org-doing-face)))
-        org-todo-keywords (todo-org-todo-keywords todo-keywords)
-        org-todo-keyword-faces (todo-org-todo-keyword-faces todo-keywords))
-
-  (--map (:push episteme/pretty-symbols it)
-         (todo-prettify-symbols-alist todo-keywords))
-#+end_src
-
-*** org agenda finalization
-#+begin_src emacs-lisp
-  (setq episteme/todo-sequences-data (todo-parse-sequences-data todo-keywords))
-  (:hook org-agenda-finalize
-    (--each episteme/todo-sequences-data
-      (-each it 'todo-finalize-agenda-for-state)))
-#+end_src
-*** sorting
-#+begin_src emacs-lisp
-  (defun episteme:todo-sort (a b)
-    (let* ((a-state (get-text-property 0 'todo-state a))
-           (b-state (get-text-property 0 'todo-state b))
-           (a-index (-elem-index a-state todo-keyword-order))
-           (b-index (-elem-index b-state todo-keyword-order)))
-      (pcase (- b-index a-index)
-        ((and v (guard (< 0 v))) 1)
-        ((and v (guard (> 0 v))) -1)
-        (default nil))))
-
-  (setq org-agenda-cmp-user-defined 'episteme:todo-sort
-        todo-keyword-order '("DOING" "SOON" "TODO" "SOMEDAY" "DONE"))
-#+end_src
-
-** org-babel
-*** babel languages
-**** ob-csharp
-#+begin_src emacs-lisp
-  (use-package ob-csharp
-    :straight (ob-csharp :type git
-                         :host github
-                         :repo "thomas-villagers/ob-csharp"
-                         :files ("src/ob-csharp.el"))
-    :config
-    (:push org-babel-load-languages '(csharp . t)))
-#+end_src
-**** ob-fsharp
-#+begin_src emacs-lisp
-  (use-package ob-fsharp
-    :straight (ob-fsharp :type git
-                         :host github
-                         :repo "zweifisch/ob-fsharp"
-                         :files ("ob-fsharp.el"))
-    :config
-    (:push org-babel-load-languages '(fsharp . t)))
-#+end_src
-*** enable languages
-#+begin_src emacs-lisp
-  (setq org-babel-load-languages
-        '((shell . t)
-          (emacs-lisp . t)
-          (python . t)
-          (js . t)
-          (csharp . t)
-          (fsharp . t)))
-#+end_src
-
-*** default header args
-#+begin_src emacs-lisp
-  (:after org
-    (setq org-babel-default-header-args
-          '((:session . "none")
-            (:results . "replace")
-            (:exports . "code")
-            (:cache . "no")
-            (:noweb . "no")
-            (:hlines . "no")
-            (:tangle . "no"))))
-#+end_src
-
-*** security
-Disable prompts for evaluating org-mode links.
-#+begin_src emacs-lisp
-  (progn
-    (setq org-confirm-babel-evaluate nil)
-    (setq org-confirm-elisp-link-function nil)
-    (setq org-confirm-shell-link-function nil)
-    (setq safe-local-variable-values '((org-confirm-elisp-link-function . nil))))
-#+end_src
-*** install babel handlers
-#+begin_src emacs-lisp
-  (:hook after-init
-    (org-babel-do-load-languages 'org-babel-load-languages
-                                 org-babel-load-languages))
-#+end_src
-
-** org-fragtog
-Automatically preview LaTex fragments.
-
-#+begin_src emacs-lisp
-  (use-package org-fragtog
-    :config
-    (:hook org-mode 'org-fragtog-mode))
-#+end_src
-
-** helm-org
-#+begin_src emacs-lisp
-  (use-package helm-org)
-#+end_src
-** helm-org-rifle
-Quickly search through the current org buffer.
-
-#+begin_src emacs-lisp
-  (use-package helm-org-rifle)
-#+end_src
-** helm-org-walk
-Easily navigate Org files with Helm.
-#+begin_src emacs-lisp
-  (use-package helm-org-walk
-    :straight (helm-org-walk :type git :host github :repo "dustinlacewell/helm-org-walk"))
-#+end_src
-** org-ql
-Query Org files for elements.
-#+begin_src emacs-lisp
-  (use-package org-ql)
-#+end_src
-** org-ls
-Interact with babel codeblocks from elisp.
-#+begin_src emacs-lisp
-  (use-package org-ls
-    :straight (org-ls :type git :host github :repo "dustinlacewell/org-ls"))
-#+end_src
-** org-journal
-#+begin_src emacs-lisp
-  (use-package org-journal
-    :config
-    (setq org-journal-dir episteme/journal)
-    (setq org-journal-file-type 'weekly))
-#+end_src
-
-** org-roam
-Backlink support
-#+begin_src emacs-lisp
-  (defun episteme:ensure-org-id ()
-    (interactive)
-    (when (s-starts-with? episteme/current-remote-root (buffer-file-name))
-      (save-excursion
-        (beginning-of-buffer)
-        (org-id-get-create))))
-
-  (use-package org-roam
+  (use-package doom-modeline
     :ensure t
+    :config
+    (doom-modeline-def-segment current-remote
+      "Display current episteme remote"
+      (format "[%s]" episteme/current-remote))
+    (doom-modeline-def-modeline
+      'epi-modeline
+
+      '(bar workspace-name window-number modals matches buffer-info remote-host selection-info)
+      '(current-remote objed-state buffer-position major-mode process vcs checker misc-info))
+    (doom-modeline-mode 1)
+    (setq doom-modeline-height 35)
+    (setq doom-modeline-bar-width 5)
+    (setq tab-bar-format '(episteme:tab-bar-format))
     :init
-    (setq org-roam-v2-ack 2)
-    :bind (("C-c n l" . org-roam-buffer-toggle)
-           ("C-c n f" . org-roam-node-find)
-           ("C-c n g" . org-roam-graph)
-           ("C-c n i" . org-roam-node-insert)
-           ("C-c n c" . org-roam-capture)
-           ;; Dailies
-           ("C-c n j" . org-roam-dailies-capture-today))
+    (defun setup-custom-doom-modeline ()
+      (doom-modeline-set-modeline 'epi-modeline t)
+      (force-mode-line-update))
+    (add-hook 'doom-modeline-mode-hook 'setup-custom-doom-modeline))
+#+end_src
+
+** doom theme
+#+begin_src emacs-lisp
+  (use-package doom-themes
+    :ensure t
     :config
-    (setq org-roam-directory episteme/current-remote-root)
+    ;; Global settings (defaults)
+    (setq doom-themes-enable-bold t     ; if nil, bold is universally disabled
+          doom-themes-enable-italic t)  ; if nil, italics is universally disabled
+    (load-theme (intern (format "doom-%s" (or (getenv "theme") "laserwave"))) t)
 
-    ;; STOP PREPENDING DATES >:|
-    (setq org-roam-capture-templates '(("d" "default" plain "%?" :target
-                                        (file+head "${slug}.org" "#+TITLE: ${title}\n")
-                                        :unnarrowed t)))
-    (setq org-roam-extract-new-file-path "${slug}.org")
-
-    ;; STOP USING "_" instead of "-" >:|
-    (cl-defmethod org-roam-node-slug ((node org-roam-node))
-      (let ((title (org-roam-node-title node))
-            (slug-trim-chars '(;; Combining Diacritical Marks https://www.unicode.org/charts/PDF/U0300.pdf
-                               768 ; U+0300 COMBINING GRAVE ACCENT
-                               769 ; U+0301 COMBINING ACUTE ACCENT
-                               770 ; U+0302 COMBINING CIRCUMFLEX ACCENT
-                               771 ; U+0303 COMBINING TILDE
-                               772 ; U+0304 COMBINING MACRON
-                               774 ; U+0306 COMBINING BREVE
-                               775 ; U+0307 COMBINING DOT ABOVE
-                               776 ; U+0308 COMBINING DIAERESIS
-                               777 ; U+0309 COMBINING HOOK ABOVE
-                               778 ; U+030A COMBINING RING ABOVE
-                               780 ; U+030C COMBINING CARON
-                               795 ; U+031B COMBINING HORN
-                               803 ; U+0323 COMBINING DOT BELOW
-                               804 ; U+0324 COMBINING DIAERESIS BELOW
-                               805 ; U+0325 COMBINING RING BELOW
-                               807 ; U+0327 COMBINING CEDILLA
-                               813 ; U+032D COMBINING CIRCUMFLEX ACCENT BELOW
-                               814 ; U+032E COMBINING BREVE BELOW
-                               816 ; U+0330 COMBINING TILDE BELOW
-                               817))) ; U+0331 COMBINING MACRON BELOW
-        (cl-flet* ((nonspacing-mark-p (char)
-                                      (memq char slug-trim-chars))
-                   (strip-nonspacing-marks (s)
-                                           (ucs-normalize-NFC-string
-                                            (apply #'string (seq-remove #'nonspacing-mark-p
-                                                                        (ucs-normalize-NFD-string s)))))
-                   (cl-replace (title pair)
-                               (replace-regexp-in-string (car pair) (cdr pair) title)))
-          (let* ((pairs `(("[^[:alnum:][:digit:]]" . "-")
-                          ("--*" . "-")
-                          ("^-" . "")
-                          ("-$" . "")))
-                 (slug (-reduce-from #'cl-replace (strip-nonspacing-marks title) pairs)))
-            (downcase slug)))))
-
-    ;; If using org-roam-protocol
-    (require 'org-roam-protocol)
-    (:hook org-mode
-     (add-hook 'before-save-hook 'episteme:ensure-org-id nil t)))
+    ;; Enable flashing mode-line on errors
+    (doom-themes-visual-bell-config)
+    ;; Corrects (and improves) org-mode's native fontification.
+    (doom-themes-org-config))
 #+end_src
-* other packages
-** persistent-scratch
+* core
+** api
+*** get-support-path
 #+begin_src emacs-lisp
-  (use-package persistent-scratch
-    :config
-    (persistent-scratch-setup-default)
-    (setq persistent-scratch-save-file (concat episteme/home "/scratch")
-          persistent-scratch-autosave-interval 20))
-#+end_src
-** embrace
-#+begin_src emacs-lisp
-  (use-package embrace
-    :config
-    (embrace-add-pair (kbd "\;") "`" "`"))
+  (defun episteme:get-support-path (filename)
+    (concat episteme/support-path "/" filename))
 #+end_src
 
-** htmlize
-Allows org codeblocks to be syntax highlighted on html export.
-
+*** get-docs-path
 #+begin_src emacs-lisp
-  (use-package htmlize)
+  (defun episteme:get-docs-path (filename)
+    (concat episteme/docs-path "/" filename))
 #+end_src
 
-* hydra
-[[https://github.com/abo-abo/hydra][Hydra]] provides customizable interactive command palettes.
-
-** pretty-hydra
-[[https://github.com/jerrypnz/major-mode-hydra.el#pretty-hydra][Pretty-hydra]] provides a macro that makes it easy to get good looking hydras.
+* remotes
 
 #+begin_src emacs-lisp
-  (use-package pretty-hydra
-    :demand t
-    :straight (pretty-hydra :type git :host github
-                            :repo "jerrypnz/major-mode-hydra.el"
-                            :files ("pretty-hydra.el")))
+  (defvar episteme/current-remote "episteme"
+    "The currently active knowledge-base.")
+
+  (:later ;; activate the default remote
+   (episteme-activate-remote episteme/default-remote))
 #+end_src
 
-** major-mode-hydra
-[[https://github.com/jerrypnz/major-mode-hydra.el][Major-mode-hydra]] associates hydras with major-modes.
-
+** api
+*** remote-exists?
 #+begin_src emacs-lisp
-  (use-package major-mode-hydra
-    :straight (major-mode-hydra :type git :host github
-                                :repo "jerrypnz/major-mode-hydra.el"
-                                :files ("major-mode-hydra.el")))
+  (defun episteme-remote-exists? (remote)
+    (file-exists-p (episteme-get-remote-path remote)))
 #+end_src
 
-** hera
-[[https://github.com/dustinlacewell/hera][Hera]] lets hydras form a stack.
-
+*** remote-is-local?
 #+begin_src emacs-lisp
-  (use-package hera
-    :demand t
-    :straight (hera :type git :host github :repo "dustinlacewell/hera"))
+  (defun episteme-remote-is-local? (remote)
+    (let ((default-directory (episteme-get-remote-path remote)))
+      (not (file-directory-p ".git"))))
 #+end_src
 
-** :hydra
-Macro for defining Hydras.
-
-*** boilerplate
-**** inject-hint
+*** remote-is-dirty?
 #+begin_src emacs-lisp
-  (defun :hydra/inject-hint (symbol hint)
-    (-let* ((name (symbol-name symbol))
-            (hint-symbol (intern (format "%s/hint" name)))
-            (format-form (eval hint-symbol))
-            (string-cdr (nthcdr 1 format-form))
-            (format-string (string-trim (car string-cdr)))
-            (amended-string (format "%s\n\n%s" format-string hint)))
-      (setcar string-cdr amended-string)))
+  (defun episteme-remote-is-dirty? (remote)
+    (let ((default-directory (episteme-get-remote-path remote)))
+      (not (string= (shell-command-to-string "git status --porcelain") ""))))
 #+end_src
 
-**** make-head-hint
+*** get-remote-path
 #+begin_src emacs-lisp
-  (defun :hydra/make-head-hint (head default-color)
-    (-let (((key _ hint . rest) head))
-      (when key
-        (-let* (((&plist :color color) rest)
-                (color (or color default-color))
-                (face (intern (format "hydra-face-%s" color)))
-                (propertized-key (propertize key 'face face)))
-          (format " [%s]: %s" propertized-key hint)))))
+  (defun episteme-get-remote-path (remote)
+    (expand-file-name remote (expand-file-name "remotes" user-emacs-directory)))
 #+end_src
 
-**** make-hint
+*** get-remote-root
 #+begin_src emacs-lisp
-  (defun :hydra/make-hint (heads default-color)
-    (string-join
-     (cl-loop for head in heads
-              for hint = (:hydra/make-head-hint head default-color)
-              collect hint) "\n"))
+  (defun episteme-get-remote-root (remote)
+    (let* ((path (episteme-get-remote-path remote))
+           (conf-path (f-join path "epi.json"))
+           (conf-exists (file-exists-p conf-path)))
+      (if conf-exists
+          ;; get "root" key from json file
+          (let* ((conf (json-read-file conf-path))
+                 (root (cdr (assoc 'root conf))))
+            (if root
+                (concat path "/" root)
+              path))
+        path)))
 #+end_src
 
-**** clear-hint
+*** get-remote-url
 #+begin_src emacs-lisp
-  (defun :hydra/clear-hint (head)
-    (-let* (((key form _ . rest) head))
-      `(,key ,form nil ,@rest)))
+  (defun episteme-get-remote-url (remote)
+    (let ((default-directory (episteme-get-remote-path remote)))
+      (s-trim (shell-command-to-string "git config --get remote.origin.url"))))
 #+end_src
 
-**** add-exit-head
+*** set-remote-url
 #+begin_src emacs-lisp
-  (defun :hydra/add-exit-head (heads)
-    (let ((exit-head '("SPC" (hera-pop) "to exit" :color blue)))
-      (append heads `(,exit-head))))
+  (defun episteme-set-remote-url (remote url)
+    (let ((default-directory (episteme-get-remote-path remote))
+          (command (format "git config --replace-all remote.origin.url %s" url)))
+      (message "%s" command)
+      (shell-command command)))
 #+end_src
 
-**** add-heads
+*** get-remote-paths
 #+begin_src emacs-lisp
-    (defun :hydra/add-heads (columns extra-heads)
-      (let* ((cell (nthcdr 1 columns))
-             (heads (car cell))
-             (extra-heads (mapcar ':hydra/clear-hint extra-heads)))
-        (setcar cell (append heads extra-heads))))
-
+  (defun episteme-get-remote-paths ()
+    (let* ((filter (lambda (it) (not (s-starts-with? "." it))))
+           (files (-filter filter (directory-files episteme/remotes-path)))
+           (paths (-map 'episteme-get-remote-path files))
+           (folders (-filter 'f-directory? paths)))
+      folders))
 #+end_src
 
-*** macro
+*** get-remote-names
 #+begin_src emacs-lisp
-    (defmacro :hydra (name body columns &optional extra-heads)
-      (declare (indent defun))
-      (-let* (((&plist :color default-color :major-mode mode) body)
-              (extra-heads (:hydra/add-exit-head extra-heads))
-              (extra-hint (:hydra/make-hint extra-heads default-color))
-              (body (plist-put body :hint nil))
-              (body-name (format "%s/body" (symbol-name name)))
-              (body-symbol (intern body-name))
-              (mode-body-name (major-mode-hydra--body-name-for mode))
-              (mode-support
-               `(when ',mode
-                  (defun ,mode-body-name () (interactive) (,body-symbol)))))
-        (:hydra/add-heads columns extra-heads)
-        (when mode
-          (cl-remf body :major-mode))
-        `(progn
-           (pretty-hydra-define ,name ,body ,columns)
-           (:hydra/inject-hint ',name ,extra-hint)
-           ,mode-support
-           )))
+  (defun episteme-get-remote-names ()
+    (let* ((filter (lambda (it) (not (s-starts-with? "." it))))
+           (files (-filter filter (directory-files episteme/remotes-path)))
+           (paths (-map 'episteme-get-remote-path files))
+           (folders (-filter 'f-directory? paths)))
+      files))
 #+end_src
 
-*** tests
+*** add-remote
 #+begin_src emacs-lisp
-    ;; (macroexpand-all `(:hydra hydra-test (:color red :major-mode fundamental-mode)
-    ;;    ("First"
-    ;;     (("a" (message "first - a") "msg a" :color blue)
-    ;;      ("b" (message "first - b") "msg b"))
-    ;;     "Second"
-    ;;     (("c" (message "second - c") "msg c" :color blue)
-    ;;      ("d" (message "second - d") "msg d")))))
-
-    ;; (:hydra hydra-test (:color red :major-mode fundamental-mode)
-    ;;    ("First"
-    ;;     (("a" (message "first - a") "msg a" :color blue)
-    ;;      ("b" (message "first - b") "msg b"))
-    ;;     "Second"
-    ;;     (("c" (message "second - c") "msg c" :color blue)
-    ;;      ("d" (message "second - d") "msg d"))))
-
+    (defun episteme-add-remote (name url)
+        (if (episteme-remote-exists? name)
+            (message "Remote %s already exists" name)
+          (let ((default-directory episteme/remotes-path))
+            ;; check url is empty
+            (if (string= "" url)
+                (progn
+                    (make-directory (episteme-get-remote-path name))
+                    (message "Local remote %s created" name))
+              (progn
+                (shell-command (format "git clone %s" url))
+                (message "Remote %s added" name))))))
 #+end_src
 
-* treemacs
+*** remove-remote
 #+begin_src emacs-lisp
-  (use-package treemacs
-    :demand t
-    :custom
-    (treemacs--project-follow-delay 0.5))
+  (defun episteme-remove-remote (name)
+    (let ((path (episteme-get-remote-path name))
+          (notify (lambda () (message "Remote %s was permanently deleted." name))))
+      (if (f-exists? path)
+          ;; confirm that the user wants to remove the remote
+          (when (yes-or-no-p (format "Are you sure you want to remove %s?" name))
+            ;; check if the remote is dirty
+            (when (and (or (episteme-remote-is-local? name) (episteme-remote-is-dirty? name))
+                       (yes-or-no-p (format "Remote %s has uncommited changes!  Are you sure you want to remove it?" name)))
+              (delete-directory path t)
+              (funcall notify))
+            (delete-directory path t)
+            (funcall notify))
+        (message "Remote %s does not exist" name))))
+#+end_src
 
-  (defun episteme:show-sidebar ()
+*** update-remote
+#+begin_src emacs-lisp
+  (defun episteme-update-remote (name)
+    (let ((path (episteme-get-remote-path name)))
+      (if (f-exists? path)
+          (if (episteme-remote-is-local? name)
+              (message "Remote %s is local and can't be updated." name)
+            (if (episteme-remote-is-dirty? name)
+                (message "Remote %s has uncommitted changes. Commit all changes before updating." name)
+              ;; pull on `path` with magit
+              (let ((default-directory path))
+                (magit-pull-from-upstream nil)))
+            (message "Updated remote %s." name))
+        (message "No remote exists with name %s." name))))
+#+end_src
+
+*** remote-status
+#+begin_src emacs-lisp
+  (defun episteme-remote-status (name)
+    (let ((path (episteme-get-remote-path name)))
+      (if (f-exists? path)
+          (if (episteme-remote-is-local? name)
+              (message "Remote %s is local and has no git status.")
+            (magit-status path))
+        (message "No remote exists with name %s." name))))
+#+end_src
+
+*** pick-remote
+#+begin_src emacs-lisp
+  (defun episteme-pick-remote ()
+    (let ((remotes (episteme-get-remote-paths)))
+      (if (not remotes)
+          (message "No remotes found.")
+        (let* ((names (-map 'f-filename remotes))
+               (name (helm :sources (helm-build-sync-source "Pick remote"
+                                                             :candidates names
+                                                             :action (lambda (name) name)))))
+            name))))
+#+end_src
+
+*** activate-remote
+Set episteme/current-remote and episteme/current-remote-root.
+#+begin_src emacs-lisp
+  (defun episteme-activate-remote (name)
+    (setq episteme/current-remote name)
+    (let ((path (episteme-get-remote-path name))
+          (root (episteme-get-remote-root name)))
+
+      (unless (f-exists? path)
+        (error "Current remote does not exist: %s" name))
+      (unless (f-exists? root)
+        (error "Current remote's root does not exist: %s " root))
+
+      (setq episteme/current-remote-root root)
+      (setq org-directory episteme/current-remote-root)
+      (setq org-roam-directory episteme/current-remote-root)))
+#+end_src
+
+** commands
+*** add-remote
+Add a remote interactively.
+#+begin_src emacs-lisp
+  (defun episteme:add-remote ()
     (interactive)
-    (let ((current-window (get-buffer-window))
-          (treemacs--find-user-project-functions
-           '((lambda () episteme/current-remote-root))))
-      (treemacs-display-current-project-exclusively)
-      (select-window current-window)))
+    (let* ((name (read-string "Name: "))
+           (url (read-string "URL: ")))
+      (episteme-add-remote name url)))
+#+end_src
 
-  (defun episteme:toggle-sidebar ()
+*** remove-remote
+Remove a remote interactively.
+#+begin_src emacs-lisp
+  (defun episteme:remove-remote ()
     (interactive)
-    (if-let (win (treemacs-get-local-window))
-        (progn (treemacs-select-window)
-               (kill-buffer-and-window))
-      (episteme:show-sidebar)))
+    (let* ((name (episteme-pick-remote)))
+      (when name
+        (episteme-remove-remote name))))
+#+end_src
+
+*** update-remote
+Update a remote interactively.
+#+begin_src emacs-lisp
+  (defun episteme:update-remote ()
+    (interactive)
+    (let* ((name (episteme-pick-remote)))
+      (when name
+        (episteme-update-remote name))))
+#+end_src
+
+*** remote-status
+Check a remote interactively.
+#+begin_src emacs-lisp
+  (defun episteme:remote-status ()
+    (interactive)
+    (let* ((name (episteme-pick-remote)))
+      (when name
+        (episteme-remote-status name))))
+#+end_src
+
+*** set-remote-url
+Set the remote url interactively.
+#+begin_src emacs-lisp
+  (defun episteme:set-remote-url ()
+    (interactive)
+    (let* ((name (episteme-pick-remote)))
+      (when name
+        (let ((url (read-string "URL: ")))
+          (episteme-set-remote-url name url)
+          (message "Remote url for %s set to %s" name url)))))
+#+end_src
+
+*** do-activate-remote
+Set episteme/current-remote interactively.
+#+begin_src emacs-lisp
+  (defun episteme:activate-remote ()
+    (interactive)
+    (let* ((name (episteme-pick-remote)))
+      (when name
+        (episteme-activate-remote name))))
+#+end_src
+
+* status bar
+#+begin_src emacs-lisp
+  (:later (episteme-init-status-bar))
+#+end_src
+
+** api
+*** tab-bar-format
+#+begin_src emacs-lisp
+  (defun episteme-tab-bar-format ()
+    (let* ((remote episteme/current-remote)
+           (is-dirty (when (episteme-remote-is-dirty? remote)
+                       (propertize "⚠️"
+                                   'face 'default
+                                   'help-echo "Remote has uncommitted changes.")))
+           (is-local (when (episteme-remote-is-local? remote) "🏠️"))
+           (icon (or is-dirty is-local "🌐"))
+           (str (s-trim (format " %s %s (%s)"
+                         icon
+                         episteme/current-remote
+                         episteme/current-remote-root))))
+      `((global menu-item ,str ignore))))
+#+end_src
+
+*** init-tab-bar
+#+begin_src emacs-lisp
+  (defun episteme-init-status-bar ()
+    (copy-face 'doom-modeline-bar 'tab-bar)
+    (invert-face 'tab-bar)
+    (let ((fg (face-attribute 'tab-bar :foreground))
+          (bg (face-attribute 'default :background)))
+      (set-face-attribute 'tab-bar nil
+                          :height 100
+                          :foreground fg
+                          :background (color-darken-name bg 3)))
+    (setq tab-bar-format '(episteme-tab-bar-format))
+    (tab-bar-mode 1))
+#+end_src
+
+* epicenter
+
+** internal
+
+*** load-remotes
+#+begin_src emacs-lisp
+  (defun epicenter:load-remotes ()
+    (let ((remotes-map (json-read-file epicenter/remotes-file)))
+      (mapcar (lambda (remote)
+                (let ((name (symbol-name (car remote)))
+                      (url (cdr (nth 1 remote)))
+                      (description (cdr (nth 2 remote))))
+                  (list name url description)))
+                remotes-map)))
+#+end_src
+
+*** compare-remote-urls
+Check every local remote against epicenter remotes.
+Gather a list of remotes whos urls are not the same.
+Each result should have the name, localUrl, and remoteUrl.
+#+begin_src emacs-lisp
+  (defun epicenter:compare-remote-urls ()
+    (let* ((remotes (epicenter:load-remotes))
+           (remote-names (--map (car it) remotes))
+           (local-remotes (episteme-get-remote-names))
+           ;; calculate which local-remotes are also in remote-names
+           (tracked-remotes (-filter
+                             (lambda (local) (--first (string= local (car it)) remotes))
+                             local-remotes))
+
+           ;; for each tracked-remote create (name localUrl remoteUrl)
+           (target-remotes (-map (lambda (tracked)
+                                   (list tracked
+                                         (episteme-get-remote-url tracked)
+                                         ;; find `remote` with same name, return its url
+                                         (nth 1 (-first (lambda (remote) (string= (car remote) tracked)) remotes))))
+                                 tracked-remotes))
+           ;; filter target-remotes down to those where (not (string= (nth 1) (nth 2)))
+           (problem-remotes (--filter
+                             (not (string= (nth 1 it) (nth 2 it)))
+                             target-remotes))
+           )
+      problem-remotes))
+#+end_src
+
+*** pick-from
+#+begin_src emacs-lisp
+  (defun epicenter:pick-from (remotes &optional title)
+    (helm :sources
+          (helm-build-sync-source (or title "Pick a remote")
+            :multiline t
+            :candidates (mapcar (lambda (remote)
+                                  (let ((name (nth 0 remote))
+                                        (local-url (nth 1 remote))
+                                        (remote-url (nth 2 remote)))
+                                    (cons (format "%s:\nLocal:  %s\nRemote: %s" name local-url remote-url)
+                                          (list name remote-url))))
+                                remotes))
+          :action (lambda (remote)
+                    (let ((name (nth 0 remote))
+                          (remote-url (nth 2 remote)))))))
+#+end_src
+
+*** pick-remote
+#+begin_src emacs-lisp
+  (defun epicenter:pick-remote ()
+    (interactive)
+    (let ((remotes (epicenter:load-remotes)))
+      (helm :sources (helm-build-sync-source "Pick an epicenter remote"
+                       :multiline t
+                       :candidates (mapcar (lambda (remote)
+                                             (let ((name (nth 0 remote))
+                                                   (url (nth 1 remote))
+                                                   (description (nth 2 remote)))
+                                               (cons (format "%s: %s\n  %s" name url description)
+                                                     (list name url description))))
+                                           remotes)))))
+#+end_src
+
+** commands
+*** update-list
+#+begin_src emacs-lisp
+  (defun epicenter-update-list ()
+    (interactive)
+    (let ((default-directory epicenter/remotes-path))
+      (shell-command "git pull")))
+#+end_src
+
+*** track-knowledgebase
+#+begin_src emacs-lisp
+  (defun epicenter-track-knowlegebase ()
+    (interactive)
+    (let ((remote (epicenter:pick-remote)))
+      (if remote
+          (let ((name (nth 0 remote))
+                (url (nth 1 remote)))
+
+            (episteme-add-remote name url)))))
+#+end_src
+
+*** compare-remotes
+#+begin_src emacs-lisp
+  (defun epicenter-compare-remotes ()
+    (interactive)
+    (let ((remotes (epicenter:compare-remote-urls)))
+      (if remotes
+          (let* ((choice (epicenter:pick-from remotes))
+                 (name (nth 0 choice))
+                 (url (nth 1 choice)))
+            (episteme-set-remote-url name url)
+            (message "Remote `%s` url set to %s" name url))
+        (message "No remote urls out-of-sync."))))
+#+end_src
+
+* todos
+* journal
+* devlog
+** commands
+*** new-devlog-entry
+#+begin_src emacs-lisp
+    (defun episteme:new-devlog-entry ()
+      (interactive)
+      (let* ((_org-journal-dir org-journal-dir))
+        (setq org-journal-dir (episteme:get-support-path "devlog"))
+        (org-journal-new-entry nil)
+        (setq org-journal-dir _org-journal-dir)))
+#+end_src
+
+* dashboard
+#+begin_src emacs-lisp
+  (:later
+   (setq dashboard-center-content t
+         dashboard-banner-logo-title "apoptosis/episteme"
+         dashboard-startup-banner
+         (concat episteme/support-path "/cain.png")
+         dashboard-footer-messages
+         '("Co-edification through tinkering, dialectic and reference!")
+         dashboard-items '((links . 10)
+                           (buttons . 10)
+                           (remotes . 10)
+                           (recents . 5)))
+
+  (add-to-list 'dashboard-item-generators '(links . episteme--dashboard-links))
+  (add-to-list 'dashboard-item-generators '(buttons . episteme--dashboard-buttons))
+  (add-to-list 'dashboard-item-generators '(remotes . episteme--dashboard-remotes))
+  (dashboard-setup-startup-hook))
+#+end_src
+** internal
+*** align-remotes-by-length
+#+begin_src emacs-lisp
+  (defun episteme--align-remotes-by-length ()
+    (let ((len-item (cdr (assoc 'remotes dashboard-items)))
+          (align-length -1)
+          (count 0)
+          (remotes (episteme-get-remote-names))
+          len-list base)
+      (setq len-list (length remotes))
+      (while (and (< count len-item) (< count len-list))
+        (setq base (nth count remotes)
+              align-length (max align-length (length (dashboard-f-filename base))))
+        (cl-incf count))
+      align-length))
+#+end_src
+
+*** dashboard-remotes-format
+#+begin_src emacs-lisp
+(defun episteme--dashboard-remotes-format ()
+  (let* ((len-align (episteme--align-remotes-by-length))
+         (new-fmt (dashboard--generate-align-format
+                   dashboard-recentf-item-format len-align)))
+    new-fmt))
+#+end_src
+
+*** dashboard-insert-section-list
+#+begin_src emacs-lisp
+(defmacro episteme--dashboard-insert-section-list (section-name list action &rest rest)
+  "Insert into SECTION-NAME a LIST of items, expanding ACTION and passing REST to widget creation."
+  `(when (car ,list)
+     (insert "\n")
+     (mapc
+      (lambda (el)
+        (let ((tag ,@rest))
+          (insert "  ")
+          (when (and (display-graphic-p)
+                     dashboard-set-file-icons
+                     (or (fboundp 'all-the-icons-icon-for-dir)
+                         (require 'all-the-icons nil 'noerror)))
+            (let* ((path (car (last (split-string ,@rest " - "))))
+                   (icon (if (and (not (file-remote-p path))
+                                  (file-directory-p path))
+                             (all-the-icons-icon-for-dir path nil "")
+                           (cond
+                            ((or (string-equal ,section-name "Agenda for today:")
+                                 (string-equal ,section-name "Agenda for the coming week:"))
+                             (all-the-icons-octicon "primitive-dot" :height 1.0 :v-adjust 0.01))
+                            ((file-remote-p path)
+                             (all-the-icons-octicon "radio-tower" :height 1.0 :v-adjust 0.01))
+                            (t (all-the-icons-icon-for-file (file-name-nondirectory path)
+                                                            :v-adjust -0.05))))))
+              (setq tag (concat icon " " ,@rest))))
+
+          (widget-create 'item
+                         :tag tag
+                         :action ,action
+                         :button-face 'dashboard-items-face
+                         :mouse-face 'highlight
+                         :button-prefix ""
+                         :button-suffix ""
+                         :format "%[%t%]")))
+      ,list)))
+#+end_src
+
+*** dashboard-insert-section
+#+begin_src emacs-lisp
+(defmacro episteme--dashboard-insert-section (section-name list list-size shortcut action &rest widget-params)
+  "Add a section with SECTION-NAME and LIST of LIST-SIZE items to the dashboard.
+SHORTCUT is the keyboard shortcut used to access the section.
+ACTION is theaction taken when the user activates the widget button.
+WIDGET-PARAMS are passed to the \"widget-create\" function."
+  `(progn
+     (dashboard-insert-heading ,section-name
+                               (if (and ,list ,shortcut dashboard-show-shortcuts) ,shortcut))
+     (if ,list
+         (when (and (episteme--dashboard-insert-section-list
+                     ,section-name
+                     (dashboard-subseq ,list ,list-size)
+                     ,action
+                     ,@widget-params)
+                    ,shortcut)
+           (dashboard-insert-shortcut ,shortcut ,section-name))
+       (insert (propertize "\n    --- No items ---" 'face 'dashboard-no-items-face)))))
+#+end_src
+
+*** dashboard-links
+#+begin_src emacs-lisp
+  (defun episteme--dashboard-links (list-size)
+    (let* ((fmt (episteme--dashboard-remotes-format))
+           (remotes (episteme-get-remote-names))
+           (items (list (list "github" "https://github.com/apoptosis/episteme")
+                        (list "discord" "https://discord.gg/3uPNVyQ5kr")
+                        (list "report issue" "https://github.com/apoptosis/episteme/issues/new")))
+           (keys (mapcar 'car items)))
+      (episteme--dashboard-insert-section
+       "web links" keys 5 "l"
+       `(lambda (&rest ignore) (browse-url-xdg-open (cadr (assoc ,el (quote ,items)))))
+       (format "[%s]" el))))
+#+end_src
+
+*** dashboard-buttons
+#+begin_src emacs-lisp
+  (defun episteme--dashboard-buttons (list-size)
+    (let* ((fmt (episteme--dashboard-remotes-format))
+           (remotes (episteme-get-remote-names))
+           (items (list (cons "main menu" '((lambda () (episteme-hydra-default/body))))
+                        (cons "init.el" '((lambda () (find-file episteme/user-init-file))))
+                        (cons "config.el" '((lambda () (find-file episteme/user-config-file))))
+                        (cons "todo" '((lambda () (episteme:todo))))
+                        (cons "journal" '((lambda () (episteme:journal))))
+                        (cons "epicenter" '((lambda () (epicenter-track-knowlegebase))))
+                        (cons "user guide" '((lambda () (find-file (concat episteme/support-path "/docs/user-guide.org")))))))
+           (keys (mapcar 'car items)))
+      (episteme--dashboard-insert-section
+       "common actions" keys list-size "m"
+       `(lambda (&rest ignore) (funcall (cadr (assoc ,el (quote ,items)))))
+       (format "[%s]" el))))
+#+end_src
+
+*** dashboard-remotes
+#+begin_src emacs-lisp
+(defun episteme--dashboard-remotes (list-size)
+  (let ((fmt (episteme--dashboard-remotes-format))
+        (remotes (episteme-get-remote-names)))
+    (dashboard-insert-section
+     "knowledge bases" remotes list-size "k"
+     `(lambda (&rest ignore) (message "@@ %s" ,el))
+     (format fmt el (episteme-get-remote-url el)))
+    ))
+#+end_src
+
+** commands
+#+begin_src emacs-lisp
+(defun episteme:dashboard ()
+  "Jump to the dashboard buffer, if doesn't exists create one."
+  (interactive)
+  (switch-to-buffer dashboard-buffer-name)
+  (dashboard-mode)
+  (dashboard-insert-startupify-lists)
+  (dashboard-refresh-buffer)
+  (beginning-of-buffer)
+  (search-forward "episteme"))
 #+end_src
 
 * main menu
@@ -2098,21 +2182,15 @@ Many of the Emacs help facilities at your fingertips!
 
 ** hydra-dev
 #+begin_src emacs-lisp
-  (defun episteme:dev-log ()
-    (interactive)
-    (let* ((_org-journal-dir org-journal-dir))
-      (setq org-journal-dir (concat episteme/support "/devlog"))
-      (org-journal-new-entry nil)
-      (setq org-journal-dir _org-journal-dir)))
-
   (:hydra episteme-hydra-dev (:color blue)
     ("Open"
-     (("s" (find-file (concat episteme/support "/support.org")) "support.org")
-      ("d" (find-file (concat episteme/org "/episteme/developer-docs.org")) "docs")
-      ("l" (call-interactively 'episteme:dev-log) "log"))
+     (("s" (find-file (episteme:get-support-path "support.org")) "support.org")
+      ("d" (find-file (episteme:get-docs-path "developer-guide.org")) "dev docs")
+      ("j" (find-file (episteme:get-docs-path "devlog.org")) "dev docs")
+      ("J" (episteme:new-devlog-entry) "new devlog entry"))
      "Git"
-     (("g" (magit-status episteme/support) "magit")
-      ("p" (magit-pull episteme/support) "pull")
+     (("g" (magit-status episteme/support-path) "magit")
+      ("p" (magit-pull episteme/support-path) "pull")
       ("R" (magit-reset-hard)))))
 #+end_src
 
@@ -2120,16 +2198,16 @@ Many of the Emacs help facilities at your fingertips!
 #+begin_src emacs-lisp
     (:hydra episteme-hydra-remotes (:color blue)
       ("Knowledge-bases  "
-       (("l" (call-interactively (lambda () (interactive) (episteme:pick-remote))) "list")
-        ("a" (lambda () (interactive) (episteme:do-activate-remote)) "activate")
-        ("n" episteme:do-add-remote "new")
-        ("u" episteme:do-update-remote "update")
-        ("r" episteme:do-remove-remote "remove")
-        ("g" episteme:do-remote-status "git status")
-        ("s" episteme:do-set-remote-url "set url"))
+       (("l" (call-interactively (lambda () (interactive) (episteme-pick-remote))) "list")
+        ("a" (lambda () (interactive) (episteme:activate-remote)) "activate")
+        ("n" episteme:add-remote "new")
+        ("u" episteme:update-remote "update")
+        ("r" episteme:remove-remote "remove")
+        ("g" episteme:remote-status "git status")
+        ("s" episteme:set-remote-url "set url"))
        "Epicenter"
-       (("U" (epicenter:update-remotes) "update epicenter")
-        ("i" (epicenter:do-track-remote) "install community kb"))))
+       (("U" (epicenter-update-list) "update epicenter")
+        ("i" (epicenter-track-knowlegebase) "install community kb"))))
 #+end_src
 
 ** hydra-default
@@ -2153,10 +2231,10 @@ Many of the Emacs help facilities at your fingertips!
       (";" embrace-commander "parens / quotes"))
      "Bookmarks"
      (("S" episteme:toggle-sidebar "sidebar" :color red)
-      ("D" (episteme:find (concat episteme/support "/docs")) "docs")
-      ("C" (find-file (concat episteme/support "/docs/cheatsheet.org")) "cheatsheet")
-      ("U" (find-file (concat episteme/support "/docs/user-guide.org")) "user guide")
-      ("I" (find-file (concat episteme/support "/README.org")) "readme"))
+      ("D" (episteme:find (concat episteme/support-path "/docs")) "docs")
+      ("C" (find-file (concat episteme/support-path "/docs/cheatsheet.org")) "cheatsheet")
+      ("U" (find-file (concat episteme/support-path "/docs/user-guide.org")) "user guide")
+      ("I" (find-file (concat episteme/support-path "/README.org")) "readme"))
      "Misc"
      (("." (hera-push 'episteme-hydra-dev/body) "dev tools"))))
 #+end_src
@@ -2703,17 +2781,11 @@ Open hydra for current major mode if one exists, otherwise the default hydra.
       ))
 #+end_src
 
-* startup
-#+begin_src emacs-lisp
-  (episteme/bind-keys)
-  (episteme:init-remotes)
-  (call-interactively 'episteme:dashboard)
-#+end_src
 * user config.el
 This should remain at the end of this file.
 #+begin_src emacs-lisp
-  (unless (file-exists-p episteme/config)
-    (with-temp-file episteme/config
+  (unless (file-exists-p episteme/user-config-file)
+    (with-temp-file episteme/user-config-file
       (insert ";; this is your custom configuration for episteme,
   ;; you can manage it with orgmode by un-commenting
   ;; the following:
@@ -2721,16 +2793,17 @@ This should remain at the end of this file.
   ;; (org-babel-load-file
   ;;  (expand-file-name
   ;;  \"README.org\"
-  ;;  episteme/home))
+  ;;  episteme/home-path))
 
   (provide 'config)
   ;;;config.el ends here")))
 
-  (when (file-exists-p episteme/config)
-      (message "Loading user config from: %s" episteme/config)
-      (load-file episteme/config))
+  (when (file-exists-p episteme/user-config-file)
+      (message "Loading user config from: %s" episteme/user-config-file)
+      (load-file episteme/user-config-file))
 #+end_src
 
 #+begin_src emacs-lisp
-  (run-hooks 'episteme-after-load-hook)
+  (run-hooks 'episteme/after-load-hook)
+  (episteme:dashboard)
 #+end_src
