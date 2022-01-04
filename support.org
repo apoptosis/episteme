@@ -25,7 +25,7 @@ github.
 *** bootstrap
 Run the [[https://github.com/raxod502/straight.el#bootstrapping-straightel][straight.el bootstrap]].
 #+begin_src emacs-lisp
-  (let ((bootstrap-file (concat (getenv "config") "/straight/repos/straight.el/bootstrap.el"))
+  (let ((bootstrap-file (concat (getenv "config") "straight/repos/straight.el/bootstrap.el"))
         (bootstrap-version 5))
     (unless (file-exists-p bootstrap-file)
       (with-current-buffer
