@@ -126,18 +126,6 @@ e.g. =(:command foobar)=
         (_ `(lambda () (interactive) ,@body) ))))
 #+end_src
 
-** :after
-Defer some forms until the given package is loaded.
-
-e.g. =(:after org (message "Hello world"))=
-
-#+begin_src emacs-lisp
-  (defmacro :after (package &rest body)
-    "A simple wrapper around `with-eval-after-load'."
-    (declare (indent defun))
-    `(with-eval-after-load ',package ,@body))
-#+end_src
-
 ** :hook
 Register some forms or a symbol with a hook.
 
@@ -162,19 +150,6 @@ e.g. (:hook org-mode foobar)
       `(add-hook ',hook-sym ,body nil ,local)))
 #+end_src
 
-** :push
-A wrapper around help:add-to-list.
-
-e.g. =(:push some-list 1 2 3)=
-
-#+begin_src emacs-lisp
-  (defmacro :push (sym &rest body)
-    (declare (indent defun))
-    (if (consp body)
-        `(setq ,sym (-snoc ,sym ,@body))
-      `(add-to-list ,sym ,body)))
-#+end_src
-
 ** :bind
 Bind some forms or a symbol to a key.
 
@@ -193,11 +168,46 @@ e.g. =(:bind "C-m" org-mode-map (message "Hello world."))=
               `(define-key ,mode (kbd ,key) ,body)))
         `(global-set-key (kbd ,(eval key)) ,(eval `(:command ,@body))))))
 #+end_src
+
 ** :later
 #+begin_src emacs-lisp
   (defmacro :later (&rest body)
     `(:hook episteme/after-load ,@body))
 #+end_src
+
+** :after
+Defer some forms until the given package is loaded.
+
+e.g. =(:after org (message "Hello world"))=
+
+#+begin_src emacs-lisp
+  (defmacro :after (package &rest body)
+    "A simple wrapper around `with-eval-after-load'."
+    (declare (indent defun))
+    `(with-eval-after-load ',package ,@body))
+#+end_src
+
+** :push
+A wrapper around help:add-to-list.
+
+e.g. =(:push some-list 1 2 3)=
+
+#+begin_src emacs-lisp
+  (defmacro :push (sym &rest body)
+    (declare (indent defun))
+    (if (consp body)
+        `(setq ,sym (-snoc ,sym ,@body))
+      `(add-to-list ,sym ,body)))
+#+end_src
+
+** :push-menu
+#+begin_src emacs-lisp
+  (defmacro :push-menu (name)
+    (let ((sym (intern (format "episteme-menu:%s/body" (symbol-name name)))))
+      `(hera-push (quote ,sym))))
+  ;; (:push-menu help)
+#+end_src
+
 * configuration
 ** episteme paths
 #+begin_src emacs-lisp
@@ -273,7 +283,7 @@ e.g. =(:bind "C-m" org-mode-map (message "Hello world."))=
 * keybinds
 #+begin_src emacs-lisp
   (:later
-    (:bind episteme/main-menu-key nil (hera-start 'episteme-hydra-default/body))
+    (:bind episteme/main-menu-key nil (hera-start 'episteme-menu:main/body))
     (:bind episteme/mode-menu-key nil episteme:hydra-dwim)
     (:bind "C-x g" nil magit-status))
 #+end_src
@@ -530,7 +540,7 @@ information.
     (setf auto-mode-alist (assoc-delete-all "\\(?:\\(?:\\.\\(?:b\\(?:\\(?:abel\\|ower\\)rc\\)\\|json\\(?:ld\\)?\\)\\|composer\\.lock\\)\\'\\)"
                                             auto-mode-alist))
     (setf auto-mode-alist (assoc-delete-all "\\.json\\'" auto-mode-alist))
-    (add-to-list 'auto-mode-alist '("\\.json\\'" . jsonc-mode)))
+    (:push auto-mode-alist '("\\.json\\'" . jsonc-mode)))
 #+end_src
 
 ** helm
@@ -1372,7 +1382,6 @@ Shorten yes/no prompts to one letter.
   (fset 'yes-or-no-p 'y-or-n-p)
 #+end_src
 
-** visual
 ** zoom
 Adjust font size in buffers or globally.
 
@@ -1409,36 +1418,37 @@ Show tracebacks when errors happen.
   (setq debug-on-error t)
 #+end_src
 
-* aesthetics
-** visual fill mode
+** aesthetics
+*** visual fill mode
 #+begin_src emacs-lisp
   (use-package visual-fill-column
     :config
     (setq fill-column episteme/fill-width)
     (setq global-visual-fill-column-mode 1))
 #+end_src
-** vertical border
+
+*** vertical border
 Make the border between windows visible.
 
 #+begin_src emacs-lisp
   (set-face-foreground 'vertical-border "gray")
 #+end_src
 
-** blend in the fringes
+*** blend in the fringes
 Hide the default buffer margins.
 
 #+begin_src emacs-lisp
   (set-face-attribute 'fringe nil :background nil)
 #+end_src
 
-** column number
+*** column number
 Show column number in addition to line number.
 
 #+begin_src emacs-lisp
   (column-number-mode 1)
 #+end_src
 
-** doom modeline
+*** doom modeline
 Use [[https://github.com/seagle0128/doom-modeline][doom-modeline]] to ornament the modeline.
 
 #+begin_src emacs-lisp
@@ -1464,7 +1474,7 @@ Use [[https://github.com/seagle0128/doom-modeline][doom-modeline]] to ornament t
     (add-hook 'doom-modeline-mode-hook 'setup-custom-doom-modeline))
 #+end_src
 
-** doom theme
+*** doom theme
 #+begin_src emacs-lisp
   (use-package doom-themes
     :ensure t
@@ -1479,18 +1489,54 @@ Use [[https://github.com/seagle0128/doom-modeline][doom-modeline]] to ornament t
     ;; Corrects (and improves) org-mode's native fontification.
     (doom-themes-org-config))
 #+end_src
+
 * core
 ** api
 *** get-support-path
 #+begin_src emacs-lisp
-  (defun episteme:get-support-path (filename)
+  (defun episteme-get-support-path (filename)
     (concat episteme/support-path "/" filename))
 #+end_src
 
 *** get-docs-path
 #+begin_src emacs-lisp
-  (defun episteme:get-docs-path (filename)
+  (defun episteme-get-docs-path (filename)
     (concat episteme/docs-path "/" filename))
+#+end_src
+
+** commands
+*** open
+#+begin_src emacs-lisp
+  (defun episteme:open ()
+    (interactive)
+    (helm-org-walk '(4)))
+#+end_src
+
+*** search
+#+begin_src emacs-lisp
+  (defun episteme:search ()
+    (interactive)
+    (helm-org-rifle-directories episteme/current-remote-root))
+#+end_src
+
+*** find
+#+begin_src emacs-lisp
+  (defun episteme:find (&optional path)
+    (interactive)
+    (let ((file-name
+           (completing-read "file: "
+                            (directory-files-recursively
+                             (or path episteme/current-remote-root) "\.org$"))))
+      (find-file file-name)))
+#+end_src
+
+*** cleanup
+#+begin_src emacs-lisp
+  (defun episteme:cleanup ()
+    (interactive)
+    (mapc 'kill-buffer (--filter (not (buffer-modified-p it)) (buffer-list)))
+    (delete-other-windows)
+    (episteme:dashboard))
 #+end_src
 
 * remotes
@@ -1890,7 +1936,30 @@ Each result should have the name, localUrl, and remoteUrl.
 #+end_src
 
 * todos
+** commands
+*** todo
+#+begin_src emacs-lisp
+  (defun episteme:todo ()
+    (interactive)
+    (find-file episteme/todo-file))
+#+end_src
+
 * journal
+** commands
+*** journal
+#+begin_src emacs-lisp
+  (defun episteme:journal ()
+    (interactive)
+    (org-journal-new-entry '(4)))
+#+end_src
+
+*** new-journal-entry
+#+begin_src emacs-lisp
+  (defun episteme:new-journal-entry ()
+    (interactive)
+    (org-journal-new-entry nil))
+#+end_src
+
 * devlog
 ** commands
 *** new-devlog-entry
@@ -1898,7 +1967,7 @@ Each result should have the name, localUrl, and remoteUrl.
     (defun episteme:new-devlog-entry ()
       (interactive)
       (let* ((_org-journal-dir org-journal-dir))
-        (setq org-journal-dir (episteme:get-support-path "devlog"))
+        (setq org-journal-dir (episteme-get-support-path "devlog"))
         (org-journal-new-entry nil)
         (setq org-journal-dir _org-journal-dir)))
 #+end_src
@@ -2028,7 +2097,7 @@ WIDGET-PARAMS are passed to the \"widget-create\" function."
   (defun episteme--dashboard-buttons (list-size)
     (let* ((fmt (episteme--dashboard-remotes-format))
            (remotes (episteme-get-remote-names))
-           (items (list (cons "main menu" '((lambda () (episteme-hydra-default/body))))
+           (items (list (cons "main menu" '((lambda () (episteme-menu:main/body))))
                         (cons "init.el" '((lambda () (find-file episteme/user-init-file))))
                         (cons "config.el" '((lambda () (find-file episteme/user-config-file))))
                         (cons "todo" '((lambda () (episteme:todo))))
@@ -2068,12 +2137,12 @@ WIDGET-PARAMS are passed to the \"widget-create\" function."
 #+end_src
 
 * main menu
-** hydra-help
+** help
 Many of the Emacs help facilities at your fingertips!
 
 #+begin_src emacs-lisp
 
-  (:hydra episteme-hydra-help (:color blue)
+  (:hydra episteme-menu:help (:color blue)
     ("Describe"
      (("c" describe-function "function")
       ("p" describe-package "package")
@@ -2100,7 +2169,7 @@ Many of the Emacs help facilities at your fingertips!
       ("C" describe-char "char at point"))))
 #+end_src
 
-** hydra-mark
+** mark
 #+begin_src emacs-lisp
   (defun unpop-to-mark-command ()
     "Unpop off mark ring. Does nothing if mark ring is empty."
@@ -2116,7 +2185,7 @@ Many of the Emacs help facilities at your fingertips!
     (set-mark-command nil)
     (set-mark-command nil))
 
-  (:hydra episteme-hydra-mark (:color pink)
+  (:hydra episteme-menu:mark (:color pink)
     ("Mark"
      (("m" push-mark "mark here")
       ("p" (lambda () (interactive) (set-mark-command '(4))) "previous")
@@ -2124,9 +2193,9 @@ Many of the Emacs help facilities at your fingertips!
       ("c" (lambda () (interactive) (setq mark-ring nil)) "clear"))))
 #+end_src
 
-** hydra-registers
+** registers
 #+begin_src emacs-lisp
-  (:hydra episteme-hydra-registers (:color pink)
+  (:hydra episteme-menu:registers (:color pink)
     ("Point"
      (("r" point-to-register "save point")
       ("j" jump-to-register "jump")
@@ -2143,12 +2212,12 @@ Many of the Emacs help facilities at your fingertips!
 
 #+end_src
 
-** hydra-window
+** windows
 #+begin_src emacs-lisp
   (use-package ace-window)
   (winner-mode 1)
 
-  (:hydra episteme-hydra-window (:color red)
+  (:hydra episteme-menu:windows (:color red)
     ("Jump"
      (("h" windmove-left "left")
       ("l" windmove-right "right")
@@ -2168,9 +2237,9 @@ Many of the Emacs help facilities at your fingertips!
       ("t" nougat-hydra-toggle-window "toggle"))))
 #+end_src
 
-** hydra-zoom
+** zoom
 #+begin_src emacs-lisp
-  (:hydra episteme-hydra-zoom (:color red)
+  (:hydra episteme-menu:zoom (:color red)
     ("Buffer"
      (("i" text-scale-increase "in")
       ("o" text-scale-decrease "out"))
@@ -2180,23 +2249,9 @@ Many of the Emacs help facilities at your fingertips!
       ("r" toggle-zoom-frame "reset" :color blue))))
 #+end_src
 
-** hydra-dev
+** remotes
 #+begin_src emacs-lisp
-  (:hydra episteme-hydra-dev (:color blue)
-    ("Open"
-     (("s" (find-file (episteme:get-support-path "support.org")) "support.org")
-      ("d" (find-file (episteme:get-docs-path "developer-guide.org")) "dev docs")
-      ("j" (find-file (episteme:get-docs-path "devlog.org")) "dev docs")
-      ("J" (episteme:new-devlog-entry) "new devlog entry"))
-     "Git"
-     (("g" (magit-status episteme/support-path) "magit")
-      ("p" (magit-pull episteme/support-path) "pull")
-      ("R" (magit-reset-hard)))))
-#+end_src
-
-** hydra-remotes
-#+begin_src emacs-lisp
-    (:hydra episteme-hydra-remotes (:color blue)
+    (:hydra episteme-menu:remotes (:color blue)
       ("Knowledge-bases  "
        (("l" (call-interactively (lambda () (interactive) (episteme-pick-remote))) "list")
         ("a" (lambda () (interactive) (episteme:activate-remote)) "activate")
@@ -2210,9 +2265,23 @@ Many of the Emacs help facilities at your fingertips!
         ("i" (epicenter-track-knowlegebase) "install community kb"))))
 #+end_src
 
-** hydra-default
+** dev-tools
 #+begin_src emacs-lisp
-  (:hydra episteme-hydra-default (:color blue)
+  (:hydra episteme-menu:dev-tools (:color blue)
+    ("Open"
+     (("s" (find-file (episteme-get-support-path "support.org")) "support.org")
+      ("d" (find-file (episteme-get-docs-path "developer-guide.org")) "dev docs")
+      ("j" (find-file (episteme-get-docs-path "devlog.org")) "devlog")
+      ("J" (episteme:new-devlog-entry) "new devlog entry"))
+     "Git"
+     (("g" (magit-status episteme/support-path) "magit")
+      ("p" (let ((default-directory episteme/support-path)) (magit-pull)) "pull")
+      ("R" (magit-reset-hard)))))
+#+end_src
+
+** main
+#+begin_src emacs-lisp
+  (:hydra episteme-menu:main (:color blue)
     ("Open"
      (("!" (episteme:cleanup) "dashboard")
       ("o" (episteme:open) "open")
@@ -2220,14 +2289,14 @@ Many of the Emacs help facilities at your fingertips!
       ("a" (episteme:find) "all files")
       ("t" (episteme:todo) "todo")
       ("j" (episteme:journal) "journal")
-      ("J" (episteme:journal-entry) "new journal entry")
-      ("k" (hera-push 'episteme-hydra-remotes/body) "knowledge-bases"))
+      ("J" (episteme:new-journal-entry) "new journal entry")
+      ("k" (:push-menu remotes) "knowledge-bases"))
      "Emacs"
-     (("h" (hera-push 'episteme-hydra-help/body) "help")
-      ("m" (hera-push 'episteme-hydra-mark/body) "mark")
-      ("w" (hera-push 'episteme-hydra-window/body) "windows")
-      ("z" (hera-push 'episteme-hydra-zoom/body) "zoom")
-      ("r" (hera-push 'episteme-hydra-registers/body) "registers")
+     (("h" (:push-menu help) "help")
+      ("m" (:push-menu mark) "mark")
+      ("w" (:push-menu windows) "windows")
+      ("z" (:push-menu zoom) "zoom")
+      ("r" (:push-menu registers) "registers")
       (";" embrace-commander "parens / quotes"))
      "Bookmarks"
      (("S" episteme:toggle-sidebar "sidebar" :color red)
@@ -2236,59 +2305,11 @@ Many of the Emacs help facilities at your fingertips!
       ("U" (find-file (concat episteme/support-path "/docs/user-guide.org")) "user guide")
       ("I" (find-file (concat episteme/support-path "/README.org")) "readme"))
      "Misc"
-     (("." (hera-push 'episteme-hydra-dev/body) "dev tools"))))
+     (("." (:push-menu dev-tools) "dev tools"))))
 #+end_src
 
-*** open
-#+begin_src emacs-lisp
-  (defun episteme:open ()
-    (interactive)
-    (helm-org-walk '(4)))
-#+end_src
-*** search
-#+begin_src emacs-lisp
-  (defun episteme:search ()
-    (interactive)
-    (helm-org-rifle-directories episteme/current-remote-root))
-#+end_src
-*** find
-#+begin_src emacs-lisp
-  (defun episteme:find (&optional path)
-    (interactive)
-    (let ((file-name
-           (completing-read "file: "
-                            (directory-files-recursively
-                             (or path episteme/current-remote-root) "\.org$"))))
-      (find-file file-name)))
-#+end_src
-*** todo
-#+begin_src emacs-lisp
-  (defun episteme:todo ()
-    (interactive)
-    (find-file episteme/todo-file))
-#+end_src
-*** journal
-#+begin_src emacs-lisp
-  (defun episteme:journal ()
-    (interactive)
-    (org-journal-new-entry '(4)))
-#+end_src
-*** journal-entry
-#+begin_src emacs-lisp
-  (defun episteme:journal-entry ()
-    (interactive)
-    (org-journal-new-entry nil))
-#+end_src
-*** cleanup
-#+begin_src emacs-lisp
-  (defun episteme:cleanup ()
-    (interactive)
-    (mapc 'kill-buffer (--filter (not (buffer-modified-p it)) (buffer-list)))
-    (delete-other-windows)
-    (episteme:dashboard))
-#+end_src
 * mode menus
-** boilerplate
+** commands
 *** hydra-dwim
 Open hydra for current major mode if one exists, otherwise the default hydra.
 #+begin_src emacs-lisp
@@ -2303,385 +2324,8 @@ Open hydra for current major mode if one exists, otherwise the default hydra.
               (hera-start hydra)
               (throw 'done t)))
           (setq mode (get mode 'derived-mode-parent)))
-        (hera-start 'hydra-default/body))))
+        (hera-start 'episteme-menu:main/body))))
 #+end_src
-** hydra-text
-#+begin_src emacs-lisp
-  (defun wtf ()
-    (interactive)
-    (table-save-horizontal nil))
-
-  (defun table-cell-p ()
-    (table--at-cell-p (point)))
-
-  (defun table-settle-row ()
-    (interactive)
-    (if (bobp)
-        (progn
-          (forward-char)
-          (next-line))
-      (if (eq 1 (line-number-at-pos))
-          (if (eq ?- (char-after))
-              (next-line)
-            (progn
-              (backward-char)
-              (next-line)))
-        (when (eolp)
-          (backward-char))
-        (while (not (table-cell-p))
-          (call-interactively 'previous-line)))))
-
-  (defun table-settle-column ()
-    (interactive)
-    (if (eq 0 (current-column))
-        (forward-char)
-      (while (not (table-cell-p))
-        (backward-char))))
-
-  (defun table-settle ()
-    (interactive)
-    (pcase (char-after)
-      ((pred (lambda (it) (eq ?- it))) (table-settle-row))
-      ((pred (lambda (it) (eq ?| it))) (table-settle-column))
-      ((pred (lambda (it) (eq ?+ it))) (progn
-                                         (forward-char)
-                                         (table-settle-row)))))
-
-  (defun table-row-cells ()
-    (table--cell-list-to-coord-list
-     (table--horizontal-cell-list t nil 'top)))
-
-  (defun table-column-cells ()
-    (table--cell-list-to-coord-list
-     (table--vertical-cell-list t nil 'left)))
-
-  (defun table-vertical-index (y cells)
-    (--find-index
-     (-let* (((tl . br) it)
-             ((tlx . tly) tl)
-             ((brx . bry) br))
-       (and (>= y tly)
-            (<= y bry)))
-     cells))
-
-  (defun table-horizontal-index (x cells)
-    (--find-index
-     (-let* (((tl . br) it)
-             ((tlx . tly) tl)
-             ((brx . bry) br))
-       (and (>= x tlx)
-            (<= x brx)))
-     cells))
-
-  (defun table-get-coordinate ()
-    (-let* ((row-cells (table-row-cells))
-            (col-cells (table-column-cells))
-            ((x . y) (table--get-coordinate))
-            (row-index (table-vertical-index y col-cells))
-            (col-index (table-horizontal-index x row-cells)))
-      (cons col-index row-index)))
-
-  (defun table-first-row-p ()
-    (-let* ((cells (table-column-cells))
-            ((x . y) (table--get-coordinate))
-            (index (table-vertical-index y cells)))
-      (eq 0 index)))
-
-  (defun table-last-row-p ()
-    (-let* ((cells (table-column-cells))
-            ((x . y) (table--get-coordinate))
-            (index (table-vertical-index y cells)))
-      (eq index (- (length cells) 1))))
-
-  (defun table-first-column-p ()
-    (-let* ((cells (table-row-cells))
-            ((x . y) (table--get-coordinate))
-            (index (table-horizontal-index x cells)))
-      (eq 0 index)))
-
-  (defun table-last-column-p ()
-    (-let* ((cells (table-row-cells))
-            ((x . y) (table--get-coordinate))
-            (index (table-horizontal-index x cells)))
-      (eq index (- (length cells) 1))))
-
-  (defmacro table-save-vertical (&rest body)
-    `(when (table-cell-p)
-       (-let* ((cells (table-column-cells))
-               ((ox . oy) (table--get-coordinate))
-               (index (table-vertical-index oy cells)))
-         ,@body
-         (table-settle)
-         (-let* ((newcells (table-column-cells))
-                 (clean-index (max 0 (min (- (length newcells) 1) index)))
-                 ((tl . br) (nth clean-index newcells)))
-           (table--goto-coordinate tl)
-           (table-settle)))))
-
-  (defmacro table-save-horizontal (&rest body)
-    `(when (table-cell-p)
-       (-let* ((cells (table-row-cells))
-               ((ox . oy) (table--get-coordinate))
-               (index (table-horizontal-index ox cells)))
-         ,@body
-         (table-settle)
-         (-let* ((newcells (table-row-cells))
-                 (clean-index (max 0 (min (- (length newcells) 1) index)))
-                 ((tl . br) (nth clean-index newcells)))
-           (table--goto-coordinate tl)
-           (table-settle)))))
-
-  ;;
-  ;; Motion
-  ;;
-
-  (defun table-goto-first-row ()
-    (interactive)
-    (when (table-cell-p)
-      (-let* ((coord-list
-               (table--cell-list-to-coord-list
-                (table--vertical-cell-list t nil 'left)))
-              ((ful . fbr) (car coord-list))
-              ((lul . lbr) (-last-item coord-list)))
-        (table--goto-coordinate ful))))
-
-  (defun table-go-up ()
-    (interactive)
-    (when (not (table-first-row-p))
-      (-let* ((cells
-               (table--cell-list-to-coord-list
-                (table--vertical-cell-list t nil 'left)))
-              ((ox . oy) (table--get-coordinate))
-              (current-index (table-vertical-index oy cells))
-              (target-index (- current-index 1))
-              ((tl . br) (nth target-index cells)))
-        (table--goto-coordinate tl))))
-
-  (defun table-go-down ()
-    (interactive)
-    (when (not (table-last-row-p))
-      (-let* ((cells
-               (table--cell-list-to-coord-list
-                (table--vertical-cell-list t nil 'left)))
-              ((ox . oy) (table--get-coordinate))
-              (current-index (table-vertical-index oy cells))
-              (target-index (+ current-index 1))
-              ((tl . br) (nth target-index cells)))
-        (table--goto-coordinate tl))))
-
-  (defun table-go-left ()
-    (interactive)
-    (when (not (table-first-column-p))
-      (-let* ((cells
-               (table--cell-list-to-coord-list
-                (table--horizontal-cell-list t nil 'left)))
-              ((ox . oy) (table--get-coordinate))
-              (current-index (table-horizontal-index ox cells))
-              (target-index (- current-index 1))
-              ((tl . br) (nth target-index cells)))
-        (table--goto-coordinate tl))))
-
-  (defun table-go-right ()
-    (interactive)
-    (when (not (table-last-column-p))
-      (-let* ((cells
-               (table--cell-list-to-coord-list
-                (table--horizontal-cell-list t nil 'top)))
-              ((ox . oy) (table--get-coordinate))
-              (current-index (table-horizontal-index ox cells))
-              (target-index (+ current-index 1))
-              ((tl . br) (nth target-index cells)))
-        (table--goto-coordinate tl))))
-
-  (cl-defun table-mark-row (&key extend-top
-                                 extend-left
-                                 extend-right
-                                 extend-bottom)
-    (interactive)
-    (when (table-cell-p)
-      (-let* ((cells (table-row-cells))
-              ((ftl . fbr) (-first-item cells))
-              ((ltl . lbr) (-last-item cells)))
-        (table--goto-coordinate ftl)
-        (when extend-top
-          (previous-line))
-        (when extend-left
-          (backward-char))
-        (rectangle-mark-mode 1)
-        (table--goto-coordinate lbr)
-        (when extend-right
-          (forward-char))
-        (when extend-bottom
-          (next-line)))))
-
-  (cl-defun table-mark-column (&key
-                                 extend-top
-                                 extend-left
-                                 extend-right
-                                 extend-bottom)
-    (interactive)
-    (when (table-cell-p)
-      (-let* ((cells (table-column-cells))
-              ((ftl . fbr) (-first-item cells))
-              ((ltl . lbr) (-last-item cells)))
-        (table--goto-coordinate ftl)
-        (when extend-top
-          (previous-line))
-        (when extend-left
-          (backward-char))
-        (rectangle-mark-mode 1)
-        (table--goto-coordinate lbr)
-        (when extend-right
-          (forward-char))
-        (when extend-bottom
-          (next-line)))))
-
-
-  (cl-defun table-mark-row-for-kill ()
-    (when (table-cell-p)
-      (-let* ((cells (table-row-cells))
-              ((ftl . fbr) (-first-item cells))
-              ((ltl . lbr) (-last-item cells)))
-        (table--goto-coordinate ftl)
-        (previous-line)
-        (backward-char)
-        (set-mark (point))
-        (table--goto-coordinate lbr)
-        (end-of-line)
-        (forward-char))))
-
-  (cl-defun table-mark-column-for-kill ()
-    (when (table-cell-p)
-      (-let* ((cells (table-column-cells))
-              ((ftl . fbr) (-first-item cells))
-              ((ltl . lbr) (-last-item cells)))
-        (table--goto-coordinate ftl)
-        (previous-line)
-        (backward-char)
-        (rectangle-mark-mode 1)
-        (table--goto-coordinate lbr)
-        (rectangle-next-line))))
-
-  (defun table-kill-row ()
-    (interactive)
-    (when (table-cell-p)
-      (table-save-vertical
-       (table-save-horizontal
-        (table-mark-row-for-kill)
-        (call-interactively 'kill-region)))))
-
-  (defun table-kill-column ()
-    (interactive)
-    (table-save-horizontal
-     (table-save-vertical
-      (table-mark-column-for-kill)
-      (call-interactively 'kill-region))))
-
-
-  (defun table-row-up ()
-    (interactive)
-    (when (and (table-cell-p) (not (table-first-row-p)))
-      (let ((last-p (table-last-row-p)))
-        (table-save-vertical
-         (table-save-horizontal
-          (table-kill-row)
-          (unless last-p
-            (search-backward-regexp "^\\+"))
-          (search-backward-regexp "^\\+")
-          (beginning-of-line)
-          (call-interactively 'yank)))
-        (when (not (table-first-row-p))
-          (call-interactively 'table-go-up)))))
-
-
-  ;; (defun table-row-down ()
-  ;;   (interactive)
-  ;;   (when (and (table-cell-p) (not (table-last-row-p)))
-  ;;     (table-save-vertical
-  ;;      (table-save-horizontal
-  ;;       (table-kill-row)
-  ;;       (search-forward-regexp "^\\+")
-  ;;       (beginning-of-line)
-  ;;       (call-interactively 'yank)))
-  ;;     (when (not (table-last-row-p))
-  ;;       (call-interactively 'table-go-down))))
-
-  (defun table-row-down ()
-    (interactive)
-    (when (and (table-cell-p) (not (table-last-row-p)))
-      (table-save-vertical
-       (table-save-horizontal
-        (table-kill-row)
-        (search-forward-regexp "^\\+")
-        (beginning-of-line)
-        (call-interactively 'yank)))
-      (when (not (table-last-row-p))
-        (call-interactively 'table-go-down))))
-
-  (defun table-column-left ()
-    (interactive)
-    (when (and (table-cell-p) (not (table-first-column-p)))
-      (let ((last-p (table-last-column-p)))
-        (table-save-vertical
-         (table-save-horizontal
-          (table-kill-column)
-          (unless last-p
-            (table-go-left))
-          (table-goto-first-row)
-          (previous-line)
-          (backward-char)
-          (call-interactively 'yank)))
-        (table-go-left))))
-
-  (defun table-column-right ()
-    (interactive)
-    (when (and (table-cell-p) (not (table-last-column-p)))
-      (table-save-horizontal
-       (table-save-vertical
-        (table-kill-column)
-        (if (table-last-column-p)
-            (progn
-              (end-of-line)
-              (while (< 1 (line-number-at-pos))
-                (previous-line)))
-          (table-go-right)
-          (table-goto-first-row)
-          (previous-line))
-        (backward-char)
-        (call-interactively 'yank)))
-      (unless (table-last-column-p)
-        (table-go-right))))
-
-
-
-  (:hydra episteme-hydra-text (:color red :major-mode text-mode)
-    ("Move"
-     (("j" table-go-down "go down")
-      ("k" table-go-up "go up")
-      ("h" table-go-left "go left")
-      ("l" table-go-right "go right"))
-     "Table size"
-     (("<" table-narrow-cell "narrow cell")
-      (">" table-widen-cell "widen cell")
-      ("{" table-shorten-cell "shorten cell")
-      ("}" table-heighten-cell "heighten cell"))
-     "Table justify"
-     (("c" table-justify-cell "justify cell")
-      ("C" table-justify-column "justify column")
-      ("r" table-justfy-row "justify row"))
-     "Table insert"
-     (("i" table-insert-row "insert row")
-      ("I" table-insert-column "insert column"))
-     "Table delete"
-     (("d" table-kill-row "delete row")
-      ("D" table-kill-column "delete column"))
-     "Table move"
-     (("J" table-row-down "row down")
-      ("K" table-row-up "row up")
-      ("H" table-column-left "column left")
-      ("L" table-column-right "column right"))))
-#+end_src
-
 ** hydra-elisp
 #+begin_src emacs-lisp
   (:hydra episteme-hydra-elisp (:color blue :major-mode emacs-lisp-mode)
