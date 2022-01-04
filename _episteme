@@ -43,7 +43,7 @@ themeFlag=""
 export theme="laserwave"
 
 configFlag=""
-export config="$HOME/.config/episteme"
+export config="$HOME/.config/episteme/"
 
 for arg do
     shift
