@@ -1,5 +1,9 @@
 #!/usr/bin/env bash
 
+support_https_url="https://github.com/apoptosis/episteme.git"
+support_ssh_url="git@github.com:apoptosis/episteme.git"
+epicenter_url="git@github.com:apoptosis/epicenter.git"
+
 RED='\033[0;31m'
 YELLOW='\033[1;33m'
 NC='\033[0m' # No Color
@@ -9,63 +13,33 @@ themes="default one one-light vibrant acario-dark acario-light city-lights chall
 help="episteme [EPISTEME-OPTS] [EMACS-OPTS]
 
 EPISTEME-OPTS:
--h             list usage
--config        Episteme config directory (default: $HOME/.config/episteme)
--themes        print theme names & exit
--theme NAME    use theme called NAME
+  -h             list usage
+  -config        Episteme config directory (default: $HOME/.config/episteme)
+  -themes        print theme names & exit
+  -theme NAME    use theme called NAME
 
 EMACS-OPTS:
-typical Emacs options"
+  Standard Emacs options"
 
 if [[ " $@[@] " =~ "-h" ]]; then
     echo "$help"
     exit 0
 fi
 
-if [[ " $@[@] " =~ "-themes" ]]; then
-    echo "Available themes:"
-    for t in $themes; do
-        let "i=$RANDOM % 256"
-        echo -en "\e[38;5;''${i}m$t \e[0m";
-    done
-    exit 0
-fi
-
 export HOME="${USERPROFILE:-$HOME}"
 export HOME="${HOME//\\//}"
 
-themeFlag=""
-export theme="laserwave"
-
 configFlag=""
-export config="$HOME/.config/episteme"
+config="$HOME/.config/episteme"
+
+originalArgs=("$@")
 
 for arg do
     shift
 
-    if [ ! -z "$themeFlag" ]; then
-        if [[ ! " $themes[@] " =~ " $arg " ]]; then
-            printf "''${RED}✗''${YELLOW} '$arg' is not a valid theme.''${NC}\n"
-            for t in $themes; do
-                let "i=$RANDOM % 256"
-                echo -en "\e[38;5;''${i}m$t \e[0m";
-            done
-            exit 1
-        fi
-
-        export theme="$arg"
-        themeFlag=""
-        continue
-    fi
-
     if [ ! -z "$configFlag" ]; then
-        export config="$arg"
+        config="$arg"
         configFlag=""
-        continue
-    fi
-
-    if [ "$arg" = "-theme" ]; then
-        themeFlag="1"
         continue
     fi
 
@@ -77,17 +51,91 @@ for arg do
     set -- "$@" "$arg"
 done
 
-export config=${config//\\//}
+config=${config//\\//}
+support="$config/support"
+remotes="$config/remotes"
+epicenter="$config/epicenter"
 
-echo "Config directory: $config"
+mkdir -p "$config"
 
-emacs -q \
---debug-init \
---eval "(setq byte-compile-warnings '(cl-functions))" \
---eval "(require 'org)" \
---chdir "$config/support/" \
---eval "(org-babel-tangle-file \"$config/support/support.org\" \"$config/support/support.el\")" \
---eval "(setq user-emacs-directory \"$config\")" \
---eval "(setq user-init-file \"$config/support/support.el\")" \
---load $config/support/support.el \
-$@
+run_episteme() {
+    $support/_episteme "${originalArgs[@]}"
+}
+
+# function to clone $support_url to $support
+clone_support() {
+    if [ ! -d "$support" ]; then
+        echo "Cloning support repository to $support"
+        git clone "$support_https_url" "$support" &> /dev/null
+    fi
+}
+
+clone_epicenter() {
+    if [ ! -d "$epicenter" ]; then
+        echo "Cloning epicenter repository to $epicenter"
+        git clone "$epicenter_url" "$epicenter" &> /dev/null
+    fi
+}
+
+try_again() {
+    echo -e "${RED}Episteme support directory is not a valid git repo.${NC}"
+    echo -e "${YELLOW}Please remove $support directory and try again.${NC}"
+}
+
+check_remotes() {
+    # if there are no subdirectories in $remotes then ask to clone the apoptosis remote
+    # first get the number of subdirectories in $remotes
+    remotesSubdirs=$(ls -A "$remotes" 2>/dev/null | wc -l)
+    # if $remotesSubdirs is 0 then ask to clone the apoptosis remote
+    if [ "$remotesSubdirs" -eq 0 ]
+    then
+        echo "Cloning apoptosis remote to $remotes/apoptosis"
+        git clone https://github.com/apoptosis/apoptosis.org.git "$remotes/apoptosis" &> /dev/null
+    fi
+
+    # link support/ to remotes/episteme/
+    if [ ! -d "$support/episteme" ]; then
+        ln -s "$support" "$remotes/episteme"
+    fi
+}
+
+first_run() {
+    # ask for permission to do first time setup
+    echo -e "${YELLOW}First run; Episteme will install a number of packages.${NC}"
+    echo -e "${YELLOW}This could take a while. Ready?${NC}"
+    read -p "y/n: " -n 1 -r
+    echo
+    if [[ $REPLY =~ ^[Yy]$ ]]
+    then
+        clone_support
+        clone_epicenter
+        check_remotes
+        run_episteme
+    else
+        echo -e "${YELLOW}Please run 'episteme' again when you are ready.${NC}"
+    fi
+}
+
+# check if support directory exists
+supportExists=$(ls -A "$support" 2>/dev/null)
+# check if support directory is git repo
+supportIsGit=$(git -C "$support" rev-parse --is-inside-work-tree 2>/dev/null)
+# if supportExists and supportIsGit
+if [ ! -z "$supportExists" ]; then
+    if [ ! -z "$supportIsGit" ]; then
+        origin=$(git -C "$support" config --get remote.origin.url)
+        echo $origin
+        # check if origin equal support_https_url or support_ssh_url
+        if [[ "$origin" =~ "$support_https_url" ]] || [[ "$origin" =~ "$support_ssh_url" ]]; then
+            run_episteme
+        else
+            echo "bad origin"
+            try_again
+        fi
+    else
+        echo "not git"
+        try_again
+    fi
+else
+    first_run "$@"
+fi
