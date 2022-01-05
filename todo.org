@@ -1,0 +1,20 @@
+#+title: Development TODO
+* TODO Automate font installation on Windows :dustin:lordvalen:windows:feat:
+Fonts should go into =C:/Windows/Font=
+- look into registry changes that might be needed?
+
+* TODO Investigate .config permission issue :dustin:lordvalen:windows:bug:
+During windows install, .config creation fails
+- [ ] Fix it
+- [ ] Remove the workaround from README.org
+
+* TODO Implement Embark :feat:dustin:
+Embark can let us customize how links are opened.
+
+https://github.com/org-roam/org-roam/issues/1479#issuecomment-844283079
+
+* TODO Better document journal-mode :docs:dustin:
+- [ ] Searching the journal
+- [ ] todo carry-over
+- [ ] capture templates
+
