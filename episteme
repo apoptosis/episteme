@@ -16,7 +16,7 @@ help="episteme [EPISTEME-OPTS] [EMACS-OPTS]
 
 EPISTEME-OPTS:
   -h             list usage
-  -https         Use https instead of ssh
+  -ssh           Use SSH instead of HTTPS during installs
   -config        Episteme config directory (default: $HOME/.config/episteme)
   -themes        print theme names & exit
   -theme NAME    use theme called NAME
@@ -35,7 +35,7 @@ export HOME="${HOME//\\//}"
 configFlag=""
 config="$HOME/.config/episteme"
 
-useHttps=0
+useSSH=0
 
 originalArgs=("$@")
 
@@ -53,8 +53,8 @@ for arg do
         continue
     fi
 
-    if [ "$arg" = "-https" ]; then
-        useHttps=1
+    if [ "$arg" = "-ssh" ]; then
+        useSSH=1
         continue
     fi
 
@@ -66,13 +66,13 @@ support="$config/support"
 remotes="$config/remotes"
 epicenter="$config/epicenter"
 
-# check if useHttps is set
-if [ "$useHttps" -eq 1 ]; then
-    support_url="$support_https_url"
-    epicenter_url="$epicenter_https_url"
-else
+# check if useSSH is set
+if [ "$useSSH" -eq 1 ]; then
     support_url="$support_ssh_url"
     epicenter_url="$epicenter_ssh_url"
+else
+    support_url="$support_https_url"
+    epicenter_url="$epicenter_https_url"
 fi
 
 # if config doesn't end in /, add it
