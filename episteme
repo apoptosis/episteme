@@ -16,6 +16,7 @@ help="episteme [EPISTEME-OPTS] [EMACS-OPTS]
 
 EPISTEME-OPTS:
   -h             list usage
+  -https         Use https instead of ssh
   -config        Episteme config directory (default: $HOME/.config/episteme)
   -themes        print theme names & exit
   -theme NAME    use theme called NAME
@@ -34,6 +35,8 @@ export HOME="${HOME//\\//}"
 configFlag=""
 config="$HOME/.config/episteme"
 
+useHttps=0
+
 originalArgs=("$@")
 
 for arg do
@@ -50,6 +53,11 @@ for arg do
         continue
     fi
 
+    if [ "$arg" = "-https" ]; then
+        useHttps=1
+        continue
+    fi
+
     set -- "$@" "$arg"
 done
 
@@ -57,6 +65,15 @@ config=${config//\\//}
 support="$config/support"
 remotes="$config/remotes"
 epicenter="$config/epicenter"
+
+# check if useHttps is set
+if [ "$useHttps" -eq 1 ]; then
+    support_url="$support_https_url"
+    epicenter_url="$epicenter_https_url"
+else
+    support_url="$support_ssh_url"
+    epicenter_url="$epicenter_ssh_url"
+fi
 
 # if config doesn't end in /, add it
 if [[ "$config" != */ ]]; then
@@ -69,7 +86,7 @@ fi
 support_install() {
     if [ ! -d "$support" ]; then
         echo "Cloning support repository to $support"
-        git clone "$support_ssh_url" "$support"
+        git clone "$support_url" "$support"
     fi
 }
 
@@ -144,7 +161,7 @@ support_validate() {
 epicenter_install() {
     if [ ! -d "$epicenter" ]; then
         echo "Cloning epicenter repository to $epicenter"
-        git clone "$epicenter_ssh_url" "$epicenter"
+        git clone "$epicenter_url" "$epicenter"
     fi
 }
 
