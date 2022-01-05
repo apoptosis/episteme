@@ -1640,7 +1640,7 @@ Use [[https://github.com/seagle0128/doom-modeline][doom-modeline]] to ornament t
                     (make-directory (episteme-get-remote-path name))
                     (message "Local remote %s created" name))
               (progn
-                (shell-command (format "git clone %s" url))
+                (shell-command (format "git clone %s %s" url name))
                 (message "Remote %s added" name))))))
 #+end_src
 
@@ -1822,7 +1822,6 @@ Set episteme/current-remote interactively.
 #+end_src
 
 * epicenter
-
 ** internal
 
 *** load-remotes
