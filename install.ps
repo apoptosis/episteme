@@ -1,0 +1,56 @@
+# install Episteme with PowerShell
+
+
+# check if chocolatey is installed with powershell
+$chocoInstalled = (Get-Command "choco" -ErrorAction SilentlyContinue) -ne $null
+
+# if not, install chocolatey
+if ($chocoInstalled -eq $null) {
+    Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))
+}
+
+# install dependencies with chocolatey
+
+$gitInstalled = (Get-Command "git" -ErrorAction SilentlyContinue) -ne $null
+if ($gitInstalled -eq $null) {
+    choco install git -y
+}
+
+$githubInstalled = (Get-Command "git-hub" -ErrorAction SilentlyContinue) -ne $null
+if ($githubInstalled -eq $null) {
+    choco install git-hub -y
+}
+
+$emacsInstalled = (Get-Command "emacs" -ErrorAction SilentlyContinue) -ne $null
+if ($emacsInstalled -eq $null) {
+    choco install emacs -y
+}
+
+$sharpkeysInstalled = (Get-Command "sharpkeys" -ErrorAction SilentlyContinue) -ne $null
+if ($sharpkeysInstalled -eq $null) {
+    choco install sharpkeys -y
+}
+
+$mingwInstalled = (Get-Command "mingw32-make" -ErrorAction SilentlyContinue) -ne $null
+if ($mingwInstalled -eq $null) {
+    choco install mingw32-make -y
+}
+
+$epistemePath = '$env:USERPROFILE\Documents\GitHub\episteme';
+
+# check that episteme is not already installed
+$epistemeExists = (Get-Item -Path $epistemePath -ErrorAction SilentlyContinue) -ne $null
+if ($epistemeExists -eq $null) {
+    gh repo clone apoptosis/episteme
+}
+
+# add episteme to global windows PATH
+# episteme is installed to Documents/GitHub/episteme
+$oldpath = (Get-ItemProperty -Path 'Registry::HKEY_LOCAL_MACHINE\System\CurrentControlSet\Control\Session Manager\Environment' -Name PATH).path
+
+# check if episteme is already in the path
+$epistemeInPath = $oldpath -match $epistemePath
+if ($epistemeInPath -eq $null) {
+    $newpath = $oldpath + ';' + $epistemePath
+    Set-ItemProperty -Path 'Registry::HKEY_LOCAL_MACHINE\System\CurrentControlSet\Control\Session Manager\Environment' -Name PATH -Value $newpath
+}
