@@ -1865,7 +1865,7 @@ Set episteme/current-remote interactively.
 
 *** load-remotes
 #+begin_src emacs-lisp
-  (defun epicenter:load-remotes ()
+  (defun epicenter--load-remotes ()
     (let ((remotes-map (json-read-file epicenter/remotes-file)))
       (--map (let* ((name (epicenter--get-remote-name it))
                     (host (epicenter--get-remote-host it))
@@ -1883,8 +1883,8 @@ Check every local remote against epicenter remotes.
 Gather a list of remotes whos urls are not the same.
 Each result should have the name, localUrl, and remoteUrl.
 #+begin_src emacs-lisp
-  (defun epicenter:compare-remote-urls ()
-    (let* ((remotes (epicenter:load-remotes))
+  (defun epicenter--compare-remote-urls ()
+    (let* ((remotes (epicenter--load-remotes))
            (remote-names (--map (car it) remotes))
            (local-remotes (episteme-get-remote-names))
            ;; calculate which local-remotes are also in remote-names
@@ -1909,7 +1909,7 @@ Each result should have the name, localUrl, and remoteUrl.
 
 *** pick-from
 #+begin_src emacs-lisp
-  (defun epicenter:pick-from (remotes &optional title)
+  (defun epicenter--pick-from (remotes &optional title)
     (helm :sources
           (helm-build-sync-source (or title "Pick a remote")
             :multiline t
@@ -1927,9 +1927,9 @@ Each result should have the name, localUrl, and remoteUrl.
 
 *** pick-remote
 #+begin_src emacs-lisp
-  (defun epicenter:pick-remote ()
+  (defun epicenter--pick-remote ()
     (interactive)
-    (let ((remotes (epicenter:load-remotes)))
+    (let ((remotes (epicenter--load-remotes)))
       (helm :sources (helm-build-sync-source "Pick an epicenter remote"
                        :multiline t
                        :candidates (mapcar (lambda (remote)
@@ -1954,7 +1954,7 @@ Each result should have the name, localUrl, and remoteUrl.
 #+begin_src emacs-lisp
   (defun epicenter-track-knowlegebase ()
     (interactive)
-    (let ((remote (epicenter:pick-remote)))
+    (let ((remote (epicenter--pick-remote)))
       (if remote
           (let ((name (nth 0 remote))
                 (url (nth 1 remote)))
@@ -1966,9 +1966,9 @@ Each result should have the name, localUrl, and remoteUrl.
 #+begin_src emacs-lisp
   (defun epicenter-compare-remotes ()
     (interactive)
-    (let ((remotes (epicenter:compare-remote-urls)))
+    (let ((remotes (epicenter--compare-remote-urls)))
       (if remotes
-          (let* ((choice (epicenter:pick-from remotes))
+          (let* ((choice (epicenter--pick-from remotes))
                  (name (nth 0 choice))
                  (url (nth 1 choice)))
             (episteme-set-remote-url name url)
