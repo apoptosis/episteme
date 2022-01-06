@@ -234,9 +234,9 @@ e.g. =(:push some-list 1 2 3)=
   ;; files
   (setq epicenter/remotes-file (concat epicenter/remotes-path "/remotes.json"))
 #+end_src
-** useSSH
+** use-ssh
 #+begin_src emacs-lisp
-(setq episteme/useSSH (getenv useSSH))
+(setq episteme/use-ssh (getenv "useSSH"))
 #+end_src
 
 ** default keybinds
@@ -1827,19 +1827,55 @@ Set episteme/current-remote interactively.
 
 * epicenter
 ** internal
+*** get-remote-name
+#+begin_src emacs-lisp
+  (defun epicenter--get-remote-name (remote)
+    (->> remote (car) (symbol-name)))
+#+end_src
+
+*** get-remote-host
+#+begin_src emacs-lisp
+  (defun epicenter--get-remote-host (remote)
+    (->> remote (nth 1) (cdr)))
+#+end_src
+
+*** get-remote-path
+#+begin_src emacs-lisp
+  (defun epicenter--get-remote-path (remote)
+    (->> remote (nth 2) (cdr)))
+#+end_src
+
+*** get-remote-description
+#+begin_src emacs-lisp
+  (defun epicenter--get-remote-description (remote)
+    (->> remote (nth 3) (cdr)))
+#+end_src
+
+*** format-ssh-url
+#+begin_src emacs-lisp
+  (defun epicenter--format-ssh-url (host path)
+    (concat "git@" host ":" path))
+#+end_src
+
+*** format-https-url
+#+begin_src emacs-lisp
+  (defun epicenter--format-https-url (host path)
+    (concat "https://" host "/" path))
+#+end_src
+
 *** load-remotes
 #+begin_src emacs-lisp
   (defun epicenter:load-remotes ()
     (let ((remotes-map (json-read-file epicenter/remotes-file)))
-      (mapcar (lambda (remote)
-                (let ((name (symbol-name (car remote)))
-                      (url (if
-                               (symbol-value 'episteme/useSSH)
-                               (concat "git@" (cdr (nth 1 remote)) ":" (cdr (nth 2 remote)))
-                             (concat "https://" (cdr (nth 1 remote)) "/" (cdr (nth 2 remote)))))
-                      (description (cdr (nth 3 remote))))
-                  (list name url description)))
-                remotes-map)))
+      (--map (let* ((name (epicenter--get-remote-name it))
+                    (host (epicenter--get-remote-host it))
+                    (path (epicenter--get-remote-path it))
+                    (desc (epicenter--get-remote-description it))
+                    (url (if episteme/use-ssh
+                             (epicenter--format-ssh-url host path)
+                           (epicenter--format-https-url host path))))
+               (list name url desc))
+             remotes-map)))
 #+end_src
 
 *** compare-remote-urls
