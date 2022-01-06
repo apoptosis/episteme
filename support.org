@@ -234,6 +234,10 @@ e.g. =(:push some-list 1 2 3)=
   ;; files
   (setq epicenter/remotes-file (concat epicenter/remotes-path "/remotes.json"))
 #+end_src
+** useSSH
+#+begin_src emacs-lisp
+(setq episteme/useSSH (getenv useSSH))
+#+end_src
 
 ** default keybinds
 #+begin_src emacs-lisp
@@ -1823,15 +1827,17 @@ Set episteme/current-remote interactively.
 
 * epicenter
 ** internal
-
 *** load-remotes
 #+begin_src emacs-lisp
   (defun epicenter:load-remotes ()
     (let ((remotes-map (json-read-file epicenter/remotes-file)))
       (mapcar (lambda (remote)
                 (let ((name (symbol-name (car remote)))
-                      (url (cdr (nth 1 remote)))
-                      (description (cdr (nth 2 remote))))
+                      (url (if
+                               (symbol-value 'episteme/useSSH)
+                               (concat "git@" (cdr (nth 1 remote)) ":" (cdr (nth 2 remote)))
+                             (concat "https://" (cdr (nth 1 remote)) "/" (cdr (nth 2 remote)))))
+                      (description (cdr (nth 3 remote))))
                   (list name url description)))
                 remotes-map)))
 #+end_src
