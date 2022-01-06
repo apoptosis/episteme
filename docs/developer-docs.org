@@ -4,6 +4,13 @@
 #+title: Developer Docs
 #+description: Episteme implementation details
 
+* Naming conventions
+All support functions should adhere to the following naming conventions:
+
+- =episteme/variable=
+- =episteme-public-api-function=
+- =episteme--internal-function=
+- =episteme:interactive-command=
 
 * Packages
 
