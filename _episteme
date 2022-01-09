@@ -49,6 +49,8 @@ export theme="laserwave"
 configFlag=""
 export config="$HOME/.config/episteme/"
 
+useSSH=0
+
 for arg do
     shift
 
@@ -83,8 +85,16 @@ for arg do
         continue
     fi
 
+    if [ "$arg" = "-ssh" ]; then
+        useSSH=1
+        echo "Using SSH for git."
+        continue
+    fi
+
     set -- "$@" "$arg"
 done
+
+export useSSH
 
 export config=${config//\\//}
 
