@@ -1,0 +1,10 @@
+* Saturday, 01/08/2022
+:PROPERTIES:
+:CREATED:  20220108
+:END:
+** 21:07 First devlog entry
+
+This feature has been around for a while. It's high time it started getting
+some use.
+** 21:07 Exported useSSH
+=_episteme= wasn't processing =-ssh= or exporting =useSSH=. This was preventing use of ssh URLs with epicenter. Fixed [[https://github.com/apoptosis/episteme/commit/31086ae063739872830a6907205621166a88a1f1][31086ae]].
