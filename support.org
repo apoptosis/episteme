@@ -208,6 +208,13 @@ e.g. =(:push some-list 1 2 3)=
   ;; (:push-menu help)
 #+end_src
 
+** :set
+#+begin_src emacs-lisp
+  (defmacro :set (place &rest expr)
+    (declare (indent defun))
+    `(let ((it (eval ,place)))
+       (setf ,place (progn ,@expr))))
+#+end_src
 * configuration
 ** episteme paths
 #+begin_src emacs-lisp
@@ -223,7 +230,8 @@ e.g. =(:push some-list 1 2 3)=
   ;; files
   (setq episteme/user-init-file (concat episteme/home-path "/init.el"))
   (setq episteme/user-config-file (concat episteme/home-path "/config.el"))
-  (setq episteme/todo-file (concat episteme/home-path "/todo.org"))
+  (setq episteme/user-todo-file (concat episteme/home-path "/todo.org"))
+  (setq episteme/user-notes-file (concat episteme/home-path "/notes.org"))
 #+end_src
 
 ** epicenter paths
@@ -338,7 +346,7 @@ Macro for defining Hydras.
             (format-form (eval hint-symbol))
             (string-cdr (nthcdr 1 format-form))
             (format-string (string-trim (car string-cdr)))
-            (amended-string (format "%s\n\n%s" format-string hint)))
+            (amended-string (format "%s\n%s" format-string hint)))
       (setcar string-cdr amended-string)))
 #+end_src
 
@@ -360,7 +368,7 @@ Macro for defining Hydras.
     (string-join
      (cl-loop for head in heads
               for hint = (:hydra/make-head-hint head default-color)
-              collect hint) "\n"))
+              collect hint) "  "))
 #+end_src
 
 ***** clear-hint
@@ -373,7 +381,7 @@ Macro for defining Hydras.
 ***** add-exit-head
 #+begin_src emacs-lisp
   (defun :hydra/add-exit-head (heads)
-    (let ((exit-head '("SPC" (hera-pop) "to exit" :color blue)))
+    (let ((exit-head '("SPC" (hera-pop) "exit" :color blue)))
       (append heads `(,exit-head))))
 #+end_src
 
@@ -389,26 +397,26 @@ Macro for defining Hydras.
 
 **** macro
 #+begin_src emacs-lisp
-    (defmacro :hydra (name body columns &optional extra-heads)
-      (declare (indent defun))
-      (-let* (((&plist :color default-color :major-mode mode) body)
-              (extra-heads (:hydra/add-exit-head extra-heads))
-              (extra-hint (:hydra/make-hint extra-heads default-color))
-              (body (plist-put body :hint nil))
-              (body-name (format "%s/body" (symbol-name name)))
-              (body-symbol (intern body-name))
-              (mode-body-name (major-mode-hydra--body-name-for mode))
-              (mode-support
-               `(when ',mode
-                  (defun ,mode-body-name () (interactive) (,body-symbol)))))
-        (:hydra/add-heads columns extra-heads)
-        (when mode
-          (cl-remf body :major-mode))
-        `(progn
-           (pretty-hydra-define ,name ,body ,columns)
-           (:hydra/inject-hint ',name ,extra-hint)
-           ,mode-support
-           )))
+  (defmacro :hydra (name body columns &optional extra-heads)
+    (declare (indent defun))
+    (-let* (((&plist :color default-color :major-mode mode) body)
+            (extra-heads (:hydra/add-exit-head extra-heads))
+            (extra-hint (:hydra/make-hint extra-heads default-color))
+            (body (plist-put body :hint nil))
+            (body-name (format "%s/body" (symbol-name name)))
+            (body-symbol (intern body-name))
+            (mode-body-name (major-mode-hydra--body-name-for mode))
+            (mode-support
+             `(when ',mode
+                (defun ,mode-body-name () (interactive) (,body-symbol)))))
+      (:hydra/add-heads columns extra-heads)
+      (when mode
+        (cl-remf body :major-mode))
+      `(progn
+         (pretty-hydra-define ,name ,body ,columns)
+         (:hydra/inject-hint ',name ,extra-hint)
+         ,mode-support
+         )))
 #+end_src
 
 **** tests
@@ -1495,6 +1503,19 @@ Use [[https://github.com/seagle0128/doom-modeline][doom-modeline]] to ornament t
 #+end_src
 
 * core
+** internal
+*** get-capture-template
+#+begin_src emacs-lisp
+  (defun episteme--get-capture-template (filename &optional template)
+    `(("t" "Template" entry (file ,filename)
+       ,(or template "* %?"))))
+#+end_src
+*** capture-template
+#+begin_src emacs-lisp
+  (defun episteme--capture-template (file &optional template)
+    (let* ((org-capture-templates (episteme--get-capture-template file template)))
+      (org-capture nil "t")))
+#+end_src
 ** api
 *** get-support-path
 #+begin_src emacs-lisp
@@ -1976,13 +1997,40 @@ Each result should have the name, localUrl, and remoteUrl.
         (message "No remote urls out-of-sync."))))
 #+end_src
 
+* notes
+** commands
+*** notes
+#+begin_src emacs-lisp
+  (defun episteme:notes ()
+    (interactive)
+    (find-file episteme/user-notes-file)
+    (unless (buffer-modified-p (current-buffer))
+      (revert-buffer t t t)))
+
+#+end_src
+*** new-note
+#+begin_src emacs-lisp
+  (defun episteme:new-note ()
+    (interactive)
+    (let ((path (concat episteme/docs-path "/changelog.org")))
+      (episteme--capture-template episteme/user-notes-file)))
+#+end_src
+
 * todos
 ** commands
 *** todo
 #+begin_src emacs-lisp
   (defun episteme:todo ()
     (interactive)
-    (find-file episteme/todo-file))
+    (find-file episteme/user-todo-file)
+    (unless (buffer-modified-p (current-buffer))
+      (revert-buffer t t t)))
+#+end_src
+*** new-todo
+#+begin_src emacs-lisp
+  (defun episteme:new-todo ()
+    (interactive)
+    (episteme--capture-template episteme/user-todo-file "* TODO %?"))
 #+end_src
 
 * journal
@@ -1999,6 +2047,16 @@ Each result should have the name, localUrl, and remoteUrl.
   (defun episteme:new-journal-entry ()
     (interactive)
     (org-journal-new-entry nil))
+#+end_src
+
+* changelog
+** commands
+*** new-changelog-entry
+#+begin_src emacs-lisp
+  (defun episteme:new-changelog-entry ()
+    (interactive)
+    (let ((path (concat episteme/docs-path "/changelog.org")))
+      (episteme--capture-template path "* %?\n%U\n")))
 #+end_src
 
 * devlog
@@ -2292,18 +2350,18 @@ Many of the Emacs help facilities at your fingertips!
 
 ** remotes
 #+begin_src emacs-lisp
-    (:hydra episteme-menu:remotes (:color blue)
-      ("Knowledge-bases  "
-       (("l" (call-interactively (lambda () (interactive) (episteme-pick-remote))) "list")
-        ("a" (lambda () (interactive) (episteme:activate-remote)) "activate")
-        ("n" episteme:add-remote "new")
-        ("u" episteme:update-remote "update")
-        ("r" episteme:remove-remote "remove")
-        ("g" episteme:remote-status "git status")
-        ("s" episteme:set-remote-url "set url"))
-       "Epicenter"
-       (("U" (epicenter-update-list) "update epicenter")
-        ("i" (epicenter-track-knowlegebase) "install community kb"))))
+  (:hydra episteme-menu:remotes (:color blue)
+    ("Knowledge-bases  "
+     (("l" (call-interactively (lambda () (interactive) (episteme-pick-remote))) "list")
+      ("a" (lambda () (interactive) (episteme:activate-remote)) "activate")
+      ("n" episteme:add-remote "new")
+      ("u" episteme:update-remote "update")
+      ("r" episteme:remove-remote "remove")
+      ("g" episteme:remote-status "git status")
+      ("s" episteme:set-remote-url "set url"))
+     "Epicenter"
+     (("U" (epicenter-update-list) "update epicenter")
+      ("i" (epicenter-track-knowlegebase) "install community kb"))))
 #+end_src
 
 ** dev-tools
@@ -2313,7 +2371,9 @@ Many of the Emacs help facilities at your fingertips!
      (("s" (find-file (episteme-get-support-path "support.org")) "support.org")
       ("d" (find-file (episteme-get-docs-path "developer-guide.org")) "dev docs")
       ("j" (find-file (episteme-get-docs-path "devlog.org")) "devlog")
-      ("J" (episteme:new-devlog-entry) "new devlog entry"))
+      ("J" (episteme:new-devlog-entry) "new devlog entry")
+      ("c" (find-file (episteme-get-docs-path "changelog.org")) "changelog")
+      ("C" (episteme:new-changelog-entry) "new changelog entry"))
      "Git"
      (("g" (magit-status episteme/support-path) "magit")
       ("p" (let ((default-directory episteme/support-path)) (magit-pull)) "pull")
@@ -2328,10 +2388,15 @@ Many of the Emacs help facilities at your fingertips!
       ("o" (episteme:open) "open")
       ("s" (episteme:search) "search")
       ("a" (episteme:find) "all files")
-      ("t" (episteme:todo) "todo")
+      ("k" (:push-menu remotes) "knowledge-bases")
+      ("S" episteme:toggle-sidebar "sidebar" :color red))
+     "Personal"
+     (("t" (episteme:todo) "todo")
+      ("T" (episteme:new-todo) "new todo")
+      ("n" (episteme:notes) "notes")
+      ("N" (episteme:new-note) "new note")
       ("j" (episteme:journal) "journal")
-      ("J" (episteme:new-journal-entry) "new journal entry")
-      ("k" (:push-menu remotes) "knowledge-bases"))
+      ("J" (episteme:new-journal-entry) "new journal entry"))
      "Emacs"
      (("h" (:push-menu help) "help")
       ("m" (:push-menu mark) "mark")
@@ -2340,13 +2405,13 @@ Many of the Emacs help facilities at your fingertips!
       ("r" (:push-menu registers) "registers")
       (";" embrace-commander "parens / quotes"))
      "Bookmarks"
-     (("S" episteme:toggle-sidebar "sidebar" :color red)
-      ("D" (episteme:find (concat episteme/support-path "/docs")) "docs")
-      ("C" (find-file (concat episteme/support-path "/docs/cheatsheet.org")) "cheatsheet")
+     (("C" (find-file (concat episteme/support-path "/docs/cheatsheet.org")) "cheatsheet")
       ("U" (find-file (concat episteme/support-path "/docs/user-guide.org")) "user guide")
-      ("I" (find-file (concat episteme/support-path "/README.org")) "readme"))
-     "Misc"
-     (("." (:push-menu dev-tools) "dev tools"))))
+      ("H" (find-file (concat episteme/support-path "/docs/changelog.org")) "changelog")
+      ("D" (episteme:find (concat episteme/support-path "/docs")) "all docs"))))
+
+  ;; hidden dev tools key
+  (:bind "." episteme-menu:main/keymap (:push-menu dev-tools))
 #+end_src
 
 * mode menus

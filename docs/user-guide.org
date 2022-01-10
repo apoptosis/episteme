@@ -329,7 +329,12 @@ Within a submenu, the spacebar will return to the previous menu.
 
 Press =C-g= to close all menus.
 
+** !: dashboard
+
+Close all windows and open the dashboard.
+
 ** =o=: open
+
 Walk directories and files of the active knowledge-base until reaching the
 desired content.
 
@@ -338,30 +343,16 @@ Use =enter= to navigate into a directory or file.
 Use =backspace= to go back to the parent directory.
 
 ** s: search
+
 Full-text search the active knowledge-base.
 
 Typing a query will filter results. Selecting one (=enter=) will open it.
 
 ** a: all files
+
 List all files in the active knowledge-base.
 
 Selecting one (=enter=) will open it.
-
-** t: todo
-
-Open your personal todo file.
-
-It's stored as =~/.config/episteme/todo.org=
-
-** j: journal
-
-Open your personal journal.
-
-It's stored as =~/.config/episteme/journal/=
-
-** J: new journal entry
-
-Create a new entry in today's journal file.
 
 ** k: knowledge-bases
 
@@ -404,11 +395,37 @@ Update the list of available community knowledge-bases.
 View the list of available community knowledge-bases.
 
 Selecting one (=enter=) will install it.
-
 ** S: sidebar
+
 Open a sidebar showing a tree-view of the active knowledge-base.
 
 Use =q= to close it.
+
+** t: todo
+
+Open your personal todo file.
+
+It's stored as =~/.config/episteme/todo.org=
+
+** n: notes
+
+Open your personal notes file.
+
+It's stored as =~/.config/episteme/notes.org=
+
+** N: new note
+
+Quickly capture a new note.
+
+** j: journal
+
+Open your personal journal.
+
+It's stored as =~/.config/episteme/journal/=
+
+** J: new journal entry
+
+Create a new entry in today's journal file.
 
 ** =g=: github
 
