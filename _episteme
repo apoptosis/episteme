@@ -7,13 +7,14 @@ NC='\033[0m' # No Color
 # use $EMACS or emacs if not set
 EMACS="${EMACS:-$(which emacs)}"
 
-# check if user $OSTYPE != "darwin"
+# check if user $OSTYPE doesn't start with "darwin"
 # if so resolve $EMACS with readlink
 
-if [[ "$OSTYPE" != "darwin" ]]; then
+if [[ "$OSTYPE" != "darwin"* ]]; then
   echo "Resolving emacs..."
   EMACS="$(readlink -f $(which $EMACS))"
 fi
+
 
 echo "Found emacs: $EMACS"
 
