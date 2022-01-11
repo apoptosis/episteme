@@ -2024,7 +2024,9 @@ Each result should have the name, localUrl, and remoteUrl.
     (interactive)
     (find-file episteme/user-todo-file)
     (unless (buffer-modified-p (current-buffer))
-      (revert-buffer t t t)))
+      ;; only if the file exists
+        (when (file-exists-p episteme/user-todo-file)
+            (revert-buffer t t t))))
 #+end_src
 *** new-todo
 #+begin_src emacs-lisp
