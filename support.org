@@ -1565,7 +1565,6 @@ Use [[https://github.com/seagle0128/doom-modeline][doom-modeline]] to ornament t
 #+end_src
 
 * remotes
-
 #+begin_src emacs-lisp
   (defvar episteme/current-remote "episteme"
     "The currently active knowledge-base.")
@@ -1594,7 +1593,11 @@ Use [[https://github.com/seagle0128/doom-modeline][doom-modeline]] to ornament t
     (let ((default-directory (episteme-get-remote-path remote)))
       (not (string= (shell-command-to-string "git status --porcelain") ""))))
 #+end_src
-
+*** remote-is-default-p
+#+begin_src emacs-lisp
+  (defun episteme--remote-is-default-p (name)
+    (string= name episteme/default-remote))
+#+end_src
 *** get-remote-path
 #+begin_src emacs-lisp
   (defun episteme-get-remote-path (remote)
@@ -1961,7 +1964,6 @@ Each result should have the name, localUrl, and remoteUrl.
                                                      (list name url description))))
                                            remotes)))))
 #+end_src
-
 ** commands
 *** update-list
 #+begin_src emacs-lisp
