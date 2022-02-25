@@ -1692,6 +1692,8 @@ Use [[https://github.com/seagle0128/doom-modeline][doom-modeline]] to ornament t
                     (episteme-activate-remote episteme/default-remote))
                 (delete-directory path t)
                 (funcall notify))
+              (if (equal name episteme/current-remote)
+                  (episteme-activate-remote episteme/default-remote))
               (delete-directory path t)
               (funcall notify)))
         (message "Remote %s does not exist" name))))
