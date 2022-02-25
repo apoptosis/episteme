@@ -1658,6 +1658,16 @@ Use [[https://github.com/seagle0128/doom-modeline][doom-modeline]] to ornament t
       files))
 #+end_src
 
+*** delete-remote
+#+begin_src emacs-lisp :tangle yes
+  (defun episteme--delete-remote (name path)
+    ;; if the target remote is the active remote, switch to the default remote
+    (if (equal name episteme/current-remote)
+        (episteme-activate-remote episteme/default-remote))
+    (delete-directory path t))
+
+#+end_src
+
 *** add-remote
 #+begin_src emacs-lisp
     (defun episteme-add-remote (name url)
@@ -1682,19 +1692,15 @@ Use [[https://github.com/seagle0128/doom-modeline][doom-modeline]] to ornament t
       (if (f-exists? path)
           ;; check if remote is default-remote
           (if (episteme--remote-is-default-p name)
-              (message "Cannot delete default remote:" name)
+              (message "Cannot delete default remote: %s" name)
             ;; confirm that the user wants to remove the remote
             (when (yes-or-no-p (format "Are you sure you want to remove %s?" name))
               ;; check if the remote is dirty
               (when (and (or (episteme--remote-is-local-p name) (episteme--remote-is-dirty-p name))
                          (yes-or-no-p (format "Remote %s has uncommited changes!  Are you sure you want to remove it?" name)))
-                (if (equal name episteme/current-remote)
-                    (episteme-activate-remote episteme/default-remote))
-                (delete-directory path t)
+                (episteme--delete-remote name path)
                 (funcall notify))
-              (if (equal name episteme/current-remote)
-                  (episteme-activate-remote episteme/default-remote))
-              (delete-directory path t)
+              (episteme--delete-remote name path)
               (funcall notify)))
         (message "Remote %s does not exist" name))))
 #+end_src
