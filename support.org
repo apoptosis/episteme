@@ -1657,6 +1657,7 @@ Use [[https://github.com/seagle0128/doom-modeline][doom-modeline]] to ornament t
            (folders (-filter 'f-directory? paths)))
       files))
 #+end_src
+
 *** add-remote
 #+begin_src emacs-lisp
     (defun episteme-add-remote (name url)
@@ -1686,11 +1687,13 @@ Use [[https://github.com/seagle0128/doom-modeline][doom-modeline]] to ornament t
               ;; check if the remote is dirty
               (when (and (or (episteme--remote-is-local-p name) (episteme--remote-is-dirty-p name))
                          (yes-or-no-p (format "Remote %s has uncommited changes!  Are you sure you want to remove it?" name)))
-                (delete-directory path t)
-                (funcall notify))
-              (delete-directory path t)
-              (funcall notify)))
-        (message "Remote %s does not exist" name))))
+                (if (equal name episteme/current-remote)
+                    (episteme-activate-remote episteme/default-remote))
+                (delete-directory path t
+                                (funcall notify)
+                              (delete-directory path t)
+                              (funcall notify)
+                        (message "Remote %s does not exist" name))))))))
 #+end_src
 
 *** update-remote
