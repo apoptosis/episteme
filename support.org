@@ -1582,37 +1582,46 @@ Use [[https://github.com/seagle0128/doom-modeline][doom-modeline]] to ornament t
       (yes-or-no-p (format msg name))))
 
 #+end_src
+*** delete-remote
+#+begin_src emacs-lisp :tangle yes
+  (defun episteme--delete-remote (name path)
+    ;; if the target remote is the active remote, switch to the default remote
+    (if (equal name episteme/current-remote)
+        (episteme-activate-remote episteme/default-remote))
+    (delete-directory path t))
+
+#+end_src
 ** api
 *** remote-exists-p
 #+begin_src emacs-lisp
-  (defun episteme--remote-exists-p (remote)
+  (defun episteme-remote-exists-p (remote)
     (file-exists-p (episteme-get-remote-path remote)))
 #+end_src
 
 *** remote-is-local-p
 #+begin_src emacs-lisp
-  (defun episteme--remote-is-local-p (remote)
+  (defun episteme-remote-is-local-p (remote)
     (let ((default-directory (episteme-get-remote-path remote)))
       (not (file-directory-p ".git"))))
 #+end_src
 
 *** remote-is-dirty-p
 #+begin_src emacs-lisp
-  (defun episteme--remote-is-dirty-p (remote)
+  (defun episteme-remote-is-dirty-p (remote)
     (let ((default-directory (episteme-get-remote-path remote)))
       (not (string= (shell-command-to-string "git status --porcelain") ""))))
 #+end_src
 
 *** remote-is-default-p
 #+begin_src emacs-lisp
-  (defun episteme--remote-is-default-p (name)
+  (defun episteme-remote-is-default-p (name)
     (string= name episteme/default-remote))
 #+end_src
 
 *** remote-is-safe-to-remove-p
 #+begin_src emacs-lisp
-  (defun episteme--remote-is-safe-to-remove-p (name)
-    (not (or (episteme--remote-is-local-p name) (episteme--remote-is-dirty-p name))))
+  (defun episteme-remote-is-safe-to-remove-p (name)
+    (not (or (episteme-remote-is-local-p name) (episteme-remote-is-dirty-p name))))
 #+end_src
 *** get-remote-path
 #+begin_src emacs-lisp
@@ -1672,20 +1681,10 @@ Use [[https://github.com/seagle0128/doom-modeline][doom-modeline]] to ornament t
       files))
 #+end_src
 
-*** delete-remote
-#+begin_src emacs-lisp :tangle yes
-  (defun episteme--delete-remote (name path)
-    ;; if the target remote is the active remote, switch to the default remote
-    (if (equal name episteme/current-remote)
-        (episteme-activate-remote episteme/default-remote))
-    (delete-directory path t))
-
-#+end_src
-
 *** add-remote
 #+begin_src emacs-lisp
     (defun episteme-add-remote (name url)
-        (if (episteme--remote-exists-p name)
+        (if (episteme-remote-exists-p name)
             (message "Remote %s already exists" name)
           (let ((default-directory episteme/remotes-path))
             ;; check url is empty
@@ -1705,12 +1704,12 @@ Use [[https://github.com/seagle0128/doom-modeline][doom-modeline]] to ornament t
           (notify (lambda () (message "Remote %s was permanently deleted." name))))
       (if (f-exists? path)
           ;; check if remote is default-remote
-          (if (episteme--remote-is-default-p name)
+          (if (episteme-remote-is-default-p name)
               (message "Cannot delete default remote: %s" name)
             ;; confirm that the user wants to remove the remote
             (when (yes-or-no-p (format "Are you sure you want to remove %s?" name))
               ;; check if the remote is dirty
-              (when (or (episteme--remote-is-safe-to-remove-p name)
+              (when (or (episteme-remote-is-safe-to-remove-p name)
                         (episteme--remote-confirm-dirty-removal name))
                 (episteme--delete-remote name path)
                 (funcall notify))))
@@ -1722,9 +1721,9 @@ Use [[https://github.com/seagle0128/doom-modeline][doom-modeline]] to ornament t
   (defun episteme-update-remote (name)
     (let ((path (episteme-get-remote-path name)))
       (if (f-exists? path)
-          (if (episteme--remote-is-local-p name)
+          (if (episteme-remote-is-local-p name)
               (message "Remote %s is local and can't be updated." name)
-            (if (episteme--remote-is-dirty-p name)
+            (if (episteme-remote-is-dirty-p name)
                 (message "Remote %s has uncommitted changes. Commit all changes before updating." name)
               ;; pull on `path` with magit
               (let ((default-directory path))
@@ -1738,7 +1737,7 @@ Use [[https://github.com/seagle0128/doom-modeline][doom-modeline]] to ornament t
   (defun episteme-remote-status (name)
     (let ((path (episteme-get-remote-path name)))
       (if (f-exists? path)
-          (if (episteme--remote-is-local-p name)
+          (if (episteme-remote-is-local-p name)
               (message "Remote %s is local and has no git status.")
             (magit-status path))
         (message "No remote exists with name %s." name))))
@@ -1848,11 +1847,11 @@ Set episteme/current-remote interactively.
 #+begin_src emacs-lisp
   (defun episteme-tab-bar-format ()
     (let* ((remote episteme/current-remote)
-           (is-dirty (when (episteme--remote-is-dirty-p remote)
+           (is-dirty (when (episteme-remote-is-dirty-p remote)
                        (propertize "⚠️"
                                    'face 'default
                                    'help-echo "Remote has uncommitted changes.")))
-           (is-local (when (episteme--remote-is-local-p remote) "🏠️"))
+           (is-local (when (episteme-remote-is-local-p remote) "🏠️"))
            (icon (or is-dirty is-local "🌐"))
            (str (s-trim (format " %s %s (%s)"
                          icon
