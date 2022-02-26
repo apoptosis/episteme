@@ -1577,7 +1577,7 @@ Use [[https://github.com/seagle0128/doom-modeline][doom-modeline]] to ornament t
 *** episteme--remote-confirm-dirty-removal
 #+begin_src emacs-lisp
   (defun episteme--remote-confirm-dirty-removal (name)
-    (let ((msg (concat "Remote %s has uncommited changes!"
+    (let ((msg (concat "Remote %s has uncommited changes!" " "
                        "Are you sure you want to remove it?")))
       (yes-or-no-p (format msg name))))
 
