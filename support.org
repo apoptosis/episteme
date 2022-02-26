@@ -1573,6 +1573,15 @@ Use [[https://github.com/seagle0128/doom-modeline][doom-modeline]] to ornament t
    (episteme-activate-remote episteme/default-remote))
 #+end_src
 
+** internal
+*** episteme--remote-confirm-dirty-removal
+#+begin_src emacs-lisp
+  (defun episteme--remote-confirm-dirty-removal (name)
+    (let ((msg (concat "Remote %s has uncommited changes!" " "
+                       "Are you sure you want to remove it?")))
+      (yes-or-no-p (format msg name))))
+
+#+end_src
 ** api
 *** remote-exists-p
 #+begin_src emacs-lisp
@@ -1600,6 +1609,11 @@ Use [[https://github.com/seagle0128/doom-modeline][doom-modeline]] to ornament t
     (string= name episteme/default-remote))
 #+end_src
 
+*** remote-is-safe-to-remove-p
+#+begin_src emacs-lisp
+  (defun episteme--remote-is-safe-to-remove-p (name)
+    (not (or (episteme--remote-is-local-p name) (episteme--remote-is-dirty-p name))))
+#+end_src
 *** get-remote-path
 #+begin_src emacs-lisp
   (defun episteme-get-remote-path (remote)
@@ -1696,12 +1710,10 @@ Use [[https://github.com/seagle0128/doom-modeline][doom-modeline]] to ornament t
             ;; confirm that the user wants to remove the remote
             (when (yes-or-no-p (format "Are you sure you want to remove %s?" name))
               ;; check if the remote is dirty
-              (when (and (or (episteme--remote-is-local-p name) (episteme--remote-is-dirty-p name))
-                         (yes-or-no-p (format "Remote %s has uncommited changes!  Are you sure you want to remove it?" name)))
+              (when (or (episteme--remote-is-safe-to-remove-p name)
+                        (episteme--remote-confirm-dirty-removal name))
                 (episteme--delete-remote name path)
-                (funcall notify))
-              (episteme--delete-remote name path)
-              (funcall notify)))
+                (funcall notify))))
         (message "Remote %s does not exist" name))))
 #+end_src
 
